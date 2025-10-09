@@ -329,11 +329,11 @@ body {
     letter-spacing: -0.02em;
     color: #000000;
     padding: 15px 50px;
-    margin: 0 auto;
+    margin: 0;
     border: 1px solid rgba(11, 13, 16, 0.5);
     border-radius: 10px;
     background-color: rgba(11, 13, 16, 0.05);
-    max-width: fit-content;
+    width: fit-content;
 }
 
 .services__main-section {
@@ -368,7 +368,7 @@ body {
     background-color: rgba(11, 13, 16, 0.2);
     backdrop-filter: blur(10px);
     border: none;
-    color: #000000;
+    color: white;
     font-size: 18px;
     font-weight: 500;
     font-family: 'Inter', sans-serif;
@@ -398,11 +398,11 @@ body {
     letter-spacing: -0.02em;
     color: #000000;
     padding: 15px 50px;
-    margin: 20px auto 10px auto;
+    margin: 20px 0 10px 0;
     border: 1px solid rgba(11, 13, 16, 0.5);
     border-radius: 10px;
     background-color: rgba(11, 13, 16, 0.05);
-    max-width: fit-content;
+    width: fit-content;
 }
 
 .services__additional-section {
@@ -414,8 +414,9 @@ body {
 
 .services__additional-options {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 10px;
+    justify-content: flex-start;
 }
 
 .additional-option {
@@ -495,7 +496,8 @@ body {
     }
 
     .services__form {
-        max-width: 100%;
+        width: 100%;
+        margin-left: 0;
     }
 
     .services__image-block {
@@ -518,6 +520,7 @@ body {
     .services__additional-label {
         padding: 12px 30px;
         font-size: 16px;
+        margin-left: 0;
     }
 
     .services__additional-section {
@@ -526,6 +529,7 @@ body {
 
     .services__additional-options {
         gap: 8px;
+        justify-content: center;
     }
 
     .additional-option {
@@ -760,12 +764,15 @@ body {
 
     .services__additional-options {
         gap: 8px;
+        justify-content: center;
     }
 
     .additional-option {
         font-size: 14px;
         padding: 12px 20px;
         min-width: 160px;
+        flex: 1 1 auto;
+        max-width: 200px;
     }
 
     .services__cta {
