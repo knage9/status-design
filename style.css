@@ -337,7 +337,7 @@ body {
 }
 
 .services__main-section {
-    margin-top: 10px;
+    margin: 10px 0 20px 0;
 }
 
 .services__image-block {
@@ -481,88 +481,248 @@ body {
     cursor: not-allowed;
 }
 
+/* Gallery Section */
+.gallery {
+    padding: 100px 0;
+    background-color: #ffffff;
+}
+
+.gallery__title {
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin-bottom: 50px;
+    text-align: left;
+    max-width: 776px;
+}
+
+.gallery__content {
+    display: grid;
+    grid-template-columns: 560px 780px;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.gallery__column--left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.gallery__column--right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.gallery__item {
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.gallery__item--tall {
+    height: 760px;
+}
+
+.gallery__item--medium {
+    height: 500px;
+}
+
+.gallery__item--wide {
+    height: 500px;
+}
+
+.gallery__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery__button {
+    display: inline-block;
+    width: 100%;
+    max-width: 1420px;
+    height: 62px;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    border: none;
+    border-radius: 1000px;
+    text-align: center;
+    line-height: 62px;
+    transition: background-color 0.3s ease;
+}
+
+.gallery__button:hover {
+    background-color: #333333;
+}
+
+/* Gallery Responsive */
+@media (max-width: 1199px) {
+    .gallery__content {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .gallery__item--tall {
+        height: 600px;
+    }
+
+    .gallery__item--medium {
+        height: 400px;
+    }
+
+    .gallery__item--wide {
+        height: 450px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery {
+        padding: 60px 0;
+    }
+
+    .gallery__title {
+        font-size: 32px;
+        margin-bottom: 30px;
+    }
+
+    .gallery__content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .gallery__item--tall {
+        height: 400px;
+    }
+
+    .gallery__item--medium {
+        height: 300px;
+    }
+
+    .gallery__item--wide {
+        height: 350px;
+    }
+
+    .gallery__button {
+        height: 56px;
+        font-size: 16px;
+        line-height: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery {
+        padding: 40px 0;
+    }
+
+    .gallery__title {
+        font-size: 26px;
+        margin-bottom: 25px;
+    }
+
+    .gallery__content {
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+
+    .gallery__item--tall {
+        height: 300px;
+    }
+
+    .gallery__item--medium {
+        height: 250px;
+    }
+
+    .gallery__item--wide {
+        height: 280px;
+    }
+
+    .gallery__button {
+        height: 52px;
+        font-size: 14px;
+        line-height: 52px;
+    }
+}
+
 /* Responsive Design */
 
-/* Services Section Responsive */
-@media (max-width: 1024px) {
+/* Services Section Responsive - меньше 1200px */
+@media (max-width: 1199px) {
     .services__content {
-        max-width: 100%;
+        flex-direction: column;
         gap: 40px;
+        align-items: stretch;
         padding: 0 40px;
     }
 
     .services__title {
-        font-size: 42px;
+        font-size: 48px;
+        text-align: left;
     }
 
     .services__form {
         width: 100%;
-        margin-left: 0;
+        margin: 0 auto;
+        max-width: 800px;
     }
 
     .services__image-block {
-        height: 350px;
+        height: 400px;
     }
 
     .services__main-options {
-        gap: 8px;
-        bottom: 15px;
-        left: 15px;
-        right: 15px;
+        gap: 12px;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
     }
 
     .main-option {
-        padding: 12px 15px;
-        font-size: 16px;
+        padding: 16px 24px;
+        font-size: 17px;
+        min-height: 52px;
     }
 
     .services__main-label,
     .services__additional-label {
-        padding: 12px 30px;
-        font-size: 16px;
-        margin-left: 0;
+        padding: 16px 40px;
+        font-size: 17px;
+        margin: 0;
     }
 
     .services__additional-section {
-        padding: 15px;
+        padding: 24px;
     }
 
     .services__additional-options {
-        gap: 8px;
-        justify-content: center;
+        gap: 12px;
+        justify-content: flex-start;
     }
 
     .additional-option {
         font-size: 16px;
-        padding: 15px 30px;
-        min-width: 180px;
+        padding: 16px 28px;
+        min-width: 200px;
+        min-height: 54px;
     }
 
     .services__cta {
-        height: 55px;
-        font-size: 16px;
+        height: 60px;
+        font-size: 17px;
     }
 }
 
-/* Tablet */
-@media (max-width: 1200px) {
-    .container {
-        max-width: 100%;
-        padding: 0 40px;
-    }
-    
-    .hero__title {
-        font-size: 60px;
-    }
-    
-    .features__title {
-        font-size: 42px;
-    }
-    
-    .features__grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+/* Упрощаем адаптивность - убираем лишние медиа-запросы */
 
 @media (max-width: 992px) {
     .hero__content {
@@ -736,48 +896,52 @@ body {
     }
 
     .services__image-block {
-        height: 250px;
+        height: 280px;
     }
 
     .services__main-options {
-        gap: 6px;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
+        gap: 8px;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
     }
 
     .main-option {
-        padding: 10px 12px;
-        font-size: 13px;
+        padding: 14px 16px;
+        font-size: 15px;
+        min-height: 48px;
     }
 
     .services__main-label,
     .services__additional-label {
-        padding: 12px 20px;
-        font-size: 15px;
+        padding: 16px 24px;
+        font-size: 16px;
+        margin-left: 0;
     }
 
     .services__additional-section {
-        padding: 15px;
-        margin-bottom: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
     }
 
     .services__additional-options {
-        gap: 8px;
+        gap: 12px;
         justify-content: center;
     }
 
     .additional-option {
-        font-size: 14px;
-        padding: 12px 20px;
-        min-width: 160px;
-        flex: 1 1 auto;
-        max-width: 200px;
+        font-size: 15px;
+        padding: 16px 24px;
+        min-width: 180px;
+        min-height: 56px;
+        flex: 0 1 auto;
+        max-width: calc(50vw - 20px);
     }
 
     .services__cta {
-        height: 52px;
-        font-size: 15px;
+        height: 60px;
+        font-size: 16px;
+        margin-top: 10px;
     }
 }
 
@@ -785,13 +949,68 @@ body {
     .hero__title {
         font-size: 28px;
     }
-    
+
     .features__title {
         font-size: 26px;
     }
-    
+
     .tabs__item {
         font-size: 13px;
         padding: 8px 16px;
+    }
+
+    /* Services Extra Small Mobile */
+    .services__content {
+        padding: 0 15px;
+    }
+
+    .services__title {
+        font-size: 28px;
+    }
+
+    .services__image-block {
+        height: 240px;
+    }
+
+    .services__main-options {
+        gap: 4px;
+        bottom: 8px;
+        left: 8px;
+        right: 8px;
+    }
+
+    .main-option {
+        padding: 10px 12px;
+        font-size: 12px;
+        min-height: 40px;
+        line-height: 1.1;
+    }
+
+    .services__main-label,
+    .services__additional-label {
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+
+    .services__additional-section {
+        padding: 16px;
+    }
+
+    .services__additional-options {
+        gap: 10px;
+    }
+
+    .additional-option {
+        font-size: 13px;
+        padding: 14px 20px;
+        min-width: 160px;
+        min-height: 52px;
+        max-width: calc(100vw - 40px);
+        box-sizing: border-box;
+    }
+
+    .services__cta {
+        height: 56px;
+        font-size: 14px;
     }
 }
