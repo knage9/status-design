@@ -1653,7 +1653,7 @@ body {
     .services__content {
         flex-direction: column;
         gap: 40px;
-        align-items: stretch;
+        align-items: flex-start;
         padding: 0 40px;
     }
 
@@ -1689,7 +1689,6 @@ body {
     .services__additional-label {
         padding: 16px 40px;
         font-size: 17px;
-        margin: 0;
     }
 
     .services__additional-section {
@@ -1820,7 +1819,7 @@ body {
 
     .services__additional-options {
         gap: 12px;
-        justify-content: center;
+        justify-content: left;
     }
 
     .additional-option {
@@ -1838,6 +1837,17 @@ body {
         margin-top: 10px;
     }
 }
+
+@media (max-width: 446px) {
+    .services__additional-options {
+        justify-content: center;
+    }
+
+    .additional-option {
+       width: 100%;
+    }
+}
+
 
 @media (max-width: 480px) {
     .hero__title {
