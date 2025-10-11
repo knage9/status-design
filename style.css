@@ -1372,6 +1372,14 @@ body {
     }
 }
 
+
+/* Медиа-запрос после базовых стилей */
+@media (min-width: 851px) {
+    .burger-menu__btn {
+        display: none;
+    }
+}
+
 /* Media query for screens smaller than 850px - move button to burger menu */
 @media (max-width: 850px) {
     /* Hide the primary button in header */
