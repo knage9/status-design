@@ -1372,6 +1372,48 @@ body {
     }
 }
 
+/* Media query for screens smaller than 850px - move button to burger menu */
+@media (max-width: 850px) {
+    /* Hide the primary button in header */
+    .btn-primary {
+        display: none;
+    }
+
+    /* Style the button in burger menu */
+    .burger-menu__btn {
+        width: 100%;
+        margin: 20px 0px;
+        padding: 15px 20px;
+        background-color: #ffffff;
+        color: #1458E4;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 120%;
+        letter-spacing: -0.02em;
+        border: none;
+        border-radius: 1000px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+        height: 55px;
+        color: #0B0D10;
+    }
+
+    .burger-menu__btn:hover {
+        background-color: #0B0D10;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Adjust burger menu dropdown width for button */
+    .burger-menu__dropdown.active {
+        width: 360px;
+    }
+}
+
 /* Gallery Responsive */
 @media (max-width: 1199px) {
     .gallery__content {
