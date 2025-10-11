@@ -1837,7 +1837,6 @@ body {
         margin-top: 10px;
     }
 }
-
 @media (max-width: 446px) {
     .services__additional-options {
         justify-content: center;
@@ -2980,6 +2979,12 @@ body {
 
     .footer__copyright,
     .footer__privacy {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .services__cta{
         font-size: 12px;
     }
 }
