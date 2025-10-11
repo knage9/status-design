@@ -369,6 +369,53 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- FAQ Section inside About -->
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">Будете ли вы разбирать автомобиль для выполнения процедуры дехромирования?</h3>
+                            <div class="faq-icon-wrapper">
+                                <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">Что будет, если в течение гарантийного срока с дехромированной детали начнет слазить краска?</h3>
+                            <div class="faq-icon-wrapper">
+                                <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                            </div>
+                        </div>
+                        <div class="faq-content">
+                            <p class="faq-description">В нашей практике подобные случаи происходят довольно редко. Если с детали начнет отходить краска, то мы готовы устранить проблему в кратчайшие сроки.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">Как вы делаете расчет цен на шумоизоляцию и почему вы можете гарантировать выполнение работы в течение 1 дня?</h3>
+                            <div class="faq-icon-wrapper">
+                                <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h3 class="faq-title">Вы можете гарантировать, что после в результате вашей работы не останется следов разбора автомобиля?</h3>
+                            <div class="faq-icon-wrapper">
+                                <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -636,6 +683,51 @@
                     });
                 });
             }
+
+            // FAQ Accordion functionality
+            const faqItems = document.querySelectorAll('.about-content .faq-item');
+
+            faqItems.forEach(item => {
+                const header = item.querySelector('.faq-header');
+                const content = item.querySelector('.faq-content');
+                const description = item.querySelector('.faq-description');
+
+                header.addEventListener('click', function() {
+                    const isActive = item.classList.contains('active');
+
+                    // Close all FAQ items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                            const otherContent = otherItem.querySelector('.faq-content');
+                            if (otherContent) {
+                                otherContent.classList.remove('active');
+                            }
+                        }
+                    });
+
+                    // Toggle current item
+                    if (isActive) {
+                        item.classList.remove('active');
+                        if (content) {
+                            content.classList.remove('active');
+                        }
+                    } else {
+                        item.classList.add('active');
+                        if (content) {
+                            content.classList.add('active');
+
+                            // Smooth scroll to expanded item
+                            setTimeout(() => {
+                                item.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                });
+                            }, 200);
+                        }
+                    }
+                });
+            });
         });
     </script>
 </body>
