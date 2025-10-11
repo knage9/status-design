@@ -443,6 +443,45 @@
                 });
             }
 
+            // Touch/Swipe functionality for mobile devices
+            const mainCard = document.querySelector('.review-card--main');
+            if (mainCard) {
+                let startX = 0;
+                let startY = 0;
+                let endX = 0;
+                let endY = 0;
+
+                mainCard.addEventListener('touchstart', function(e) {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                });
+
+                mainCard.addEventListener('touchmove', function(e) {
+                    e.preventDefault(); // Prevent scrolling while swiping
+                });
+
+                mainCard.addEventListener('touchend', function(e) {
+                    endX = e.changedTouches[0].clientX;
+                    endY = e.changedTouches[0].clientY;
+
+                    const deltaX = endX - startX;
+                    const deltaY = endY - startY;
+
+                    // Check if horizontal swipe is more significant than vertical
+                    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                        if (deltaX > 0 && currentSlide > 0) {
+                            // Swipe right - previous slide
+                            currentSlide--;
+                            updateReviews();
+                        } else if (deltaX < 0 && currentSlide < maxSlides) {
+                            // Swipe left - next slide
+                            currentSlide++;
+                            updateReviews();
+                        }
+                    }
+                });
+            }
+
             // Initialize reviews
             updateReviews();
         });
