@@ -988,15 +988,17 @@ body {
 /* About Location */
 .about-location {
     margin-top: 150px;
-    margin-left: auto;
-    max-width: 940px;
     width: 100%;
+    max-width: 1420px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .location-content {
     display: flex;
-    gap: 50px;
+    justify-content: space-between;
     align-items: flex-start;
+    gap: 40px;
 }
 
 .address-container {
@@ -1034,7 +1036,7 @@ body {
     height: 550px;
     border-radius: 10px;
     overflow: hidden;
-    align-self: flex-start;
+    flex-shrink: 0;
 }
 
 .map-container iframe {
