@@ -22,6 +22,12 @@ body {
     padding: 0 20px;
 }
 
+.container-hero {
+    max-width: 1420px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
 /* Header */
 .header {
     position: fixed;
@@ -1160,6 +1166,34 @@ body {
 .gallery__button:hover {
     background-color: #333333;
 }
+
+
+@media (max-width: 1300px) {
+
+    .container-hero {
+        max-width: 1420px;
+        margin: 0 0;
+    }
+    
+    .hero__content {
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        gap: 20px;
+        padding-bottom: 150px;
+        padding-left: 50px;
+    }
+    
+    .hero__description {
+        text-align: left;
+        margin-left: 0;
+        max-width: 395px;
+    }
+}
+
+
+
+
 
 /* Hide contact labels on screens smaller than 1000px */
 @media (max-width: 999px) {
