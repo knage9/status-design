@@ -11,6 +11,9 @@
     <script src="script.js" defer></script>
 </head>
 <body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -24,6 +27,24 @@
                         <a href="#" class="nav__link">Отзывы</a>
                         <a href="#" class="nav__link">Контакты</a>
                     </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                            <div class="burger-menu__content">
+                                <a href="#" class="burger-menu__link">О компании</a>
+                                <a href="#" class="burger-menu__link">Отзывы</a>
+                                <a href="#" class="burger-menu__link">Контакты</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <button class="btn-primary">Оставить заявку</button>
             </div>
