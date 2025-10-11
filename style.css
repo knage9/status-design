@@ -651,19 +651,13 @@ body {
     object-fit: cover;
 }
 
-/* Reviews navigation positioned to the right of main card */
-.reviews__slider {
-    position: relative;
-}
-
+/* Reviews navigation positioned to the right of main card at bottom */
 .reviews__navigation {
     position: absolute;
-    top: 50%;
-    right: -70px;
-    transform: translateY(-50%);
+    bottom: 20px;
+    right: 20px;
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     z-index: 10;
 }
 
@@ -1288,7 +1282,8 @@ body {
     }
 
     .reviews__navigation {
-        right: -60px;
+        bottom: 15px;
+        right: 15px;
     }
 }
 
