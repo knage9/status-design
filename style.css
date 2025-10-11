@@ -415,10 +415,10 @@ body {
 
 .main-option {
     flex: 1;
-    background-color: rgba(11, 13, 16, 0.2);
+    background-color: rgb(255, 255, 255);
     backdrop-filter: blur(10px);
     border: none;
-    color: white;
+    color: black;
     font-size: 18px;
     font-weight: 500;
     font-family: 'Inter', sans-serif;
@@ -428,16 +428,16 @@ body {
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid rgba(11, 13, 16, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .main-option--active {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #1458E4;
+    color: white;
 }
 
 .main-option:hover:not(.main-option--active) {
-    background-color: rgba(11, 13, 16, 0.3);
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 .services__additional-label {
@@ -529,6 +529,40 @@ body {
 
 .services__cta:disabled {
     cursor: not-allowed;
+}
+
+/* Services Section Responsive - меньше 1420px */
+@media (max-width: 1419px) and (min-width: 1200px) {
+    .services__content {
+        flex-direction: column;
+        gap: 50px;
+        align-items: flex-start;
+        padding: 0 20px;
+    }
+
+    .services__form {
+        width: 100%;
+        margin: 0;
+        padding: 0px;
+        box-sizing: border-box;
+        height: auto;
+    }
+
+    .services__image-block {
+        height: 550px;
+    }
+
+    .services__title{
+        margin-bottom: 20px;
+    }
+
+    .services__left {
+        max-width: 700px;
+    }
+
+    .main-option{
+        height: 100px;
+    }
 }
 
 /* Reviews Section */
@@ -2623,12 +2657,12 @@ body {
         height: 36px;
     }
 
-    .about-content .faq-icon {
+.about-content .faq-icon {
         width: 14px;
         height: 14px;
     }
 
-.about-content .faq-content.active {
+    .about-content .faq-content.active {
         max-height: 300px;
         padding: 0 12px 12px 12px;
     }
