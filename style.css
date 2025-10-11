@@ -949,6 +949,39 @@ body {
     margin-left: auto;
     margin-top: 150px;
     text-align: left;
+    position: relative;
+}
+
+/* Contact Labels */
+.contact-label {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 120%;
+    color: #ffffff;
+    background-color: rgb(20, 88, 228, 0.3);
+    backdrop-filter: blur(10px);
+    padding: 10px 25px;
+    border-radius: 25px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    transition: transform 0.1s ease-out;
+}
+
+.contact-label--first {
+    top: -20px;
+    left: 50px;
+    transform: rotate(-5deg);
+    z-index: 1;
+}
+
+.contact-label--second {
+    bottom: 1%;
+    right: 50px;
+    z-index: 2;
+    transform: rotate(15deg);
 }
 
 /* Gallery Section */
@@ -1033,6 +1066,13 @@ body {
 
 .gallery__button:hover {
     background-color: #333333;
+}
+
+/* Hide contact labels on screens smaller than 1000px */
+@media (max-width: 999px) {
+    .contact-label {
+        display: none;
+    }
 }
 
 /* Gallery Responsive */
@@ -1906,5 +1946,21 @@ body {
         padding: 16px 25px;
         font-size: 14px;
         margin-top: 18px;
+    }
+
+    /* Contact Labels Mobile */
+    .contact-label {
+        font-size: 14px;
+        padding: 8px 20px;
+    }
+
+    .contact-label--first {
+        top: -15px;
+        right: 20px;
+    }
+
+    .contact-label--second {
+        bottom: 15px;
+        left: 20px;
     }
 }
