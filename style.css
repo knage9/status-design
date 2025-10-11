@@ -272,6 +272,18 @@ body {
     border-left: 1px dashed rgba(0, 0, 0, 0.2);
 }
 
+/* Responsive для планшетов - две колонки на ширине меньше 1350px */
+@media (max-width: 1349px) and (min-width: 769px) {
+    .features__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+    }
+
+    .feature-card {
+        padding: 30px 25px;
+    }
+}
+
 .feature-card {
     padding: 20px 20px;
     border-right: 1px dashed rgba(0, 0, 0, 0.2);
@@ -2616,14 +2628,14 @@ body {
         height: 14px;
     }
 
-    .about-content .faq-content.active {
+.about-content .faq-content.active {
         max-height: 300px;
         padding: 0 12px 12px 12px;
     }
 
-.about-content .faq-description {
-    font-size: 14px;
-}
+    .about-content .faq-description {
+        font-size: 14px;
+    }
 }
 
 /* Footer Section */
