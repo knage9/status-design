@@ -1,0 +1,6 @@
+<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="50" height="50" rx="5" fill="#0B0D10" style="fill:#0B0D10;fill:color(display-p3 0.0431 0.0510 0.0627);fill-opacity:1;"/>
+<rect width="50" height="50" rx="5" fill="black" fill-opacity="0.2" style="fill:black;fill-opacity:0.2;"/>
+<rect x="24" y="19" width="2" height="12" rx="1" fill="#D9D9D9" style="fill:#D9D9D9;fill:color(display-p3 0.8510 0.8510 0.8510);fill-opacity:1;"/>
+<rect x="19" y="26" width="2" height="12" rx="1" transform="rotate(-90 19 26)" fill="#D9D9D9" style="fill:#D9D9D9;fill:color(display-p3 0.8510 0.8510 0.8510);fill-opacity:1;"/>
+</svg>

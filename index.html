@@ -331,6 +331,18 @@
         </div>
     </section>
 
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <h2 class="about-title">Мы относимся к каждому автомобилю как к собственному.
+Тюнинг для нас — не просто работа, а возможность подчеркнуть характер машины и её владельца.
+Нам важно то ощущение, которое получает клиент, садясь в обновлённый автомобиль.</h2>
+                <button class="about-btn">Оставить заявку</button>
+            </div>
+        </div>
+    </section>
+
     <script>
         // Services functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -544,6 +556,31 @@
 
             // Initialize reviews
             updateReviews();
+
+            // About section scroll animation
+            const aboutTitle = document.querySelector('.about-title');
+            if (aboutTitle) {
+                const observerOptions = {
+                    threshold: 0.3,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // Start animation when element comes into view
+                            setTimeout(() => {
+                                entry.target.style.opacity = '1';
+                                entry.target.style.transform = 'translateY(0)';
+                                entry.target.style.backgroundPosition = '0 0';
+                                entry.target.style.filter = 'drop-shadow(0 0 0px rgba(42, 39, 37, 0))';
+                            }, 150);
+                        }
+                    });
+                }, observerOptions);
+
+                observer.observe(aboutTitle);
+            }
         });
     </script>
 </body>
