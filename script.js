@@ -237,6 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
         burgerOverlay.classList.add('active');
         toggleBodyScroll(true);
 
+        // Change text and icon
+        const burgerText = burgerToggle.querySelector('.burger-menu__text');
+        if (burgerText) {
+            burgerText.textContent = 'Закрыть';
+        }
+
         // Focus management for accessibility
         burgerDropdown.setAttribute('aria-hidden', 'false');
         burgerToggle.setAttribute('aria-expanded', 'true');
@@ -249,6 +255,12 @@ document.addEventListener('DOMContentLoaded', function() {
         burgerDropdown.classList.remove('active');
         burgerOverlay.classList.remove('active');
         toggleBodyScroll(false);
+
+        // Change text and icon back
+        const burgerText = burgerToggle.querySelector('.burger-menu__text');
+        if (burgerText) {
+            burgerText.textContent = 'Меню';
+        }
 
         // Focus management for accessibility
         burgerDropdown.setAttribute('aria-hidden', 'true');
