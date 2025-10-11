@@ -984,7 +984,7 @@ body {
     line-height: 1.2;
     letter-spacing: -0.02em;
     color: #2A2725;
-    width: 1300px;
+    max-width: 1300px;
     margin: 0 0 25px 0;
     opacity: 0;
     transform: translateY(30px);
@@ -1542,6 +1542,15 @@ body {
     .contact-label {
         display: none;
     }
+
+    .about-contact-text{
+        margin: 0px;
+    }
+
+    .about-contact-info{
+        margin-left: 0px;
+    }
+
 
     /* Show burger menu and hide regular nav on mobile */
     .nav {
@@ -2327,6 +2336,10 @@ body {
         margin-top: 120px;
     }
 
+    .address-title{
+        font-size: 36px;
+    }
+
     .about-contact-info {
         max-width: 800px;
     }
@@ -2335,43 +2348,6 @@ body {
         font-size: 36px;
     }
 
-    .about-location {
-        max-width: 800px;
-    }
-
-    .location-content {
-        flex-direction: column;
-        gap: 30px;
-        align-items: center;
-    }
-
-    .address-container {
-        width: 100%;
-        max-width: 600px;
-        text-align: center;
-        gap: 15px;
-    }
-
-    .address-title {
-        font-size: 36px;
-        text-align: center;
-    }
-
-    .address-description {
-        width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
-        text-align: center;
-    }
-
-    .map-container {
-        width: 100%;
-        height: 450px;
-    }
-
-    .about-content {
-        padding: 80px 0;
-    }
 }
 
 @media (max-width: 992px) {
@@ -2402,7 +2378,7 @@ body {
     .about-section {
         margin: 15px;
         width: calc(100% - 30px);
-        padding: 0 15px;
+        padding: 0px;
     }
 
     .about-content {
@@ -2417,8 +2393,6 @@ body {
 
     .about-contact-info {
         gap: 10px;
-        text-align: center;
-        align-items: center;
     }
 
     .contact-link {
@@ -2435,27 +2409,9 @@ body {
         align-items: center;
     }
 
-    .address-container {
-        width: 100%;
-        text-align: center;
-        gap: 12px;
-    }
-
-    .address-title {
-        font-size: 28px;
-        text-align: center;
-    }
-
-    .address-description {
-        width: 100%;
-        max-width: 400px;
-        font-size: 18px;
-        text-align: center;
-        margin: 0 auto 15px auto;
-    }
 
     .map-container {
-        width: 100%;
+        max-width: 100%;
         height: 350px;
     }
 
@@ -2496,31 +2452,6 @@ body {
 
     .about-location {
         margin-top: 60px;
-    }
-
-    .location-content {
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-    }
-
-    .address-container {
-        width: 100%;
-        text-align: center;
-        gap: 10px;
-    }
-
-    .address-title {
-        font-size: clamp(20px, 6vw, 28px);
-        text-align: center;
-    }
-
-    .address-description {
-        width: 100%;
-        max-width: 300px;
-        font-size: clamp(16px, 4vw, 18px);
-        text-align: center;
-        margin: 0 auto 12px auto;
     }
 
     .map-container {
@@ -2645,12 +2576,10 @@ body {
 
 /* FAQ Responsive inside About */
 @media (max-width: 1199px) {
-    .about-content .faq-item {
-        width: 800px;
-    }
+
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1080px) {
     .about-content .faq-container {
         margin-top: 40px;
         gap: 15px;
@@ -2658,7 +2587,7 @@ body {
 
     .about-content .faq-item {
         width: 100%;
-        max-width: 700px;
+        max-width: 100%px;
     }
 
     .about-content .faq-title {
@@ -2902,7 +2831,16 @@ body {
     }
 }
 
-@media (max-width: 1199px) {
+@media (max-width: 1200px) {
+    .footer__image {
+        width: 350px;
+    }
+    .footer__cta-block{
+        width: 100%;
+    }
+}
+
+@media (max-width: 1000px) {
     .footer__content {
         flex-direction: column;
         gap: 20px;
@@ -2910,13 +2848,11 @@ body {
     }
 
     .footer__image {
-        width: 520px;
-        height: 370px;
+        display: none;
     }
 
     .footer__cta-block {
         width: 100%;
-        max-width: 800px;
         height: 370px;
         padding: 20px;
     }
@@ -2942,23 +2878,17 @@ body {
     }
 
     .footer__container {
-        padding: 0 20px;
+        padding: 0 15px;
     }
 
     .footer__content {
         gap: 15px;
     }
 
-    .footer__image {
-        width: 100%;
-        max-width: 400px;
-        height: 280px;
-    }
-
     .footer__cta-block {
         width: 100%;
         height: 300px;
-        padding: 15px;
+        padding: 20px;
     }
 
     .footer__title {
@@ -2971,12 +2901,6 @@ body {
         max-width: 400px;
     }
 
-    .footer__button {
-        bottom: 15px;
-        left: 15px;
-        padding: 20px 30px;
-        font-size: 15px;
-    }
 
     .footer__bottom {
         margin-top: 8px;
@@ -2999,7 +2923,7 @@ body {
     }
 
     .footer__container {
-        padding: 0 15px;
+        padding: 0 10px;
     }
 
     .footer__content {
@@ -3007,12 +2931,14 @@ body {
     }
 
     .footer__image {
+        display: block;
+        width: 100%;
         height: 220px;
     }
 
     .footer__cta-block {
         height: 250px;
-        padding: 12px;
+        padding: 20px;
     }
 
     .footer__title {
@@ -3024,9 +2950,7 @@ body {
     }
 
     .footer__button {
-        bottom: 12px;
-        left: 12px;
-        padding: 16px 24px;
+        
         font-size: 13px;
     }
 
@@ -3051,5 +2975,77 @@ body {
 @media (max-width: 1050px) {
     .reviews__title{
         max-width: 600px;
+    }
+}
+
+
+@media (max-width: 1540px) {
+    .location-content{
+        display: block;
+    }
+    .address-container{
+        max-width: 100%;
+    }
+    .address-title{
+        max-width: 600px;
+    }
+    .address-description{
+        width: 800px;
+    }
+    .about-content .faq-container {
+        align-items: flex-start;
+    }
+}
+
+
+@media (max-width: 1080px) {
+    .location-content{
+        max-width: 100%;
+    }
+    .map-container{
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 1000px) {
+    .about-contact-text{
+        font-size: 28px;
+        max-width: 100%;
+    }
+
+    .contact-link{
+        font-size: 28px;
+    }
+    .address-title{
+        font-size: 28px;
+        max-width: 400px;
+    }
+    .address-description{
+        font-size: 18px;
+        max-width: 600px;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .about-contact-text{
+        max-width: 100%;
+    }
+
+    .address-description{
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 550px) {
+    .about-contact-text{
+        font-size: 24px;
+    }
+    .contact-link{
+        font-size: 24px;
+    }
+    .address-description{
+        font-size: 16px;
     }
 }
