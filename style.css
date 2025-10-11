@@ -2202,11 +2202,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    align-items: flex-end;
+    position: relative;
+    width: 100%;
+    margin-left: auto;
+    max-width: calc(1420px - 40px);
 }
 
 .about-content .faq-item {
     width: 940px;
-    margin: 0 auto;
     background-color: rgba(134, 134, 134, 0.2);
     border-radius: 10px;
     backdrop-filter: blur(10px);
@@ -2376,7 +2380,6 @@ body {
         padding: 0 12px 12px 12px;
     }
 
-    .about-content .faq-description {
-        font-size: 14px;
-    }
+.about-content .faq-description {
+    font-size: 14px;
 }
