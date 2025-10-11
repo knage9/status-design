@@ -1272,15 +1272,15 @@ body {
     background-color: #1458E4;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.4s ease;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 1002;
 }
 
 .burger-menu__dropdown.active {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
     width: 360px;
     height: auto;
     background-color: #1458E4;
@@ -1387,10 +1387,15 @@ body {
         display: none;
     }
 
+    .hero__title{
+        font-size: 56px;
+        max-width: 500px;
+    }
+}
     /* Style the button in burger menu */
     .burger-menu__btn {
-        width: 100%;
-        margin: 20px 0px;
+        width: calc(100% - 40px);
+        margin: 20px;
         padding: 15px 20px;
         background-color: #ffffff;
         color: #1458E4;
@@ -1401,18 +1406,34 @@ body {
         border: none;
         border-radius: 1000px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: 'Inter', sans-serif;
         height: 55px;
-        color: #0B0D10;
+        opacity: 0;
+        transform: translateY(20px);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Button appears after dropdown animation */
+    .burger-menu__dropdown.active .burger-menu__btn {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.6s;
+    }
+
+    /* Button disappears immediately when dropdown closes */
+    .burger-menu__dropdown:not(.active) .burger-menu__btn {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.1s ease, transform 0.1s ease;
     }
 
     .burger-menu__btn:hover {
-        background-color: #0B0D10;
-        color: white;
+        background-color: #f0f0f0;
         transform: translateY(-1px);
     }
 
