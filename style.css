@@ -209,6 +209,38 @@ body {
     white-space: nowrap;
 }
 
+@media (max-width: 500px) {
+    .tabs{
+        padding: 10px;
+    }
+    .tabs__wrapper{
+        gap: 10px;
+    }
+    .tabs__item{
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media (max-width: 390px) {
+    .tabs{
+        padding: 10px;
+    }
+    .tabs__wrapper{
+        gap: 8px;
+    }
+    .tabs__item{
+        font-size: 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+
 .tabs__item--active {
     background-color: #ffffff;
     color: #000000;
@@ -241,7 +273,7 @@ body {
 }
 
 .feature-card {
-    padding: 40px 30px;
+    padding: 20px 20px;
     border-right: 1px dashed rgba(0, 0, 0, 0.2);
     border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
     display: flex;
@@ -1392,6 +1424,42 @@ body {
         max-width: 500px;
     }
 }
+
+@media (max-width: 620px) {
+    .hero__title{
+        font-size: 48px;
+        max-width: 400px;
+    }
+}
+
+
+@media (max-width: 550px) {
+    .hero__content{
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .hero__title{
+        font-size: 38px;
+        max-width: 400px;
+    }
+    .hero__description{
+        font-size: 16px;
+        max-width: 320px;
+    }
+}
+
+@media (max-width: 400px) {
+    .hero__title{
+        font-size: 38px;
+        max-width: 360px;
+    }
+    .hero__description{
+        font-size: 16px;
+        max-width: 300px;
+    }
+}
+
+
     /* Style the button in burger menu */
     .burger-menu__btn {
         width: calc(100% - 40px);
@@ -1734,10 +1802,6 @@ body {
         font-size: 26px;
     }
 
-    .tabs__item {
-        font-size: 13px;
-        padding: 8px 16px;
-    }
 
     /* Services Extra Small Mobile */
     .services__content {
