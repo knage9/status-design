@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="contacts.css">
     <script src="header.js" defer></script>
     <script src="animations.js" defer></script>
+    <script src="popup.js" defer></script>
     <script src="contacts.js" defer></script>
 </head>
 <body>
@@ -222,6 +223,94 @@
         </div>
     </footer>
 
+    <!-- Multi-step Popup Modal -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут</h2>
+                </div>
+                <button class="popup__close" id="popupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <!-- Step 1: Contact Information -->
+                <div class="popup__step popup__step--active" data-step="1">
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="userName" placeholder="Ваше имя" required>
+                        <div class="popup__error" id="nameError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="tel" class="popup__input" id="userPhone" placeholder="Телефон" required>
+                        <div class="popup__error" id="phoneError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто" required>
+                        <div class="popup__error" id="carError"></div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Main Service Selection -->
+                <div class="popup__step" data-step="2">
+                    <div class="popup__main-services">
+                        <button class="popup__service-btn" data-service="carbon" type="button">
+                            <span class="popup__service-text">Карбон</span>
+                        </button>
+                        <button class="popup__service-btn" data-service="antichrome" type="button">
+                            <span class="popup__service-text">Антихром с покраской</span>
+                        </button>
+                    </div>
+                    <div class="popup__error" id="mainServiceError"></div>
+                </div>
+
+                <!-- Step 3: Additional Services -->
+                <div class="popup__discount" id="discountSection" style="display: none;">
+                    <div class="popup__discount-wrapper">
+                        <div class="popup__discount-badge">
+                            <span class="popup__discount-percent" id="discountPercent">-10%</span>
+                        </div>
+                        <div class="popup__discount-text">
+                            <span class="popup__discount-label">Ваша персональная скидка</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup__step" data-step="3">
+                    <div class="popup__additional-container">
+                        <div class="popup__additional-services">
+                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
+                                <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
+                                <span class="popup__additional-text">Окрас колесных дисков</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="cleaning" type="button">
+                                <span class="popup__additional-text">Химчистка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="ceramic" type="button">
+                                <span class="popup__additional-text">Керамика</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="polish" type="button">
+                                <span class="popup__additional-text">Полировка</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Success Message -->
+                <div class="popup__step" data-step="4">
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
+                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить заявку</button>
+                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Success Popup Modal (from main page) -->
     <div class="popup-overlay popup-overlay--success" id="successPopupOverlay">
         <div class="popup popup--success">
@@ -239,7 +328,7 @@
             </div>
 
             <div class="popup__footer" style="padding: 20px;">
-                <button class="popup__btn popup__btn--success" id="successBtn">Буду ожидать</button>
+                <button class="popup__btn popup__btn--success" id="contactsSuccessBtn">Буду ожидать</button>
             </div>
         </div>
     </div>

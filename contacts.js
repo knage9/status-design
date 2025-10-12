@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Success popup elements (from main page)
     const successPopup = document.getElementById('successPopupOverlay');
     const successPopupClose = document.getElementById('successPopupClose');
-    const successBtn = document.getElementById('successBtn');
+    const successBtn = document.getElementById('contactsSuccessBtn');
 
     // State variables
     let selectedMainService = '';
