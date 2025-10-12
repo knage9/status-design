@@ -538,7 +538,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize all animations
     animateOnScroll();
     addAutoShimmer();
-    enhanceTabs();
     enhanceImages();
     animateFeatureCards();
 
@@ -546,7 +545,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const observer = new MutationObserver(() => {
         animateOnScroll();
         addAutoShimmer();
-        enhanceTabs();
         enhanceImages();
         animateFeatureCards();
     });
