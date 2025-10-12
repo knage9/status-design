@@ -383,11 +383,11 @@
 
 /* Active nav link */
 .nav__link--active {
-    color: #1458E4;
+    color: white
 }
 
 .burger-menu__link--active {
-    color: #1458E4;
+    color: white;
 }
 
 /* Responsive Design */
@@ -743,7 +743,8 @@
 }
 
 .map-container {
-    width: 940px;
+    width: 100%;
+    max-width: 940px;
     height: 550px;
     border-radius: 10px;
     overflow: hidden;
@@ -767,7 +768,7 @@
 
 .detail-card {
     background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 25px 20px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
@@ -809,18 +810,35 @@
         padding: 90px 0;
     }
 
+    .location-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+    .address-container {
+        width: 100%;
+        max-width: 600px;
+        text-align: left;
+    }
+
     .address-title {
         font-size: 40px;
+        text-align: left;
     }
 
     .address-description {
         font-size: 19px;
-        width: 380px;
+        width: 100%;
+        max-width: 500px;
+        text-align: left;
     }
 
     .map-container {
-        width: 850px;
+        width: 100%;
+        max-width: 850px;
         height: 500px;
+        align-self: flex-start;
     }
 
     .company-details {
@@ -841,21 +859,34 @@
     }
 
     .location-content {
-        gap: 35px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+    .address-container {
+        width: 100%;
+        max-width: 600px;
+        text-align: left;
     }
 
     .address-title {
         font-size: 36px;
+        text-align: left;
     }
 
     .address-description {
         font-size: 18px;
-        width: 350px;
+        width: 100%;
+        max-width: 500px;
+        text-align: left;
     }
 
     .map-container {
         width: 100%;
+        max-width: 800px;
         height: 450px;
+        align-self: flex-start;
     }
 
     .company-details {
@@ -878,17 +909,35 @@
         padding: 70px 0;
     }
 
+    .location-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+    .address-container {
+        width: 100%;
+        max-width: 600px;
+        text-align: left;
+    }
+
     .address-title {
         font-size: 32px;
+        text-align: left;
     }
 
     .address-description {
         font-size: 17px;
-        width: 320px;
+        width: 100%;
+        max-width: 500px;
+        text-align: left;
     }
 
     .map-container {
+        width: 100%;
+        max-width: 700px;
         height: 400px;
+        align-self: flex-start;
     }
 
     .company-details {
@@ -935,13 +984,13 @@
 
     .address-title {
         font-size: 28px;
-        text-align: center;
+        text-align: left;
     }
 
     .address-description {
         font-size: 16px;
         width: 100%;
-        text-align: center;
+        text-align: left;
         margin-bottom: 0;
     }
 
@@ -977,11 +1026,13 @@
     .address-title {
         font-size: 26px;
         line-height: 110%;
+        text-align: left;
     }
 
     .address-description {
         font-size: 15px;
         line-height: 130%;
+        text-align: left;
     }
 
     .map-container {
@@ -1016,11 +1067,13 @@
     .address-title {
         font-size: 24px;
         line-height: 110%;
+        text-align: left;
     }
 
     .address-description {
         font-size: 15px;
         line-height: 120%;
+        text-align: left;
     }
 
     .map-container {
@@ -1055,10 +1108,12 @@
 
     .address-title {
         font-size: 22px;
+        text-align: left;
     }
 
     .address-description {
         font-size: 14px;
+        text-align: left;
     }
 
     .map-container {
