@@ -1893,12 +1893,6 @@ body {
 }
 
 
-/* Медиа-запрос после базовых стилей */
-@media (min-width: 851px) {
-    .burger-menu__btn {
-        display: none;
-    }
-}
 
 /* Media query for screens smaller than 850px - move button to burger menu */
 @media (max-width: 850px) {
@@ -1950,11 +1944,11 @@ body {
 
     /* Style the button in burger menu */
     .burger-menu__btn {
-        width: calc(100% - 40px);
-        margin: 20px;
+        width: 100%;
+        margin-top: 20px;
         padding: 15px 20px;
         background-color: #ffffff;
-        color: #1458E4;
+        color: #0B0D10;
         font-size: 16px;
         font-weight: 500;
         line-height: 120%;
@@ -1997,6 +1991,59 @@ body {
     .burger-menu__dropdown.active {
         width: 360px;
     }
+
+
+/* Медиа-запрос после базовых стилей */
+@media (min-width: 851px) {
+    .burger-menu__btn {
+        display: none;
+    }
+}
+
+@media (max-width: 510px) {
+    .burger-menu__dropdown.active {
+        max-width: 300px;
+    }
+    .burger-menu__toggle.active {
+        max-width: 300px;
+    }
+    .burger-menu__link{
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 450px) {
+    .burger-menu__dropdown.active {
+        max-width: 250px;
+    }
+    .burger-menu__toggle.active {
+        max-width: 250px;
+    }
+    .burger-menu__link{
+        font-size: 32px;
+    }
+}
+
+
+@media (max-width: 400px) {
+    .burger-menu__dropdown.active {
+        max-width: 210px;
+    }
+    .burger-menu__toggle.active {
+        max-width: 210px;
+    }
+    .burger-menu__link{
+        font-size: 24px;
+    }
+    .burger-menu__btn{
+        height: 50px;
+        font-size: 14px;
+    }
+
+    .burger-menu__toggle{
+        width: 140px;
+    }
+}
 
 /* Services Section Responsive - меньше 1200px */
 @media (max-width: 1199px) {
