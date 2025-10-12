@@ -226,6 +226,21 @@
     color: #ffffff;
 }
 
+.contacts__discount-info {
+    margin-top: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 100%;
+}
+
+.contacts__discount-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A9B0B8;
+}
+
 .contacts__additional-section {
     background-color: #0B0D10;
     border-radius: 10px;
@@ -489,6 +504,15 @@
         height: 56px;
         font-size: 16px;
     }
+
+    .contacts__discount-info {
+        padding: 8px 15px;
+        margin-top: 8px;
+    }
+
+    .contacts__discount-description {
+        font-size: 13px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -554,6 +578,15 @@
     .contacts__submit {
         height: 52px;
         font-size: 14px;
+    }
+
+    .contacts__discount-info {
+        padding: 6px 12px;
+        margin-top: 6px;
+    }
+
+    .contacts__discount-description {
+        font-size: 12px;
     }
 }
 

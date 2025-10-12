@@ -604,38 +604,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Phone number validation regex (Russia format)
     const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
 
-    // Discount calculation based on selected services
+    // Service costs for discount calculation
+    const serviceCosts = {
+        'antigravity-film': 50000,  // Оклейка антигравийной пленкой
+        'disk-painting': 30000,     // Окрас колесных дисков
+        'cleaning': 15000,          // Химчистка
+        'ceramic': 25000,           // Керамика
+        'polish': 10000             // Полировка
+    };
+
+    // Enhanced discount calculation based on selected services
     function calculateDiscount() {
-        let discount = 0;
-        if (selectedAdditionalServices.length >= 2) {
-            discount = 10;
-        } else if (selectedAdditionalServices.length >= 1) {
-            discount = 5;
+        if (selectedAdditionalServices.length === 0) {
+            return 0;
         }
-        return discount;
-    }
 
-    // Update discount display
-    function updateDiscountDisplay() {
-        const discount = calculateDiscount();
-        if (discount > 0) {
-            discountPercent.textContent = `-${discount}%`;
-            discountSection.style.display = 'flex';
-        } else {
-            discountSection.style.display = 'none';
-        }
-        formData.discount = discount;
-    }
+        // Base discount based on quantity
+        const baseDiscounts = [0, 2, 4, 8, 12, 16, 20];
+        const baseDiscount = Math.min(baseDiscounts[selectedAdditionalServices.length] || 20, 20);
 
-    // Validation functions
-    function validateName() {
-        const name = userName.value.trim();
-        if (name.length < 2) {
-            nameError.textContent = 'Имя должно содержать минимум 2 символа';
-            nameError.classList.add('active');
-            return false;
-        }
-        nameError.classList.remove('active');
+        // Additional discount based on total cost
+        let totalCost = 0;
+        selectedAdditionalServices.forEach(service => {
+            totalCost += serviceCosts[service] || 0;
+        });
+
+        // 0.5% for every 10,000 rubles
+        const costBonus = Math.floor(totalCost / 10000) * 0.5;
+
+        // Total discount (max 20%)
+        const totalDiscount = Math.min(baseDiscount + costBonus, 20);
+
+        return Math.round(totalDiscount);
         return true;
     }
 
