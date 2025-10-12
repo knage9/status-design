@@ -8,6 +8,15 @@ class ReviewsManager {
         this.currentSort = 'default';
         this.currentServiceFilter = 'all';
 
+        // Review Popup State
+        this.currentStep = 1;
+        this.selectedServices = [];
+        this.reviewData = {
+            carModel: '',
+            reviewText: '',
+            photos: []
+        };
+
         this.init();
     }
 
@@ -289,6 +298,9 @@ class ReviewsManager {
                 this.closeAllDropdowns();
             }
         });
+
+        // Review Popup Events
+        this.bindReviewPopupEvents();
     }
 
     // Управление dropdown
@@ -623,6 +635,294 @@ class ReviewsManager {
                 notification.remove();
             }, 300);
         }, 3000);
+    }
+
+    // Review Popup Methods
+    bindReviewPopupEvents() {
+        // Кнопка "Оставить отзыв"
+        const leaveBtn = document.querySelector('.reviews-page__leave-btn');
+        leaveBtn?.addEventListener('click', () => {
+            this.openReviewPopup();
+        });
+
+        // Кнопка закрытия попапа
+        const closeBtn = document.getElementById('reviewPopupClose');
+        closeBtn?.addEventListener('click', () => {
+            this.closeReviewPopup();
+        });
+
+        // Клик вне попапа для закрытия
+        const popup = document.getElementById('reviewPopupOverlay');
+        popup?.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                this.closeReviewPopup();
+            }
+        });
+
+        // Кнопка "Продолжить"
+        const continueBtn = document.getElementById('reviewContinueBtn');
+        continueBtn?.addEventListener('click', () => {
+            this.nextStep();
+        });
+
+        // Кнопка "Отправить отзыв"
+        const submitBtn = document.getElementById('reviewSubmitBtn');
+        submitBtn?.addEventListener('click', () => {
+            this.submitReview();
+        });
+
+        // Кнопка "Отлично" (финальный шаг)
+        const successBtn = document.getElementById('reviewSuccessBtn');
+        successBtn?.addEventListener('click', () => {
+            this.closeReviewPopup();
+        });
+
+        // Обработка выбора услуг
+        const serviceButtons = document.querySelectorAll('.popup__service-btn');
+        serviceButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.selectService(e.target.dataset.service, e.target);
+            });
+        });
+
+        // Обработка загрузки фото в попапе
+        const photoInput = document.getElementById('reviewPhotoInput');
+        photoInput?.addEventListener('change', (e) => {
+            this.handleReviewPhotoUpload(e);
+        });
+    }
+
+    openReviewPopup() {
+        const popup = document.getElementById('reviewPopupOverlay');
+        if (popup) {
+            this.currentStep = 1;
+            this.selectedServices = [];
+            this.resetReviewPopup();
+            popup.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    closeReviewPopup() {
+        const popup = document.getElementById('reviewPopupOverlay');
+        if (popup) {
+            popup.classList.remove('active');
+            document.body.style.overflow = '';
+            this.resetReviewPopup();
+        }
+    }
+
+    nextStep() {
+        if (this.validateStep(this.currentStep)) {
+            this.currentStep++;
+            this.updatePopupStep();
+        }
+    }
+
+    updatePopupStep() {
+        // Обновляем активный шаг
+        document.querySelectorAll('.popup__step').forEach((step, index) => {
+            step.classList.toggle('popup__step--active', index + 1 === this.currentStep);
+        });
+
+        // Обновляем заголовок попапа
+        const titleElement = document.getElementById('reviewPopupTitle');
+        if (titleElement) {
+            switch (this.currentStep) {
+                case 1:
+                    titleElement.textContent = 'Оставь отзыв — сделаем сервис лучше вместе';
+                    break;
+                case 2:
+                    titleElement.textContent = 'Укажите, какие работы мы выполнили для вас';
+                    break;
+                case 3:
+                    titleElement.textContent = 'Готово! Отзыв скоро появится для всех.';
+                    break;
+            }
+        }
+
+        // Обновляем кнопки
+        const continueBtn = document.getElementById('reviewContinueBtn');
+        const submitBtn = document.getElementById('reviewSubmitBtn');
+        const successBtn = document.getElementById('reviewSuccessBtn');
+
+        if (continueBtn) continueBtn.style.display = this.currentStep < 2 ? 'flex' : 'none';
+        if (submitBtn) submitBtn.style.display = this.currentStep === 2 ? 'flex' : 'none';
+        if (successBtn) successBtn.style.display = this.currentStep === 3 ? 'flex' : 'none';
+    }
+
+    validateStep(step) {
+        switch (step) {
+            case 1:
+                const carModel = document.getElementById('reviewCarModel').value.trim();
+                const reviewText = document.getElementById('reviewText').value.trim();
+
+                if (!carModel) {
+                    this.showPopupError('reviewCarError', 'Укажите марку и модель авто');
+                    return false;
+                }
+
+                if (!reviewText) {
+                    this.showPopupError('reviewTextError', 'Напишите ваш отзыв');
+                    return false;
+                }
+
+                // Сохраняем данные
+                this.reviewData.carModel = carModel;
+                this.reviewData.reviewText = reviewText;
+
+                return true;
+
+            case 2:
+                if (this.selectedServices.length === 0) {
+                    this.showPopupError('reviewServiceError', 'Выберите хотя бы одну услугу');
+                    return false;
+                }
+                return true;
+
+            default:
+                return true;
+        }
+    }
+
+    selectService(service, button) {
+        // Переключаем выбор услуги
+        if (this.selectedServices.includes(service)) {
+            this.selectedServices = this.selectedServices.filter(s => s !== service);
+            button.classList.remove('popup__service-btn--selected');
+        } else {
+            this.selectedServices.push(service);
+            button.classList.add('popup__service-btn--selected');
+        }
+
+        // Скрываем ошибку при выборе услуги
+        this.hidePopupError('reviewServiceError');
+    }
+
+    submitReview() {
+        if (this.validateStep(2)) {
+            // Создаем отзыв из данных попапа
+            const reviewData = {
+                carModel: this.reviewData.carModel,
+                reviewText: this.reviewData.reviewText,
+                photos: this.reviewData.photos,
+                services: this.selectedServices
+            };
+
+            // Создаем объект отзыва для добавления в массив
+            const newReview = {
+                id: Date.now(),
+                rating: 5, // По умолчанию 5 звезд для нового отзыва
+                service: this.selectedServices[0] || 'other', // Берем первую выбранную услугу
+                carModel: reviewData.carModel,
+                text: reviewData.reviewText,
+                date: new Date().toLocaleDateString('ru-RU'),
+                hasImage: reviewData.photos.length > 0,
+                image: reviewData.photos[0] || null,
+                tags: [reviewData.carModel, ...this.selectedServices.map(s => this.getServiceName(s))]
+            };
+
+            // Добавляем отзыв в массив
+            this.reviews.unshift(newReview);
+            this.applyFilters();
+
+            // Показываем уведомление
+            this.showNotification('Отзыв успешно отправлен на модерацию!');
+
+            // Переходим к финальному шагу
+            this.currentStep = 3;
+            this.updatePopupStep();
+        }
+    }
+
+    handleReviewPhotoUpload(e) {
+        const files = Array.from(e.target.files);
+        const preview = document.getElementById('reviewPhotoPreview');
+
+        if (!preview) return;
+
+        files.forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'photo-upload__preview-item';
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <div class="photo-upload__preview-remove">
+                            <img src="img/close.svg" alt="Remove">
+                        </div>
+                    `;
+
+                    // Обработка удаления фото
+                    const removeBtn = previewItem.querySelector('.photo-upload__preview-remove');
+                    removeBtn.addEventListener('click', () => {
+                        previewItem.remove();
+                        this.removeReviewPhoto(e.target.result);
+                    });
+
+                    preview.appendChild(previewItem);
+                    this.addReviewPhoto(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    addReviewPhoto(photo) {
+        this.reviewData.photos.push(photo);
+    }
+
+    removeReviewPhoto(photo) {
+        this.reviewData.photos = this.reviewData.photos.filter(p => p !== photo);
+    }
+
+    showPopupError(errorId, message) {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.add('active');
+        }
+    }
+
+    hidePopupError(errorId) {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+            errorElement.classList.remove('active');
+        }
+    }
+
+    resetReviewPopup() {
+        // Сбрасываем состояние попапа
+        this.currentStep = 1;
+        this.selectedServices = [];
+        this.reviewData = {
+            carModel: '',
+            reviewText: '',
+            photos: []
+        };
+
+        // Сбрасываем формы
+        const carModelInput = document.getElementById('reviewCarModel');
+        const reviewTextInput = document.getElementById('reviewText');
+        const photoPreview = document.getElementById('reviewPhotoPreview');
+
+        if (carModelInput) carModelInput.value = '';
+        if (reviewTextInput) reviewTextInput.value = '';
+        if (photoPreview) photoPreview.innerHTML = '';
+
+        // Снимаем выбор со всех услуг
+        document.querySelectorAll('.popup__service-btn').forEach(btn => {
+            btn.classList.remove('popup__service-btn--selected');
+        });
+
+        // Скрываем все ошибки
+        document.querySelectorAll('.popup__error').forEach(error => {
+            error.classList.remove('active');
+        });
+
+        // Обновляем попап
+        this.updatePopupStep();
     }
 }
 

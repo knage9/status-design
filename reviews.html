@@ -129,77 +129,89 @@
         </div>
     </footer>
 
-    <!-- Review Modal -->
-    <div class="review-modal-overlay" id="reviewModalOverlay">
-        <div class="review-modal">
-            <div class="review-modal__header">
-                <h2 class="review-modal__title">Оставить отзыв</h2>
-                <button class="review-modal__close" id="reviewModalClose">
-                    <img src="img/close-popup.svg" alt="Close">
+    <!-- Review Popup Modal (Multi-step) -->
+    <div class="popup-overlay" id="reviewPopupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="reviewPopupTitle">Оставь отзыв — сделаем сервис лучше вместе</h2>
+                </div>
+                <button class="popup__close" id="reviewPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
                 </button>
             </div>
 
-            <div class="review-modal__content">
-                <form class="review-modal__form" id="reviewForm">
-                    <!-- Rating -->
-                    <div class="review-modal__group">
-                        <label class="review-modal__label">Оценка</label>
-                        <div class="rating-input">
-                            <input type="radio" id="star5" name="rating" value="5" required>
-                            <label for="star5" class="rating-star">★</label>
-                            <input type="radio" id="star4" name="rating" value="4">
-                            <label for="star4" class="rating-star">★</label>
-                            <input type="radio" id="star3" name="rating" value="3">
-                            <label for="star3" class="rating-star">★</label>
-                            <input type="radio" id="star2" name="rating" value="2">
-                            <label for="star2" class="rating-star">★</label>
-                            <input type="radio" id="star1" name="rating" value="1">
-                            <label for="star1" class="rating-star">★</label>
-                        </div>
+            <div class="popup__content">
+                <!-- Step 1: Contact Information and Review -->
+                <div class="popup__step popup__step--active" data-step="1">
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="reviewCarModel" placeholder="Марка и модель авто" required>
+                        <div class="popup__error" id="reviewCarError"></div>
                     </div>
-
-                    <!-- Service -->
-                    <div class="review-modal__group">
-                        <label class="review-modal__label">Услуга</label>
-                        <select class="review-modal__select" name="service" required>
-                            <option value="">Выберите услугу</option>
-                            <option value="antichrome">Антихром</option>
-                            <option value="carbon">Карбон</option>
-                            <option value="soundproofing">Шумоизоляция</option>
-                            <option value="wheels">Колесные диски</option>
-                            <option value="cleaning">Химчистка</option>
-                            <option value="other">Другое</option>
-                        </select>
+                    <div class="popup__form-group">
+                        <textarea class="popup__input popup__textarea" id="reviewText" placeholder="Ваш комментарий" rows="4" required></textarea>
+                        <div class="popup__error" id="reviewTextError"></div>
                     </div>
-
-                    <!-- Car Model -->
-                    <div class="review-modal__group">
-                        <label class="review-modal__label">Модель автомобиля</label>
-                        <input type="text" class="review-modal__input" name="carModel" placeholder="Например: BMW X5" required>
-                    </div>
-
-                    <!-- Review Text -->
-                    <div class="review-modal__group">
-                        <label class="review-modal__label">Ваш отзыв</label>
-                        <textarea class="review-modal__textarea" name="reviewText" placeholder="Расскажите о вашем опыте работы с нами..." rows="5" required></textarea>
-                    </div>
-
-                    <!-- Photo Upload -->
-                    <div class="review-modal__group">
-                        <label class="review-modal__label">Фото результата (необязательно)</label>
+                    <div class="popup__form-group">
                         <div class="photo-upload">
-                            <input type="file" class="photo-upload__input" id="photoInput" accept="image/*" multiple>
-                            <label for="photoInput" class="photo-upload__label">
-                                <img src="img/plus.svg" alt="Plus" class="photo-upload__icon">
-                                <span class="photo-upload__text">Добавить фото</span>
+                            <input type="file" class="photo-upload__input" id="reviewPhotoInput" accept="image/*" multiple>
+                            <label for="reviewPhotoInput" class="photo-upload__label">
+                                <img src="img/upload.svg" alt="Upload" class="photo-upload__icon">
+                                <span class="photo-upload__text">Добавить фото результата</span>
                             </label>
-                            <div class="photo-upload__preview" id="photoPreview"></div>
+                            <div class="photo-upload__preview" id="reviewPhotoPreview"></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="review-modal__submit">Отправить отзыв</button>
-                </form>
+                <!-- Step 2: Services Selection -->
+                <div class="popup__step" data-step="2">
+                    <div class="popup__services-container">
+                        <div class="popup__services-grid">
+                            <button class="popup__service-btn" data-service="carbon" type="button">
+                                <span class="popup__service-text">Карбон</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="antichrome" type="button">
+                                <span class="popup__service-text">Антихром с покраской</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="soundproofing" type="button">
+                                <span class="popup__service-text">Полная/частичная шумоизоляция</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="film" type="button">
+                                <span class="popup__service-text">Оклейка антигравийной пленкой</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="wheels" type="button">
+                                <span class="popup__service-text">Окрас колесных дисков</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="cleaning" type="button">
+                                <span class="popup__service-text">Химчистка</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="ceramic" type="button">
+                                <span class="popup__service-text">Керамика</span>
+                            </button>
+                            <button class="popup__service-btn" data-service="polish" type="button">
+                                <span class="popup__service-text">Полировка</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="popup__error" id="reviewServiceError"></div>
+                </div>
+
+                <!-- Step 3: Success Message -->
+                <div class="popup__step" data-step="3">
+                    <div class="popup__success">
+                        <div class="popup__success-content">
+                            <h3 class="popup__success-title">Готово! Отзыв скоро появится для всех.</h3>
+                            <p class="popup__success-description">Спасибо, что помогаете нам становиться лучше. Ваш отзыв пройдёт модерацию и станет частью нашей истории.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--continue" id="reviewContinueBtn">Продолжить</button>
+                <button class="popup__btn popup__btn--submit" id="reviewSubmitBtn" style="display: none;">Отправить отзыв</button>
+                <button class="popup__btn popup__btn--success" id="reviewSuccessBtn" style="display: none;">Отлично!</button>
             </div>
         </div>
     </div>
