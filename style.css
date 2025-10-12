@@ -3512,6 +3512,16 @@ body {
     line-height: 100%;
     letter-spacing: -0.05em;
     color: #000000;
+    margin: 0 0 10px 0;
+    text-align: left;
+}
+
+.popup__discount-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A9B0B8;
     margin: 0;
     text-align: left;
 }
@@ -3885,39 +3895,16 @@ body {
 
 /* Discount Popup Styles */
 .popup--discount {
-    height: 500px;
+    height: 600px;
 }
 
-.popup__discount-section {
+.popup__form-section {
     display: flex;
     flex-direction: column;
     gap: 30px;
     height: 100%;
     justify-content: center;
     margin-top: 50px;
-}
-
-.popup__discount-display {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.popup__discount-info {
-    flex: 1;
-}
-
-.popup__discount-info .popup__discount-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 120%;
-    color: #000000;
-    margin: 0;
 }
 
 .popup__form {

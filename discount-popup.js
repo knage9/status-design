@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Discount display elements
     const discountTitle = document.getElementById('discountTitle');
-    const discountPercentDisplay = document.getElementById('discountPercentDisplay');
 
     // Error elements
     const discountNameError = document.getElementById('discountNameError');
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (discount > 0) {
             // Update popup title with discount
             discountTitle.textContent = `Ваша персональная скидка — ${discount}%`;
-            discountPercentDisplay.textContent = `-${discount}%`;
 
             // Show popup
             discountPopupOverlay.classList.add('active');
