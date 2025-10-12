@@ -539,8 +539,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         currentStep = step;
 
+        // Update popup title and size based on step
+        updatePopupTitle(step);
+        updatePopupSize(step);
+
         // Update button visibility and text
         updateStepButtons();
+    }
+
+    // Update popup title based on current step
+    function updatePopupTitle(step) {
+        const titles = {
+            1: 'Мы перезвоним и ответим на все вопросы в течение 15 минут',
+            2: 'Выберите основную услугу',
+            3: 'Выберите дополнительные услуги',
+            4: 'Ваш запрос в работе'
+        };
+
+        if (titles[step]) {
+            popupTitle.textContent = titles[step];
+        }
+    }
+
+    // Update popup size based on current step
+    function updatePopupSize(step) {
+        const popup = document.querySelector('.popup');
+
+        if (step === 4) {
+            // Compact size for success step
+            popup.classList.add('popup--compact');
+        } else {
+            // Normal size for other steps
+            popup.classList.remove('popup--compact');
+        }
     }
 
     function updateStepButtons() {

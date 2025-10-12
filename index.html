@@ -489,7 +489,6 @@
 
                 <!-- Step 2: Main Service Selection -->
                 <div class="popup__step" data-step="2">
-                    <h3 class="popup__step-title">Выберите основную услугу</h3>
                     <div class="popup__main-services">
                         <button class="popup__service-btn" data-service="carbon" type="button">
                             <span class="popup__service-text">Карбон</span>
@@ -502,42 +501,48 @@
                 </div>
 
                 <!-- Step 3: Additional Services -->
+                                     <!-- Discount Display -->
+                    <div class="popup__discount" id="discountSection" style="display: none;">
+                        <div class="popup__discount-wrapper">
+                            <div class="popup__discount-badge">
+                                <span class="popup__discount-percent" id="discountPercent">-10%</span>
+                            </div>
+                            <div class="popup__discount-text">
+                                <span class="popup__discount-label">Ваша персональная скидка</span>
+                            </div>
+                        </div>
+                    </div>
                 <div class="popup__step" data-step="3">
-                    <h3 class="popup__step-title">Выберите дополнительные услуги</h3>
-                    <div class="popup__additional-services">
-                        <button class="popup__additional-btn" data-service="antigravity-film" type="button">
-                            <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
-                        </button>
-                        <button class="popup__additional-btn" data-service="disk-painting" type="button">
-                            <span class="popup__additional-text">Окрас колесных дисков</span>
-                        </button>
-                        <button class="popup__additional-btn" data-service="cleaning" type="button">
-                            <span class="popup__additional-text">Химчистка</span>
-                        </button>
-                        <button class="popup__additional-btn" data-service="ceramic" type="button">
-                            <span class="popup__additional-text">Керамика</span>
-                        </button>
-                        <button class="popup__additional-btn" data-service="polish" type="button">
-                            <span class="popup__additional-text">Полировка</span>
-                        </button>
+                    <div class="popup__additional-container">
+                        <div class="popup__additional-services">
+                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
+                                <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
+                                <span class="popup__additional-text">Окрас колесных дисков</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="cleaning" type="button">
+                                <span class="popup__additional-text">Химчистка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="ceramic" type="button">
+                                <span class="popup__additional-text">Керамика</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="polish" type="button">
+                                <span class="popup__additional-text">Полировка</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Discount Display -->
-                    <div class="popup__discount" id="discountSection" style="display: none;">
-                        <div class="popup__discount-badge">
-                            <span class="popup__discount-percent" id="discountPercent">-10%</span>
-                        </div>
-                        <div class="popup__discount-text">
-                            <span class="popup__discount-label">Ваша персональная скидка</span>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- Step 4: Success Message -->
                 <div class="popup__step" data-step="4">
                     <div class="popup__success">
-                        <h3 class="popup__success-title">Ваш запрос в работе.<br>Перезвоним в течение 15 минут.</h3>
-                        <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.</p>
+                        <div class="popup__success-content">
+                            <h3 class="popup__success-title">Ваш запрос в работе.<br>Перезвоним в течение 15 минут.</h3>
+                            <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.</p>
+                        </div>
                     </div>
                 </div>
             </div>
