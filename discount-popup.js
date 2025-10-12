@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showSuccessPopup() {
         const successPopupOverlay = document.getElementById('successPopupOverlay');
         const successPopupClose = document.getElementById('successPopupClose');
-        const successBtn = document.getElementById('successBtn');
+        const successBtn = document.getElementById('discountSuccessBtn');
 
         if (successPopupOverlay) {
             // Show success popup
@@ -164,32 +164,75 @@ document.addEventListener('DOMContentLoaded', function() {
             function closeSuccessPopup() {
                 successPopupOverlay.classList.remove('active');
                 document.body.style.overflow = '';
+                // Reset main page form after closing success popup
+                resetMainPageForm();
             }
 
-            // Close success popup events
+            // Remove existing event listeners to prevent duplicates
             if (successPopupClose) {
+                successPopupClose.removeEventListener('click', closeSuccessPopup);
                 successPopupClose.addEventListener('click', closeSuccessPopup);
             }
 
             if (successBtn) {
+                successBtn.removeEventListener('click', closeSuccessPopup);
                 successBtn.addEventListener('click', closeSuccessPopup);
             }
 
             // Close on overlay click
-            successPopupOverlay.addEventListener('click', function(e) {
-                if (e.target === successPopupOverlay) {
-                    closeSuccessPopup();
-                }
-            });
+            successPopupOverlay.removeEventListener('click', handleSuccessOverlayClick);
+            successPopupOverlay.addEventListener('click', handleSuccessOverlayClick);
 
             // Close on Escape key
-            function handleEscapeKey(e) {
-                if (e.key === 'Escape' && successPopupOverlay.classList.contains('active')) {
-                    closeSuccessPopup();
-                    document.removeEventListener('keydown', handleEscapeKey);
-                }
-            }
-            document.addEventListener('keydown', handleEscapeKey);
+            document.removeEventListener('keydown', handleSuccessEscapeKey);
+            document.addEventListener('keydown', handleSuccessEscapeKey);
+        }
+    }
+
+    // Handle success popup overlay click
+    function handleSuccessOverlayClick(e) {
+        const successPopupOverlay = document.getElementById('successPopupOverlay');
+        if (e.target === successPopupOverlay) {
+            successPopupOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            resetMainPageForm();
+        }
+    }
+
+    // Handle success popup escape key
+    function handleSuccessEscapeKey(e) {
+        const successPopupOverlay = document.getElementById('successPopupOverlay');
+        if (e.key === 'Escape' && successPopupOverlay && successPopupOverlay.classList.contains('active')) {
+            successPopupOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            resetMainPageForm();
+            document.removeEventListener('keydown', handleSuccessEscapeKey);
+        }
+    }
+
+    // Reset main page form
+    function resetMainPageForm() {
+        // Reset main service selection
+        selectedMainService = '';
+        mainOptions.forEach(opt => opt.classList.remove('main-option--active'));
+
+        // Reset additional services selection
+        selectedAdditionalServices = [];
+        additionalOptions.forEach(opt => opt.classList.remove('additional-option--selected'));
+
+        // Update CTA button state
+        updateCTAButton();
+
+        // Clear discount popup form if it's open
+        if (discountUserName && discountUserPhone && discountCarModel) {
+            discountUserName.value = '';
+            discountUserPhone.value = '';
+            discountCarModel.value = '';
+
+            // Clear errors
+            if (discountNameError) discountNameError.classList.remove('active');
+            if (discountPhoneError) discountPhoneError.classList.remove('active');
+            if (discountCarError) discountCarError.classList.remove('active');
         }
     }
 
