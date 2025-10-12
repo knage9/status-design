@@ -3093,6 +3093,8 @@ body {
     gap: 20px;
     height: 100%;
     justify-content: center;
+    height: auto;
+    margin-top: 50px;
 }
 
 .popup__step--active {
@@ -3283,6 +3285,8 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
+    
+    max-width: 436px;
 }
 
 .popup__discount-badge {
