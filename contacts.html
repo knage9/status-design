@@ -147,6 +147,28 @@
         </div>
     </section>
 
+    <!-- Location Section -->
+    <section class="location-section">
+        <div class="container">
+            <div class="location-content">
+                <div class="address-container">
+                    <h3 class="address-title">Россия, Москва, Калужское шоссе, Сосенки 2с4</h3>
+                    <p class="address-description">Найти нас проще простого: поворачиваете с улицы Старые Сосенки на Старопрокшинское шоссе — и сразу рядом с «Азбукой вкуса» вы уже у StatusDesign</p>
+                </div>
+                <div class="map-container">
+                    <iframe
+                        src="https://yandex.ru/map-widget/v1/?um=constructor%3A0c8b1c8e8b8e8b8e8b8e8b8e8b8e8b8e8b8e8b8e8b8e8b8e&source=constructor"
+                        width="940"
+                        height="550"
+                        frameborder="0"
+                        allowfullscreen=""
+                        style="border-radius: 10px;">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer Section -->
     <footer class="footer">
         <div class="footer__container">
@@ -167,31 +189,24 @@
         </div>
     </footer>
 
-    <!-- Thank You Popup Modal -->
-    <div class="popup-overlay" id="contactsPopupOverlay">
-        <div class="popup">
+    <!-- Success Popup Modal (from main page) -->
+    <div class="popup-overlay popup-overlay--success" id="successPopupOverlay">
+        <div class="popup popup--success">
             <div class="popup__header">
                 <div class="popup__title-bg">
-                    <h2 class="popup__title" id="contactsPopupTitle">Спасибо за заявку!</h2>
+                    <h2 class="popup__title" id="successTitle">Ваш запрос в работе. Перезвоним в течение 15 минут.</h2>
+                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.</p>
                 </div>
-                <button class="popup__close" id="contactsPopupClose">
+                <button class="popup__close" id="successPopupClose">
                     <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
                 </button>
             </div>
 
             <div class="popup__content">
-                <div class="popup__step popup__step--active" data-step="1">
-                    <div class="popup__success">
-                        <div class="popup__success-content">
-                            <h3 class="popup__success-title">Спасибо за заявку!</h3>
-                            <p class="popup__success-description">Мы получили вашу заявку и свяжемся с вами в течение 15 минут для уточнения деталей.</p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <div class="popup__footer">
-                <button class="popup__btn popup__btn--success" id="contactsSuccessBtn">Хорошо, жду звонка</button>
+            <div class="popup__footer" style="padding: 20px;">
+                <button class="popup__btn popup__btn--success" id="successBtn">Буду ожидать</button>
             </div>
         </div>
     </div>

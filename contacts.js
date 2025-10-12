@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountSection = document.getElementById('discountSection');
     const discountPercent = document.getElementById('discountPercent');
 
-    // Thank you popup elements
-    const thankYouPopup = document.getElementById('contactsPopupOverlay');
-    const thankYouClose = document.getElementById('contactsPopupClose');
-    const thankYouBtn = document.getElementById('contactsSuccessBtn');
+    // Success popup elements (from main page)
+    const successPopup = document.getElementById('successPopupOverlay');
+    const successPopupClose = document.getElementById('successPopupClose');
+    const successBtn = document.getElementById('successBtn');
 
     // State variables
     let selectedMainService = '';
@@ -234,8 +234,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             console.log('Form data to send to CRM:', formData);
 
-            // Show thank you popup
-            showThankYouPopup();
+            // Show success popup
+            showSuccessPopup();
 
             // Reset loading state
             submitBtn.classList.remove('loading');
@@ -246,31 +246,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     });
 
-    // Show thank you popup
-    function showThankYouPopup() {
-        thankYouPopup.classList.add('active');
+    // Show success popup
+    function showSuccessPopup() {
+        successPopup.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
-    // Close thank you popup
-    function closeThankYouPopup() {
-        thankYouPopup.classList.remove('active');
-        document.body.style.overflow = '';
+    // Reset form function
+    function resetForm() {
+        // Clear input fields
+        contactName.value = '';
+        contactPhone.value = '';
+        contactCar.value = '';
+
+        // Reset selected services
+        selectedMainService = '';
+        selectedAdditionalServices = [];
+
+        // Remove active classes from service buttons
+        mainOptions.forEach(opt => opt.classList.remove('main-option--active'));
+        additionalOptions.forEach(opt => opt.classList.remove('additional-option--selected'));
+
+        // Hide discount section
+        discountSection.style.display = 'none';
+
+        // Clear errors
+        nameError.classList.remove('active');
+        phoneError.classList.remove('active');
+        carError.classList.remove('active');
+
+        // Reset submit button state
+        submitBtn.disabled = true;
+
+        // Reset form data
+        formData = {
+            name: '',
+            phone: '',
+            carModel: '',
+            mainService: '',
+            additionalServices: [],
+            discount: 0,
+            timestamp: ''
+        };
     }
 
-    // Thank you popup event listeners
-    thankYouClose.addEventListener('click', closeThankYouPopup);
-    thankYouBtn.addEventListener('click', closeThankYouPopup);
-    thankYouPopup.addEventListener('click', function(e) {
-        if (e.target === thankYouPopup) {
-            closeThankYouPopup();
+    // Close success popup
+    function closeSuccessPopup() {
+        successPopup.classList.remove('active');
+        document.body.style.overflow = '';
+
+        // Reset form after closing popup
+        resetForm();
+    }
+
+    // Success popup event listeners
+    successPopupClose.addEventListener('click', closeSuccessPopup);
+    successBtn.addEventListener('click', closeSuccessPopup);
+    successPopup.addEventListener('click', function(e) {
+        if (e.target === successPopup) {
+            closeSuccessPopup();
         }
     });
 
     // Close popup on Escape key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && thankYouPopup.classList.contains('active')) {
-            closeThankYouPopup();
+        if (e.key === 'Escape' && successPopup.classList.contains('active')) {
+            closeSuccessPopup();
         }
     });
 
@@ -289,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(result => {
             console.log('CRM response:', result);
-            showThankYouPopup();
+            showSuccessPopup();
         })
         .catch(error => {
             console.error('CRM error:', error);
