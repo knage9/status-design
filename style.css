@@ -3913,6 +3913,25 @@ body {
     gap: 20px;
 }
 
+/* Success Popup Styles */
+.popup--success {
+    height: 360px;
+}
+
+.popup-overlay--success {
+    /* Success popup styles can be customized here */
+}
+
+.popup__success-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A9B0B8;
+    margin: 0;
+    text-align: left;
+}
+
 /* Popup Mobile Responsive */
 @media (max-width: 768px) {
     .popup-overlay {

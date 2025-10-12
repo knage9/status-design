@@ -149,6 +149,50 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
     }
 
+    // Show success popup
+    function showSuccessPopup() {
+        const successPopupOverlay = document.getElementById('successPopupOverlay');
+        const successPopupClose = document.getElementById('successPopupClose');
+        const successBtn = document.getElementById('successBtn');
+
+        if (successPopupOverlay) {
+            // Show success popup
+            successPopupOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Close success popup function
+            function closeSuccessPopup() {
+                successPopupOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // Close success popup events
+            if (successPopupClose) {
+                successPopupClose.addEventListener('click', closeSuccessPopup);
+            }
+
+            if (successBtn) {
+                successBtn.addEventListener('click', closeSuccessPopup);
+            }
+
+            // Close on overlay click
+            successPopupOverlay.addEventListener('click', function(e) {
+                if (e.target === successPopupOverlay) {
+                    closeSuccessPopup();
+                }
+            });
+
+            // Close on Escape key
+            function handleEscapeKey(e) {
+                if (e.key === 'Escape' && successPopupOverlay.classList.contains('active')) {
+                    closeSuccessPopup();
+                    document.removeEventListener('keydown', handleEscapeKey);
+                }
+            }
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+    }
+
     // Validation functions
     function validateDiscountName() {
         const name = discountUserName.value.trim();
@@ -252,8 +296,11 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 console.log('Discount popup data to send to CRM:', discountPopupData);
 
-                // Close popup
+                // Close discount popup
                 closeDiscountPopup();
+
+                // Show success popup
+                showSuccessPopup();
 
                 // Reset loading state
                 discountSubmitBtn.classList.remove('loading');
