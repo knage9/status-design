@@ -14,7 +14,36 @@ class ReviewsManager {
     init() {
         this.generateReviews();
         this.bindEvents();
+        this.applyFilters(); // Применяем фильтры при инициализации
+        this.updateActiveFilterButtons(); // Обновляем активные кнопки фильтров
         this.renderReviews();
+    }
+
+    // Обновление активных кнопок фильтров
+    updateActiveFilterButtons() {
+        // Устанавливаем активную кнопку сортировки
+        const sortOptions = document.querySelectorAll('#sortMenu .filter-dropdown__option');
+        sortOptions.forEach(option => {
+            option.classList.remove('filter-dropdown__option--active');
+            if (option.dataset.value === this.currentSort) {
+                option.classList.add('filter-dropdown__option--active');
+            }
+        });
+
+        // Обновляем текст кнопки сортировки
+        const activeSortOption = document.querySelector(`#sortMenu .filter-dropdown__option[data-value="${this.currentSort}"]`);
+        if (activeSortOption) {
+            document.querySelector('.filter-dropdown__text').textContent = activeSortOption.textContent;
+        }
+
+        // Устанавливаем активную кнопку фильтра услуг
+        const serviceOptions = document.querySelectorAll('#servicesMenu .filter-dropdown__option');
+        serviceOptions.forEach(option => {
+            option.classList.remove('filter-dropdown__option--active');
+            if (option.dataset.value === this.currentServiceFilter) {
+                option.classList.add('filter-dropdown__option--active');
+            }
+        });
     }
 
     // Генерация разнообразных отзывов
