@@ -639,6 +639,30 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
+    // Update discount display
+    function updateDiscountDisplay() {
+        const discount = calculateDiscount();
+        if (discount > 0) {
+            discountPercent.textContent = `-${discount}%`;
+            discountSection.style.display = 'flex';
+        } else {
+            discountSection.style.display = 'none';
+        }
+        formData.discount = discount;
+    }
+
+    // Validation functions
+    function validateName() {
+        const name = userName.value.trim();
+        if (name.length < 2) {
+            nameError.textContent = 'Имя должно содержать минимум 2 символа';
+            nameError.classList.add('active');
+            return false;
+        }
+        nameError.classList.remove('active');
+        return true;
+    }
+
     function validatePhone() {
         const phone = userPhone.value.trim();
         if (!phoneRegex.test(phone)) {
