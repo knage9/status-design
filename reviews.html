@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы - Тюнинг премиум класса в Москве</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="reviews.css">
+    <script src="header.js" defer></script>
+    <script src="reviews.js" defer></script>
+</head>
+<body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <img src="img/logo.svg" alt="SD Logo">
+                    </div>
+                    <nav class="nav">
+                        <a href="index.html" class="nav__link">О компании</a>
+                        <a href="reviews.html" class="nav__link nav__link--active">Отзывы</a>
+                        <a href="contacts.html" class="nav__link">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                        <div class="burger-menu__content">
+                            <a href="index.html" class="burger-menu__link">О компании</a>
+                            <a href="reviews.html" class="burger-menu__link burger-menu__link--active">Отзывы</a>
+                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                            <button class="burger-menu__btn">Оставить заявку</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Reviews Page Content -->
+    <main class="reviews-page">
+        <div class="container">
+            <!-- Page Title -->
+            <h1 class="reviews-page__title">Ваши эмоции — лучший результат нашей работы</h1>
+            <!-- Leave Review Button -->
+            <button class="reviews-page__leave-btn">Оставить отзыв</button>
+            
+            <!-- Controls Section -->
+            <div class="reviews-page__controls">
+
+                <!-- Filters -->
+                <div class="reviews-page__filters">
+                    <!-- Sort Filter -->
+                    <div class="filter-dropdown">
+                        <button class="filter-dropdown__toggle" id="sortToggle">
+                            <span class="filter-dropdown__text">По умолчанию</span>
+                            <img src="img/down.svg" alt="Down" class="filter-dropdown__icon">
+                        </button>
+                        <div class="filter-dropdown__menu" id="sortMenu">
+                            <div class="filter-dropdown__option filter-dropdown__option--active" data-value="default">По умолчанию</div>
+                            <div class="filter-dropdown__option" data-value="date">По дате</div>
+                            <div class="filter-dropdown__option" data-value="positive">Положительные</div>
+                            <div class="filter-dropdown__option" data-value="negative">Отрицательные</div>
+                        </div>
+                    </div>
+
+                    <!-- Services Filter -->
+                    <div class="filter-dropdown filter-dropdown--small">
+                        <button class="filter-dropdown__toggle filter-dropdown__toggle--small" id="servicesToggle">
+                            <img src="img/filter.svg" alt="Filter" class="filter-dropdown__icon filter-dropdown__icon--small">
+                        </button>
+                        <div class="filter-dropdown__menu filter-dropdown__menu--small" id="servicesMenu">
+                            <div class="filter-dropdown__option" data-value="all">Все услуги</div>
+                            <div class="filter-dropdown__option" data-value="antichrome">Антихром</div>
+                            <div class="filter-dropdown__option" data-value="carbon">Карбон</div>
+                            <div class="filter-dropdown__option" data-value="soundproofing">Шумоизоляция</div>
+                            <div class="filter-dropdown__option" data-value="wheels">Колесные диски</div>
+                            <div class="filter-dropdown__option" data-value="cleaning">Химчистка</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div class="reviews-page__grid" id="reviewsGrid">
+                <!-- Review Cards will be inserted here by JavaScript -->
+            </div>
+
+            <!-- Show More Button -->
+            <button class="reviews-page__show-more" id="showMoreBtn">Показать еще</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="img/footer-img.png" alt="Footer image">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <div class="footer__privacy">Политика конфиденциальности</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Review Modal -->
+    <div class="review-modal-overlay" id="reviewModalOverlay">
+        <div class="review-modal">
+            <div class="review-modal__header">
+                <h2 class="review-modal__title">Оставить отзыв</h2>
+                <button class="review-modal__close" id="reviewModalClose">
+                    <img src="img/close-popup.svg" alt="Close">
+                </button>
+            </div>
+
+            <div class="review-modal__content">
+                <form class="review-modal__form" id="reviewForm">
+                    <!-- Rating -->
+                    <div class="review-modal__group">
+                        <label class="review-modal__label">Оценка</label>
+                        <div class="rating-input">
+                            <input type="radio" id="star5" name="rating" value="5" required>
+                            <label for="star5" class="rating-star">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4" class="rating-star">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3" class="rating-star">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2" class="rating-star">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1" class="rating-star">★</label>
+                        </div>
+                    </div>
+
+                    <!-- Service -->
+                    <div class="review-modal__group">
+                        <label class="review-modal__label">Услуга</label>
+                        <select class="review-modal__select" name="service" required>
+                            <option value="">Выберите услугу</option>
+                            <option value="antichrome">Антихром</option>
+                            <option value="carbon">Карбон</option>
+                            <option value="soundproofing">Шумоизоляция</option>
+                            <option value="wheels">Колесные диски</option>
+                            <option value="cleaning">Химчистка</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+
+                    <!-- Car Model -->
+                    <div class="review-modal__group">
+                        <label class="review-modal__label">Модель автомобиля</label>
+                        <input type="text" class="review-modal__input" name="carModel" placeholder="Например: BMW X5" required>
+                    </div>
+
+                    <!-- Review Text -->
+                    <div class="review-modal__group">
+                        <label class="review-modal__label">Ваш отзыв</label>
+                        <textarea class="review-modal__textarea" name="reviewText" placeholder="Расскажите о вашем опыте работы с нами..." rows="5" required></textarea>
+                    </div>
+
+                    <!-- Photo Upload -->
+                    <div class="review-modal__group">
+                        <label class="review-modal__label">Фото результата (необязательно)</label>
+                        <div class="photo-upload">
+                            <input type="file" class="photo-upload__input" id="photoInput" accept="image/*" multiple>
+                            <label for="photoInput" class="photo-upload__label">
+                                <img src="img/plus.svg" alt="Plus" class="photo-upload__icon">
+                                <span class="photo-upload__text">Добавить фото</span>
+                            </label>
+                            <div class="photo-upload__preview" id="photoPreview"></div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="review-modal__submit">Отправить отзыв</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
