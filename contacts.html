@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Контакты - Тюнинг премиум класса в Москве</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contacts.css">
+    <script src="script.js" defer></script>
+    <script src="contacts.js" defer></script>
+</head>
+<body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <img src="img/logo.svg" alt="SD Logo">
+                    </div>
+                    <nav class="nav">
+                        <a href="index.html" class="nav__link">О компании</a>
+                        <a href="#" class="nav__link">Отзывы</a>
+                        <a href="contacts.html" class="nav__link nav__link--active">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                        <div class="burger-menu__content">
+                            <a href="index.html" class="burger-menu__link">О компании</a>
+                            <a href="#" class="burger-menu__link">Отзывы</a>
+                            <a href="contacts.html" class="burger-menu__link burger-menu__link--active">Контакты</a>
+                            <button class="burger-menu__btn">Оставить заявку</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contacts Section -->
+    <section class="contacts">
+        <div class="container">
+            <div class="contacts__content">
+                <!-- Left Side -->
+                <div class="contacts__left">
+                    <div class="contacts__greeting">
+                        <h2 class="contacts__greeting-text">Привет.</h2>
+                    </div>
+
+                    <h3 class="contacts__title">Мы рады, что ты решил связаться с нами. Расскажи, чем можем быть полезны.</h3>
+
+                    <div class="contacts__info">
+                        <div class="contacts__phone">
+                            <div class="contacts__label">Номер телефона</div>
+                            <a href="tel:+79855050085" class="contacts__phone-link">+7 (985) 505-00-85</a>
+                        </div>
+
+                        <div class="contacts__email">
+                            <div class="contacts__label">Наша почта</div>
+                            <a href="mailto:info@statusdesign.ru" class="contacts__email-link">info@statusdesign.ru</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="contacts__right">
+                    <form class="contacts__form">
+                        <div class="contacts__main-services">
+                            <div class="contacts__main-label">Выберите основную услугу</div>
+
+                            <div class="contacts__main-section">
+                                <div class="contacts__main-options">
+                                    <button class="main-option" data-service="carbon" type="button">Карбон</button>
+                                    <button class="main-option" data-service="antichrome" type="button">Антихром с покраской</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="contacts__additional-services">
+                            <div class="contacts__additional-label">Добавьте дополнительные</div>
+
+                            <!-- Discount Section -->
+                            <div class="contacts__discount" id="discountSection" style="display: none;">
+                                <div class="contacts__discount-wrapper">
+                                    <div class="contacts__discount-badge">
+                                        <span class="contacts__discount-percent" id="discountPercent">-10%</span>
+                                    </div>
+                                    <div class="contacts__discount-text">
+                                        <span class="contacts__discount-label">Ваша персональная скидка</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="contacts__additional-section">
+                                <div class="contacts__additional-options">
+                                    <button class="additional-option" data-option="antigravity-film" type="button">Оклейка антигравийной пленкой</button>
+                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас колесных дисков</button>
+                                    <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
+                                    <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
+                                    <button class="additional-option" data-option="polish" type="button">Полировка</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="contacts__contact-info">
+                            <div class="contacts__form-group">
+                                <input type="text" class="contacts__input" id="contactName" placeholder="Ваше имя" required>
+                                <div class="contacts__error" id="contactNameError"></div>
+                            </div>
+                            <div class="contacts__form-group">
+                                <input type="tel" class="contacts__input" id="contactPhone" placeholder="Телефон" required>
+                                <div class="contacts__error" id="contactPhoneError"></div>
+                            </div>
+                            <div class="contacts__form-group">
+                                <input type="text" class="contacts__input" id="contactCar" placeholder="Марка и модель авто" required>
+                                <div class="contacts__error" id="contactCarError"></div>
+                            </div>
+                        </div>
+
+                        <button class="contacts__submit" disabled type="submit">Отправить заявку</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="img/footer-img.png" alt="Footer image">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <div class="footer__privacy">Политика конфиденциальности</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Thank You Popup Modal -->
+    <div class="popup-overlay" id="contactsPopupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="contactsPopupTitle">Спасибо за заявку!</h2>
+                </div>
+                <button class="popup__close" id="contactsPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <div class="popup__step popup__step--active" data-step="1">
+                    <div class="popup__success">
+                        <div class="popup__success-content">
+                            <h3 class="popup__success-title">Спасибо за заявку!</h3>
+                            <p class="popup__success-description">Мы получили вашу заявку и свяжемся с вами в течение 15 минут для уточнения деталей.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--success" id="contactsSuccessBtn">Хорошо, жду звонка</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
