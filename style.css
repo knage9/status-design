@@ -3918,10 +3918,6 @@ body {
     height: 360px;
 }
 
-.popup-overlay--success {
-    /* Success popup styles can be customized here */
-}
-
 .popup__success-description {
     font-family: 'Inter', sans-serif;
     font-size: 18px;
