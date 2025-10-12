@@ -486,26 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // Enhanced tab animation
-    const enhanceTabs = () => {
-        const tabs = document.querySelectorAll('.tabs__item');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('mouseenter', () => {
-                if (!tab.classList.contains('tabs__item--active')) {
-                    tab.style.animation = 'magneticPull 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
-                }
-            });
-
-            tab.addEventListener('mouseleave', () => {
-                if (!tab.classList.contains('tabs__item--active')) {
-                    tab.style.animation = 'none';
-                    tab.style.transform = 'translateY(0) scale(1)';
-                    tab.style.boxShadow = 'none';
-                }
-            });
-        });
-    };
 
     // Image lazy loading with zoom effect
     const enhanceImages = () => {
