@@ -366,7 +366,7 @@ class ReviewsManager {
     // Создание HTML карточки отзыва
     createReviewCard(review) {
         const starsHtml = Array(5).fill(0).map((_, i) =>
-            `<img src="${i < review.rating ? 'img/star.svg' : 'img/black-star.svg'}" alt="Star">`
+            `<img src="${i < review.rating ? 'img/black-star.svg' : 'img/star-zero.svg'}" alt="Star">`
         ).join('');
 
         const imageHtml = review.hasImage ?
