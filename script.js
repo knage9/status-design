@@ -113,37 +113,60 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateReviews() {
         const data = reviewsData[currentSlide];
 
-        // Update main card
-        const mainCard = document.querySelector('.review-card--main');
-        const mainText = mainCard.querySelector('.review-card__text');
-        const mainImage = mainCard.querySelector('.review-card__image img');
-
-        mainText.textContent = data.main.text;
-        mainImage.src = data.main.image;
-
-        // Update tags for main card
-        const mainTagsContainer = document.querySelector('.review-card__tags--main');
-        if (mainTagsContainer) {
-            mainTagsContainer.innerHTML = data.main.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
-        }
-
-        // Update side cards
-        const sideCards = document.querySelectorAll('.review-card--side');
-        data.sides.forEach((sideData, index) => {
-            if (sideCards[index]) {
-                const sideText = sideCards[index].querySelector('.review-card__text');
-                const sideImage = sideCards[index].querySelector('.review-card__image img');
-
-                sideText.textContent = sideData.text;
-                sideImage.src = sideData.image;
-
-                // Update tags for side cards
-                const sideTagsContainers = document.querySelectorAll('.review-card__tags--side');
-                if (sideTagsContainers[index]) {
-                    sideTagsContainers[index].innerHTML = sideData.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
-                }
-            }
+        // Add fade-out class to all cards
+        const allCards = document.querySelectorAll('.review-card');
+        allCards.forEach(card => {
+            card.classList.add('fade-out');
         });
+
+        // Update content after fade-out animation starts
+        setTimeout(() => {
+            // Update main card
+            const mainCard = document.querySelector('.review-card--main');
+            const mainText = mainCard.querySelector('.review-card__text');
+            const mainImage = mainCard.querySelector('.review-card__image img');
+
+            mainText.textContent = data.main.text;
+            mainImage.src = data.main.image;
+
+            // Update tags for main card
+            const mainTagsContainer = document.querySelector('.review-card__tags--main');
+            if (mainTagsContainer) {
+                mainTagsContainer.innerHTML = data.main.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
+            }
+
+            // Update side cards
+            const sideCards = document.querySelectorAll('.review-card--side');
+            data.sides.forEach((sideData, index) => {
+                if (sideCards[index]) {
+                    const sideText = sideCards[index].querySelector('.review-card__text');
+                    const sideImage = sideCards[index].querySelector('.review-card__image img');
+
+                    sideText.textContent = sideData.text;
+                    sideImage.src = sideData.image;
+
+                    // Update tags for side cards
+                    const sideTagsContainers = document.querySelectorAll('.review-card__tags--side');
+                    if (sideTagsContainers[index]) {
+                        sideTagsContainers[index].innerHTML = sideData.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
+                    }
+                }
+            });
+
+            // Remove fade-out and add fade-in classes
+            allCards.forEach(card => {
+                card.classList.remove('fade-out');
+                card.classList.add('fade-in');
+            });
+
+            // Remove fade-in class after animation completes
+            setTimeout(() => {
+                allCards.forEach(card => {
+                    card.classList.remove('fade-in');
+                });
+            }, 400);
+
+        }, 200);
 
         // Update button states
         if (prevBtn && nextBtn) {

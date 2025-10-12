@@ -800,6 +800,26 @@ body {
     background-color: #ffffff;
 }
 
+/* Reviews Slider Animation */
+.reviews__container {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.review-card {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center;
+}
+
+.review-card.fade-out {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.98);
+}
+
+.review-card.fade-in {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
 .reviews__header {
     display: flex;
     justify-content: space-between;
