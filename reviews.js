@@ -333,12 +333,21 @@ class ReviewsManager {
                 break;
             case 'positive':
                 filtered = filtered.filter(review => review.rating >= 4);
+                filtered.sort((a, b) => b.rating - a.rating); // От 5 к 4 звездам
                 break;
             case 'negative':
                 filtered = filtered.filter(review => review.rating <= 3);
+                filtered.sort((a, b) => a.rating - b.rating); // От 1 к 3 звездам
                 break;
             default:
-                // По умолчанию - исходный порядок
+                // По умолчанию: сначала с фото, потом без фото
+                filtered.sort((a, b) => {
+                    // Если один с фото, другой без - фото идет первым
+                    if (a.hasImage && !b.hasImage) return -1;
+                    if (!a.hasImage && b.hasImage) return 1;
+                    // Если оба с фото или оба без - оставляем исходный порядок
+                    return 0;
+                });
                 break;
         }
 
@@ -379,16 +388,18 @@ class ReviewsManager {
         ).join('');
 
         return `
-            <div class="review-card-reviews" data-id="${review.id}">
-                <div class="review-card-reviews__header">
-                    <div class="review-card-reviews__stars">
-                        ${starsHtml}
+            <div class="review-card-container" data-id="${review.id}">
+                <div class="review-card-reviews">
+                    <div class="review-card-reviews__header">
+                        <div class="review-card-reviews__stars">
+                            ${starsHtml}
+                        </div>
+                        <div class="review-card-reviews__date">${review.date}</div>
                     </div>
-                    <div class="review-card-reviews__date">${review.date}</div>
+                    <p class="review-card-reviews__text">${review.text}</p>
+                    ${imageHtml}
                 </div>
-                <p class="review-card-reviews__text">${review.text}</p>
-                ${imageHtml}
-                <div class="review-card-reviews__tags">
+                <div class="review-card-below-tags">
                     ${tagsHtml}
                 </div>
             </div>

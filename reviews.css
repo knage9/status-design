@@ -210,9 +210,16 @@
 .reviews-page__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 70px 20px; /* 70px vertical gap for rows, 20px horizontal gap for columns */
     padding: 0px 20px;
     margin-bottom: 50px;
+}
+
+/* Review Card Container */
+.review-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 /* Review Card for Reviews Page */
@@ -295,10 +302,7 @@
 
 /* Tags */
 .review-card-reviews__tags {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: auto;
+    display: none; /* Hide tags inside cards */
 }
 
 .review-card-reviews__tag {
@@ -313,6 +317,15 @@
     background-color: transparent;
     white-space: nowrap;
 }
+
+/* Tags below cards */
+.review-card-below-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
 
 /* Show More Button */
 .reviews-page__show-more {
@@ -670,7 +683,7 @@
 /* Large Desktop */
 @media (max-width: 1599px) {
     .reviews-page__grid {
-        gap: 15px;
+        gap: 60px 15px; /* Maintain row spacing on large desktop */
     }
 
     .review-card-reviews {
@@ -686,7 +699,7 @@
 @media (max-width: 1199px) {
     .reviews-page__grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        gap: 60px 20px; /* Maintain row spacing on desktop */
     }
 
     .review-card-reviews {
@@ -745,7 +758,7 @@
 
     .reviews-page__grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 50px; /* Maintain row spacing on tablet */
         margin-bottom: 40px;
     }
 
@@ -841,7 +854,7 @@
     }
 
     .reviews-page__grid {
-        gap: 15px;
+        gap: 40px; /* Maintain row spacing on mobile */
         margin-bottom: 30px;
     }
 
