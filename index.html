@@ -12,6 +12,7 @@
     <script src="animations.js" defer></script>
     <script src="script.js" defer></script>
     <script src="popup.js" defer></script>
+    <script src="discount-popup.js" defer></script>
 </head>
 <body>
     <!-- Burger Menu Overlay -->
@@ -504,17 +505,16 @@
                 </div>
 
                 <!-- Step 3: Additional Services -->
-                                     <!-- Discount Display -->
-                    <div class="popup__discount" id="discountSection" style="display: none;">
-                        <div class="popup__discount-wrapper">
-                            <div class="popup__discount-badge">
-                                <span class="popup__discount-percent" id="discountPercent">-10%</span>
-                            </div>
-                            <div class="popup__discount-text">
-                                <span class="popup__discount-label">Ваша персональная скидка</span>
-                            </div>
+                <div class="popup__discount" id="discountSection" style="display: none;">
+                    <div class="popup__discount-wrapper">
+                        <div class="popup__discount-badge">
+                            <span class="popup__discount-percent" id="discountPercent">-10%</span>
+                        </div>
+                        <div class="popup__discount-text">
+                            <span class="popup__discount-label">Ваша персональная скидка</span>
                         </div>
                     </div>
+                </div>
                 <div class="popup__step" data-step="3">
                     <div class="popup__additional-container">
                         <div class="popup__additional-services">
@@ -535,8 +535,6 @@
                             </button>
                         </div>
                     </div>
-
-
                 </div>
 
                 <!-- Step 4: Success Message -->
@@ -548,6 +546,52 @@
                 <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
                 <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить заявку</button>
                 <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discount Popup Modal -->
+    <div class="popup-overlay" id="discountPopupOverlay">
+        <div class="popup popup--discount">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="discountTitle">Ваша персональная скидка — 20%</h2>
+                </div>
+                <button class="popup__close" id="discountPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <div class="popup__discount-section">
+                    <div class="popup__discount-display">
+                        <div class="popup__discount-badge">
+                            <span class="popup__discount-percent" id="discountPercentDisplay">-20%</span>
+                        </div>
+                        <div class="popup__discount-info">
+                            <p class="popup__discount-text">Заполните форму и закрепите за собой скидку.</p>
+                        </div>
+                    </div>
+
+                    <div class="popup__form">
+                        <div class="popup__form-group">
+                            <input type="text" class="popup__input" id="discountUserName" placeholder="Ваше имя" required>
+                            <div class="popup__error" id="discountNameError"></div>
+                        </div>
+                        <div class="popup__form-group">
+                            <input type="tel" class="popup__input" id="discountUserPhone" placeholder="Телефон" required>
+                            <div class="popup__error" id="discountPhoneError"></div>
+                        </div>
+                        <div class="popup__form-group">
+                            <input type="text" class="popup__input" id="discountCarModel" placeholder="Марка и модель авто" required>
+                            <div class="popup__error" id="discountCarError"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--submit" id="discountSubmitBtn">Отправить заявку</button>
             </div>
         </div>
     </div>
