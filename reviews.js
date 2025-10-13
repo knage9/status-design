@@ -749,6 +749,48 @@ class ReviewsManager {
         if (continueBtn) continueBtn.style.display = this.currentStep < 2 ? 'flex' : 'none';
         if (submitBtn) submitBtn.style.display = this.currentStep === 2 ? 'flex' : 'none';
         if (successBtn) successBtn.style.display = this.currentStep === 3 ? 'flex' : 'none';
+
+        // Динамическое управление высотой попапа
+        this.updatePopupHeight();
+    }
+
+    updatePopupHeight() {
+        const popup = document.querySelector('.popup');
+        if (!popup) return;
+
+        // Разные высоты для разных этапов
+        let targetHeight;
+
+        switch (this.currentStep) {
+            case 1:
+                targetHeight = '600px'; // Первый этап - стандартная высота
+                break;
+            case 2:
+                targetHeight = '700px'; // Второй этап - увеличенная высота для кнопок услуг
+                break;
+            case 3:
+                targetHeight = '300px'; // Третий этап - стандартная высота
+                break;
+            default:
+                targetHeight = '700px';
+        }
+
+        // Плавно изменяем высоту
+        popup.style.height = targetHeight;
+
+        // Обновляем позиционирование для центрирования
+        this.centerPopup();
+    }
+
+    centerPopup() {
+        const popup = document.querySelector('.popup');
+        if (!popup) return;
+
+        // Убеждаемся, что попап остается центрированным
+        popup.style.transform = 'translate(-50%, -50%) scale(1)';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.position = 'fixed';
     }
 
     validateStep(step) {
