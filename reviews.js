@@ -678,7 +678,7 @@ class ReviewsManager {
         });
 
         // Обработка выбора услуг
-        const serviceButtons = document.querySelectorAll('.popup__service-btn');
+        const serviceButtons = document.querySelectorAll('.popup__additional-btn');
         serviceButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.selectService(e.target.dataset.service, e.target);
@@ -789,10 +789,10 @@ class ReviewsManager {
         // Переключаем выбор услуги
         if (this.selectedServices.includes(service)) {
             this.selectedServices = this.selectedServices.filter(s => s !== service);
-            button.classList.remove('popup__service-btn--selected');
+            button.classList.remove('popup__additional-btn--selected');
         } else {
             this.selectedServices.push(service);
-            button.classList.add('popup__service-btn--selected');
+            button.classList.add('popup__additional-btn--selected');
         }
 
         // Скрываем ошибку при выборе услуги
@@ -912,8 +912,8 @@ class ReviewsManager {
         if (photoPreview) photoPreview.innerHTML = '';
 
         // Снимаем выбор со всех услуг
-        document.querySelectorAll('.popup__service-btn').forEach(btn => {
-            btn.classList.remove('popup__service-btn--selected');
+        document.querySelectorAll('.popup__additional-btn').forEach(btn => {
+            btn.classList.remove('popup__additional-btn--selected');
         });
 
         // Скрываем все ошибки

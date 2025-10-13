@@ -1059,60 +1059,70 @@
     display: block;
 }
 
-.popup__services-container {
-    width: 100%;
+.popup__additional-container {
+    width: 500px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.popup__additional-services {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
     max-width: 100%;
 }
 
-.popup__services-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    width: 100%;
-    justify-content: flex-start;
+.popup__additional-services::-webkit-scrollbar {
+    width: 4px;
 }
 
-.popup__service-btn {
-    height: 58px;
+.popup__additional-services::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.popup__additional-services::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.popup__additional-btn {
     background-color: transparent;
     border: 1px solid #000000;
     border-radius: 1000px;
+    padding: 20px 40px;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
     position: relative;
-    overflow: hidden;
-    padding: 20px 40px;
-    white-space: nowrap;
     flex-shrink: 0;
 }
 
-.popup__service-btn:hover {
+.popup__additional-btn:hover {
     background-color: #262A30;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
 }
 
-.popup__service-btn--selected {
+.popup__additional-btn--selected {
     background-color: #262A30;
-    border-color: #1458E4;
 }
 
-.popup__service-text {
+.popup__additional-text {
     font-family: 'Inter', sans-serif;
     font-size: 18px;
     font-weight: 500;
     line-height: 100%;
     letter-spacing: -0.02em;
     color: #000000;
-    text-align: center;
 }
 
-.popup__service-btn--selected .popup__service-text {
+.popup__additional-btn--selected .popup__additional-text {
     color: #ffffff;
 }
+
+
+
+
 
 .popup__success {
     text-align: center;
@@ -1344,9 +1354,8 @@
         padding-bottom: 15px;
     }
 
-    .popup__services-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
+    .popup__additional-container {
+        max-width: 100%;
     }
 
     .popup__input {
@@ -1361,11 +1370,11 @@
         font-size: 15px;
     }
 
-    .popup__service-btn {
-        height: 60px;
+    .popup__additional-btn {
+        padding: 16px 24px;
     }
 
-    .popup__service-text {
+    .popup__additional-text {
         font-size: 16px;
     }
 
@@ -1437,11 +1446,11 @@
         font-size: 14px;
     }
 
-    .popup__service-btn {
-        height: 56px;
+    .popup__additional-btn {
+        padding: 14px 20px;
     }
 
-    .popup__service-text {
+    .popup__additional-text {
         font-size: 15px;
     }
 
