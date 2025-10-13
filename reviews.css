@@ -542,99 +542,6 @@
     color: #ffd700;
 }
 
-/* Photo Upload */
-.photo-upload {
-    position: relative;
-}
-
-.photo-upload__input {
-    position: absolute;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-.photo-upload__label {
-    width: 100%;
-    height: 80px;
-    background-color: #f8f9fa;
-    border: 2px dashed rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.photo-upload__label:hover {
-    background-color: #f0f2f5;
-    border-color: rgba(20, 88, 228, 0.3);
-}
-
-.photo-upload__icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
-.photo-upload__text {
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    color: #A9B0B8;
-}
-
-.photo-upload__preview {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.photo-upload__preview-item {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    background-color: #f5f5f5;
-}
-
-.photo-upload__preview-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.photo-upload__preview-remove {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 20px;
-    height: 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.photo-upload__preview-remove:hover {
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-.photo-upload__preview-remove img {
-    width: 12px;
-    height: 12px;
-    object-fit: contain;
-}
-
 /* Submit Button */
 .review-modal__submit {
     width: 100%;
@@ -937,14 +844,7 @@
         font-size: 26px;
     }
 
-    .photo-upload__label {
-        height: 70px;
-    }
-
-    .photo-upload__preview-item {
-        width: 70px;
-        height: 70px;
-    }
+    
 
     .review-modal__submit {
         height: 56px;
@@ -1165,18 +1065,18 @@
 }
 
 .popup__services-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     width: 100%;
+    justify-content: flex-start;
 }
 
 .popup__service-btn {
-    width: 100%;
-    height: 70px;
+    height: 58px;
     background-color: transparent;
     border: 1px solid #000000;
-    border-radius: 10px;
+    border-radius: 1000px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -1184,6 +1084,9 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
+    padding: 20px 40px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .popup__service-btn:hover {
@@ -1308,13 +1211,62 @@
 }
 
 /* Photo Upload in Popup */
+.popup .photo-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.popup .photo-upload__label {
+    width: 60px;
+    height: 60px;
+    background-color: #262A30;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.popup .photo-upload__label:hover {
+    background-color: #2A3038;
+}
+
+.popup .photo-upload__icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.popup .photo-upload__text {
+    display: none;
+}
+
+.popup .photo-upload__input {
+    position: absolute;
+    opacity: 0;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.popup .photo-upload__preview {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 .popup .photo-upload__preview-item {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 8px;
     overflow: hidden;
     position: relative;
     background-color: #f5f5f5;
+    flex-shrink: 0;
 }
 
 .popup .photo-upload__preview-item img {
