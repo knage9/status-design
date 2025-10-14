@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио работ - Тюнинг премиум класса в Москве</title>
+    <meta name="description" content="Посмотрите наши работы по тюнингу автомобилей премиум класса. Антихром, карбон, шумоизоляция для Mercedes-Benz, BMW, Audi, Porsche и других марок.">
+    <meta name="keywords" content="портфолио тюнинг, работы антихром, карбон портфолио, шумоизоляция примеры, тюнинг Mercedes, BMW тюнинг, Audi тюнинг">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://statusdesign.ru/portfolio.html">
+    <meta property="og:title" content="Портфолио работ - Тюнинг премиум класса в Москве">
+    <meta property="og:description" content="Посмотрите наши работы по тюнингу автомобилей премиум класса. Антихром, карбон, шумоизоляция для Mercedes-Benz, BMW, Audi, Porsche и других марок.">
+    <meta property="og:image" content="https://statusdesign.ru/img/portfolio/mercedes-s-class-1.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://statusdesign.ru/portfolio.html">
+    <meta property="twitter:title" content="Портфолио работ - Тюнинг премиум класса в Москве">
+    <meta property="twitter:description" content="Посмотрите наши работы по тюнингу автомобилей премиум класса. Антихром, карбон, шумоизоляция для Mercedes-Benz, BMW, Audi, Porsche и других марок.">
+    <meta property="twitter:image" content="https://statusdesign.ru/img/portfolio/mercedes-s-class-1.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="portfolio.css">
+    <script src="header.js" defer></script>
+    <script src="data/portfolio-data.js" defer></script>
+    <script src="portfolio.js" defer></script>
+</head>
+<body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <img src="img/logo.svg" alt="SD Logo">
+                    </div>
+                    <nav class="nav">
+                        <a href="index.html" class="nav__link">О компании</a>
+                        <a href="reviews.html" class="nav__link">Отзывы</a>
+                        <a href="news.html" class="nav__link">Новости</a>
+                        <a href="portfolio.html" class="nav__link nav__link--active">Портфолио</a>
+                        <a href="contacts.html" class="nav__link">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                        <div class="burger-menu__content">
+                            <a href="index.html" class="burger-menu__link">О компании</a>
+                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                            <a href="news.html" class="burger-menu__link">Новости</a>
+                            <a href="portfolio.html" class="burger-menu__link burger-menu__link--active">Портфолио</a>
+                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                            <button class="burger-menu__btn">Оставить заявку</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portfolio Page Content -->
+    <main class="portfolio-page">
+        <div class="container">
+            <!-- Page Title -->
+            <h1 class="portfolio-page__title">Наши работы</h1>
+            <p class="portfolio-page__description">Каждый автомобиль — это уникальный проект. Смотрите наши работы по тюнингу премиальных автомобилей и вдохновляйтесь на изменения.</p>
+
+            <!-- Controls Section -->
+            <div class="portfolio-page__controls">
+                <!-- Filters -->
+                <div class="portfolio-page__filters">
+                    <!-- Car Brand Filter -->
+                    <div class="filter-dropdown">
+                        <button class="filter-dropdown__toggle" id="brandToggle">
+                            <span class="filter-dropdown__text">Все марки</span>
+                            <img src="img/down.svg" alt="Down" class="filter-dropdown__icon">
+                        </button>
+                        <div class="filter-dropdown__menu" id="brandMenu">
+                            <div class="filter-dropdown__option filter-dropdown__option--active" data-value="all">Все марки</div>
+                            <!-- Опции марок будут добавлены JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Services Filter -->
+                    <div class="filter-dropdown">
+                        <button class="filter-dropdown__toggle" id="serviceToggle">
+                            <span class="filter-dropdown__text">Все услуги</span>
+                            <img src="img/down.svg" alt="Down" class="filter-dropdown__icon">
+                        </button>
+                        <div class="filter-dropdown__menu" id="serviceMenu">
+                            <div class="filter-dropdown__option filter-dropdown__option--active" data-value="all">Все услуги</div>
+                            <!-- Опции услуг будут добавлены JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Sort Filter -->
+                    <div class="filter-dropdown">
+                        <button class="filter-dropdown__toggle" id="sortToggle">
+                            <span class="filter-dropdown__text">По дате</span>
+                            <img src="img/down.svg" alt="Down" class="filter-dropdown__icon">
+                        </button>
+                        <div class="filter-dropdown__menu" id="sortMenu">
+                            <div class="filter-dropdown__option filter-dropdown__option--active" data-value="date">По дате</div>
+                            <div class="filter-dropdown__option" data-value="popular">По популярности</div>
+                            <div class="filter-dropdown__option" data-value="title">По алфавиту</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            <div class="portfolio-page__active-filters" id="activeFilters">
+                <!-- Активные фильтры будут отображаться здесь -->
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="portfolio-page__grid" id="portfolioGrid">
+                <!-- Portfolio Cards will be inserted here by JavaScript -->
+            </div>
+
+            <!-- Show More Button -->
+            <button class="portfolio-page__show-more" id="showMoreBtn">Показать еще</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="img/footer-img.png" alt="Footer image">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <div class="footer__privacy">Политика конфиденциальности</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Portfolio Item Modal -->
+    <div class="portfolio-modal-overlay" id="portfolioModal">
+        <div class="portfolio-modal">
+            <div class="portfolio-modal__header">
+                <button class="portfolio-modal__close" id="modalClose">
+                    <img src="img/close-popup.svg" alt="Close" class="portfolio-modal__close-icon">
+                </button>
+            </div>
+
+            <div class="portfolio-modal__content">
+                <div class="portfolio-modal__main">
+                    <!-- Главное изображение -->
+                    <div class="portfolio-modal__main-image">
+                        <img id="modalMainImage" src="" alt="Portfolio work">
+                    </div>
+
+                    <!-- Информация о работе -->
+                    <div class="portfolio-modal__info">
+                        <h2 class="portfolio-modal__title" id="modalTitle"></h2>
+                        <div class="portfolio-modal__details">
+                            <div class="portfolio-modal__detail">
+                                <span class="portfolio-modal__label">Марка:</span>
+                                <span class="portfolio-modal__value" id="modalBrand"></span>
+                            </div>
+                            <div class="portfolio-modal__detail">
+                                <span class="portfolio-modal__label">Модель:</span>
+                                <span class="portfolio-modal__value" id="modalModel"></span>
+                            </div>
+                            <div class="portfolio-modal__detail">
+                                <span class="portfolio-modal__label">Услуги:</span>
+                                <div class="portfolio-modal__services" id="modalServices"></div>
+                            </div>
+                            <div class="portfolio-modal__detail">
+                                <span class="portfolio-modal__label">Дата:</span>
+                                <span class="portfolio-modal__value" id="modalDate"></span>
+                            </div>
+                        </div>
+                        <p class="portfolio-modal__description" id="modalDescription"></p>
+                    </div>
+                </div>
+
+                <!-- Галерея изображений -->
+                <div class="portfolio-modal__gallery">
+                    <div class="portfolio-modal__gallery-thumbnails" id="modalThumbnails">
+                        <!-- Миниатюры будут добавлены JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Портфолио работ - Status Design",
+        "description": "Наши работы по тюнингу автомобилей премиум класса",
+        "url": "https://statusdesign.ru/portfolio.html",
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Портфолио работ по тюнингу",
+            "description": "Коллекция работ по тюнингу автомобилей от Status Design"
+        },
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Главная",
+                    "item": "https://statusdesign.ru/"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Портфолио",
+                    "item": "https://statusdesign.ru/portfolio.html"
+                }
+            ]
+        }
+    }
+    </script>
+</body>
+</html>
