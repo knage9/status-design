@@ -39,6 +39,7 @@
 /* Active Filters Display */
 .portfolio-page__active-filters {
     margin-top: 20px;
+    margin-bottom: 40px;
     min-height: 40px;
 }
 
