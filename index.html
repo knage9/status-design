@@ -13,6 +13,8 @@
     <script src="script.js" defer></script>
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
+    <script src="data/news-data.js" defer></script>
+    <script src="main-news.js" defer></script>
 </head>
 <body>
     <!-- Burger Menu Overlay -->
@@ -310,51 +312,7 @@
 
             <div class="news__content">
                 <div class="news__grid">
-                    <!-- News Cards - только 2 последние новости -->
-                    <div class="news-card news-card--news">
-                        <div class="news-card__image">
-                            <img src="img/news_img_1.png" alt="Шумоизоляция вашего авто — теперь за 1 день!">
-                        </div>
-                        <div class="news-card__content">
-                            <h3 class="news-card__title">Шумоизоляция вашего авто — теперь за 1 день!</h3>
-                            <div class="news-card__tags">
-                                <span class="news-tag">Новости</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="news-card news-card--news">
-                        <div class="news-card__image">
-                            <img src="img/news_img_2.png" alt="Антихром — современное решение для автомобиля">
-                        </div>
-                        <div class="news-card__content">
-                            <h3 class="news-card__title">Антихром — современное решение для автомобиля</h3>
-                            <div class="news-card__tags">
-                                <span class="news-tag">Новости</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Article Cards - только 2 последние статьи -->
-                    <div class="news-card news-card--article">
-                        <div class="news-card__content">
-                            <h3 class="news-card__title">Зачем нужна шумоизоляция автомобиля</h3>
-                            <p class="news-card__description">Шумоизоляция автомобиля — это не роскошь, а необходимость для комфортного вождения. В нашей подробной статье мы расскажем о преимуществах профессиональной шумоизоляции.</p>
-                            <div class="news-card__tags">
-                                <span class="news-tag">Статья</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="news-card news-card--article">
-                        <div class="news-card__content">
-                            <h3 class="news-card__title">Руководство по выбору антихрома</h3>
-                            <p class="news-card__description">Антихром — это современное решение для изменения внешнего вида автомобиля. Узнайте, как выбрать подходящий вариант антихрома для вашей модели.</p>
-                            <div class="news-card__tags">
-                                <span class="news-tag">Статья</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Новости загружаются автоматически из data/news-data.js -->
                 </div>
             </div>
         </div>

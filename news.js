@@ -18,139 +18,8 @@ class NewsManager {
     }
 
     loadNewsData() {
-        // Загружаем данные новостей и статей
-        this.newsData = [
-            // Новости
-            {
-                id: 1,
-                type: 'news',
-                title: 'Шумоизоляция вашего авто — теперь за 1 день!',
-                image: 'img/news_img_1.png',
-                category: 'news',
-                date: '2024-01-15',
-                views: 245,
-                content: 'Ищете где быстро сделать шумоизоляцию вашего автомобиля? Теперь мы предлагаем услугу шумоизоляции за 1 день без потери качества услуги!',
-                tags: ['Новости']
-            },
-            {
-                id: 2,
-                type: 'news',
-                title: 'Антихром — современное решение для автомобиля',
-                image: 'img/news_img_2.png',
-                category: 'news',
-                date: '2024-01-12',
-                views: 189,
-                content: 'Антихром становится всё популярнее среди владельцев премиальных автомобилей. Узнайте о преимуществах этого решения.',
-                tags: ['Новости']
-            },
-            {
-                id: 3,
-                type: 'news',
-                title: 'Расширение услуг: теперь доступны все марки BMW',
-                image: 'img/news_img_1.png',
-                category: 'news',
-                date: '2024-01-10',
-                views: 156,
-                content: 'Мы рады сообщить, что теперь выполняем работы по тюнингу для всех моделей BMW, включая последние новинки.',
-                tags: ['Новости']
-            },
-            {
-                id: 4,
-                type: 'news',
-                title: 'Новые материалы для карбонового тюнинга',
-                image: 'img/news_img_2.png',
-                category: 'news',
-                date: '2024-01-08',
-                views: 203,
-                content: 'В наш ассортимент добавлены премиальные карбоновые материалы от ведущих мировых производителей.',
-                tags: ['Новости']
-            },
-
-            // Статьи
-            {
-                id: 5,
-                type: 'article',
-                title: 'Зачем нужна шумоизоляция автомобиля',
-                category: 'articles',
-                date: '2024-01-14',
-                views: 312,
-                content: 'Шумоизоляция автомобиля — это не роскошь, а необходимость для комфортного вождения. В нашей подробной статье мы расскажем о преимуществах профессиональной шумоизоляции, материалах и процессе установки.',
-                tags: ['Статья']
-            },
-            {
-                id: 6,
-                type: 'article',
-                title: 'Руководство по выбору антихрома для вашего авто',
-                category: 'articles',
-                date: '2024-01-11',
-                views: 278,
-                content: 'Антихром — это современное решение для изменения внешнего вида автомобиля. В этой статье мы подробно расскажем о том, как выбрать подходящий вариант антихрома для вашей модели.',
-                tags: ['Статья']
-            },
-            {
-                id: 7,
-                type: 'article',
-                title: 'Преимущества карбонового тюнинга',
-                category: 'articles',
-                date: '2024-01-09',
-                views: 195,
-                content: 'Карбоновый тюнинг не только улучшает внешний вид автомобиля, но и влияет на его технические характеристики. Узнайте о всех преимуществах карбоновых элементов.',
-                tags: ['Статья']
-            },
-            {
-                id: 8,
-                type: 'article',
-                title: 'Как ухаживать за автомобилем после тюнинга',
-                category: 'articles',
-                date: '2024-01-07',
-                views: 167,
-                content: 'Правильный уход за тюнингованными элементами — залог их долговечности. Мы расскажем о том, как сохранить первозданный вид вашего автомобиля после тюнинга.',
-                tags: ['Статья']
-            },
-
-            // Акции
-            {
-                id: 9,
-                type: 'action',
-                title: 'Скидка до 50% на антихром с покраской',
-                category: 'actions',
-                date: '2024-01-13',
-                views: 445,
-                content: 'Ограниченное предложение на услуги "Антихром с помощью покраски". Успей воспользоваться предложением по выгодной цене! Акция действует до конца месяца.',
-                tags: ['Акция']
-            },
-            {
-                id: 10,
-                type: 'action',
-                title: 'Комплексный тюнинг со скидкой 30%',
-                category: 'actions',
-                date: '2024-01-06',
-                views: 389,
-                content: 'Специальное предложение для комплексного тюнинга: антихром + шумоизоляция + карбоновые элементы со скидкой 30%. Экономьте на полном преображении вашего автомобиля.',
-                tags: ['Акция']
-            },
-            {
-                id: 11,
-                type: 'action',
-                title: 'Бесплатная диагностика для новых клиентов',
-                category: 'actions',
-                date: '2024-01-05',
-                views: 234,
-                content: 'Новые клиенты могут получить бесплатную диагностику состояния автомобиля и консультацию по возможным вариантам тюнинга. Предложение ограничено!',
-                tags: ['Акция']
-            },
-            {
-                id: 12,
-                type: 'action',
-                title: 'Сезонная скидка на шумоизоляцию',
-                category: 'actions',
-                date: '2024-01-03',
-                views: 198,
-                content: 'Подготовьте ваш автомобиль к весеннему сезону! Скидка 25% на все виды шумоизоляции до конца марта. Качество работ гарантируем.',
-                tags: ['Акция']
-            }
-        ];
-
+        // Загружаем данные из общего источника
+        this.newsData = NEWS_DATA;
         this.filteredNews = [...this.newsData];
     }
 
@@ -242,8 +111,8 @@ class NewsManager {
         } else {
             this.filteredNews = this.newsData.filter(item => {
                 if (this.currentCategory === 'news') return item.type === 'news';
-                if (this.currentCategory === 'articles') return item.type === 'article';
-                if (this.currentCategory === 'actions') return item.type === 'action';
+                if (this.currentCategory === 'articles') return item.type === 'article' && item.category === 'articles';
+                if (this.currentCategory === 'actions') return item.type === 'article' && item.category === 'actions';
                 return true;
             });
         }
@@ -314,6 +183,7 @@ class NewsManager {
                     <img src="${newsItem.image}" alt="${newsItem.title}">
                 </div>
                 <div class="news-card__content">
+                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <div class="news-card__tags">
                         ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
@@ -324,6 +194,7 @@ class NewsManager {
             // Карточка статьи или акции (только текст)
             cardContent = `
                 <div class="news-card__content">
+                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <p class="news-card__description">${newsItem.content}</p>
                     <div class="news-card__tags">

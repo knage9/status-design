@@ -1213,7 +1213,16 @@ body {
 .news-card__content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
+}
+
+.news-card__date {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A9B0B8;
+    margin-bottom: 5px;
 }
 
 .news-card__title {
