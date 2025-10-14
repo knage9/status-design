@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="news-title">Новость - Тюнинг премиум класса в Москве</title>
+    <meta name="description" id="news-description" content="Подробная информация о новости от Status Design - ведущей компании по тюнингу автомобилей премиум класса в Москве.">
+    <meta name="keywords" id="news-keywords" content="тюнинг, премиум класс, Москва, автомобиль, новость">
+    <link rel="canonical" id="news-canonical" href="https://statusdesign.ru/news-detail.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" id="news-og-url" content="https://statusdesign.ru/news-detail.html">
+    <meta property="og:title" id="news-og-title" content="Новость - Тюнинг премиум класса в Москве">
+    <meta property="og:description" id="news-og-description" content="Подробная информация о новости от Status Design">
+    <meta property="og:image" id="news-og-image" content="https://statusdesign.ru/img/news_img_1.png">
+    <meta property="article:published_time" id="news-published-time" content="">
+    <meta property="article:modified_time" id="news-modified-time" content="">
+    <meta property="article:author" content="Status Design">
+    <meta property="article:section" id="news-section" content="Новости">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" id="news-twitter-url" content="https://statusdesign.ru/news-detail.html">
+    <meta property="twitter:title" id="news-twitter-title" content="Новость - Тюнинг премиум класса в Москве">
+    <meta property="twitter:description" id="news-twitter-description" content="Подробная информация о новости от Status Design">
+    <meta property="twitter:image" id="news-twitter-image" content="https://statusdesign.ru/img/news_img_1.png">
+
+    <!-- Дополнительные мета-теги для SEO -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="author" content="Status Design">
+    <meta name="publisher" content="Status Design">
+    <meta name="language" content="Russian">
+    <meta name="geo.region" content="RU-MOW">
+    <meta name="geo.placename" content="Москва">
+    <meta name="geo.position" content="55.7558;37.6176">
+    <meta name="ICBM" content="55.7558, 37.6176">
+
+    <!-- Предзагрузка критических ресурсов -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="news.css" as="style">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="news.css">
+    <script src="header.js" defer></script>
+    <script src="data/news-data.js" defer></script>
+    <script src="news-detail.js" defer></script>
+</head>
+<body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <img src="img/logo.svg" alt="SD Logo">
+                    </div>
+                    <nav class="nav">
+                        <a href="index.html" class="nav__link">О компании</a>
+                        <a href="reviews.html" class="nav__link">Отзывы</a>
+                        <a href="news.html" class="nav__link nav__link--active">Новости</a>
+                        <a href="contacts.html" class="nav__link">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                        <div class="burger-menu__content">
+                            <a href="index.html" class="burger-menu__link">О компании</a>
+                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                            <a href="news.html" class="burger-menu__link burger-menu__link--active">Новости</a>
+                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                            <button class="burger-menu__btn">Оставить заявку</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- News Detail Page -->
+    <main class="news-detail-page">
+        <div class="container">
+            <!-- Breadcrumb Navigation -->
+            <nav class="breadcrumb" id="breadcrumb">
+                <a href="index.html" class="breadcrumb__link">Главная</a>
+                <span class="breadcrumb__separator">/</span>
+                <a href="news.html" class="breadcrumb__link">Новости</a>
+                <span class="breadcrumb__separator">/</span>
+                <span class="breadcrumb__current" id="breadcrumb-current">Новость</span>
+            </nav>
+
+            <!-- News Detail Content -->
+            <article class="news-detail" id="newsDetail">
+                <!-- News content will be loaded here -->
+            </article>
+
+            <!-- Related News Section - в стиле секций сайта -->
+            <section class="related-news">
+                <div class="container">
+                    <h2 class="related-news__title">Похожие новости и статьи</h2>
+                    <div class="related-news__grid" id="relatedNewsGrid">
+                        <!-- Related news cards will be inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section - в стиле главной страницы -->
+            <section class="features">
+                <div class="container">
+                    <h2 class="features__title">Почему выбирают Status Design</h2>
+
+                    <div class="features__grid">
+                        <div class="feature-card">
+                            <div class="feature-card__icon">
+                                <img src="img/иконка_1.svg" alt="Premium Cars">
+                            </div>
+                            <h3 class="feature-card__title">Опыт работы с премиальными авто</h3>
+                            <p class="feature-card__description">За 7 лет мы работали с 37 марками автомобилей, включая премиум-класс.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-card__icon">
+                                <img src="img/иконка_2.svg" alt="Quality Guarantee">
+                            </div>
+                            <h3 class="feature-card__title">Гарантия качества и ответственности</h3>
+                            <p class="feature-card__description">Все работы выполняются с гарантией и материальной ответственностью за результат.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-card__icon">
+                                <img src="img/иконка_3.svg" alt="Professional Team">
+                            </div>
+                            <h3 class="feature-card__title">Профессиональная команда</h3>
+                            <p class="feature-card__description">В нашей команде более 20 специалистов с опытом работы в тюнинге свыше 15 лет.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-card__icon">
+                                <img src="img/иконка_4.svg" alt="Premium Materials">
+                            </div>
+                            <h3 class="feature-card__title">Только проверенные материалы</h3>
+                            <p class="feature-card__description">Мы используем только современные технологии и премиальные материалы.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section - в стиле главной страницы -->
+            <section class="news-cta">
+                <div class="container">
+                    <div class="news-cta__content">
+                        <h2 class="news-cta__title">Готовы преобразить свой автомобиль?</h2>
+                        <p class="news-cta__description">Доверьте свой автомобиль профессионалам Status Design и получите результат премиум-класса.</p>
+                        <button class="btn-primary news-cta__button">Получить консультацию</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="img/footer-img.png" alt="Footer image">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <div class="footer__privacy">Политика конфиденциальности</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json" id="newsStructuredData">
+    {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": "",
+        "description": "",
+        "image": "",
+        "datePublished": "",
+        "dateModified": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Status Design",
+            "url": "https://statusdesign.ru"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Status Design",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://statusdesign.ru/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": ""
+        },
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Главная",
+                    "item": "https://statusdesign.ru/"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Новости",
+                    "item": "https://statusdesign.ru/news.html"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "",
+                    "item": ""
+                }
+            ]
+        }
+    }
+    </script>
+</body>
+</html>

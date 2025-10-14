@@ -192,11 +192,13 @@ class NewsManager {
             `;
         } else {
             // Карточка статьи или акции (только текст)
+            const truncatedContent = this.truncateTextByLines(newsItem.content, 4);
+
             cardContent = `
                 <div class="news-card__content">
                     <div class="news-card__date">${formatDate(newsItem.date)}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
-                    <p class="news-card__description">${newsItem.content}</p>
+                    <p class="news-card__description">${truncatedContent}</p>
                     <div class="news-card__tags">
                         ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
                     </div>
@@ -214,15 +216,54 @@ class NewsManager {
         return cardDiv;
     }
 
+    // Функция для обрезки текста по количеству строк
+    truncateTextByLines(text, maxLines) {
+        if (!text) return '';
+
+        // Создаем временный элемент для измерения
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.visibility = 'hidden';
+        tempDiv.style.height = 'auto';
+        tempDiv.style.width = '280px'; // Примерная ширина карточки
+        tempDiv.style.lineHeight = '1.25';
+        tempDiv.style.fontSize = '18px';
+        tempDiv.style.fontFamily = 'Inter, sans-serif';
+        tempDiv.style.wordWrap = 'break-word';
+
+        document.body.appendChild(tempDiv);
+
+        let result = '';
+        const words = text.trim().split(' ');
+
+        // Добавляем слова по одному, пока не превысим количество строк
+        for (let i = 0; i < words.length; i++) {
+            tempDiv.textContent = words.slice(0, i + 1).join(' ') + '...';
+            const lines = Math.round(tempDiv.scrollHeight / (parseInt(tempDiv.style.lineHeight) * parseInt(tempDiv.style.fontSize)));
+
+            if (lines > maxLines) {
+                result = words.slice(0, i).join(' ') + '...';
+                break;
+            }
+        }
+
+        // Если текст помещается в заданное количество строк, возвращаем его как есть
+        if (!result) {
+            result = text;
+        }
+
+        document.body.removeChild(tempDiv);
+        return result;
+    }
+
     loadMoreNews() {
         this.currentPage++;
         this.renderNews();
     }
 
     openNewsDetail(newsId) {
-        // Здесь можно добавить логику для открытия полной статьи
-        console.log('Открываем новость:', newsId);
-        // Например, можно открыть модальное окно или перейти на отдельную страницу
+        // Переходим на детальную страницу новости с параметром ID
+        window.location.href = `news-detail.html?id=${newsId}`;
     }
 }
 
