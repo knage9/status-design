@@ -709,13 +709,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 16px;
     color: #A9B0B8;
-    padding: 20px;
-    background-color: #0B0D10;
-    border-radius: 10px;
-    margin-top: -10px;
-    position: relative;
-    z-index: 2;
-
+    margin-bottom: 30px;
 }
 
 .news-detail__views {
@@ -833,20 +827,127 @@
     margin-bottom: 50px;
 }
 
-/* Related News Cards - в стиле карточек сайта */
+/* Related News Cards - точно как на главной странице */
 .news-card--related {
-    width: 100%;
-    max-width: none;
+    width: 320px;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.news-card--related::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+        rgba(20, 88, 228, 0.05) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(20, 88, 228, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: 10px;
+    z-index: 1;
 }
 
 .news-card--related:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.news-card--related:hover::before {
+    opacity: 1;
+}
+
+.news-card--related .news-card__image {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.news-card--related .news-card__image img {
+    width: 300px;
+    height: 223px;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.news-card--related:hover .news-card__image img {
+    transform: scale(1.05);
+}
+
+.news-card--related .news-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 20px 20px;
+}
+
+.news-card--related .news-card__date {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A9B0B8;
+    margin-bottom: 5px;
+}
+
+.news-card--related .news-card__title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 120%;
+    color: #ffffff;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    font-size: 18px;
+}
+
+.news-card--related .news-card__description {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 125%;
+    color: #A9B0B8;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.news-card--related:hover .news-card__title {
+    transform: translateX(3px);
+}
+
+.news-card--related:hover .news-card__description {
+    color: #6B7C93;
+    transform: translateX(3px);
+}
+
+.news-card--related .news-card__tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.news-card--related .news-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 100%;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+    padding: 10px 25px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 1000px;
+    background-color: transparent;
+    white-space: nowrap;
 }
 
 /* News CTA Section - в стиле CTA сайта */

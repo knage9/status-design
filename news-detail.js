@@ -56,6 +56,8 @@ class NewsDetailManager {
                     <div class="news-detail__image">
                         <img src="${newsData.image}" alt="${newsData.title}" loading="lazy">
                     </div>
+                </div>
+                <div class="news-detail__content">
                     <div class="news-detail__meta">
                         <div class="news-detail__date">${formatDate(newsData.date)}</div>
                         <div class="news-detail__type">${this.getTypeLabel(newsData.type)}</div>
@@ -67,8 +69,6 @@ class NewsDetailManager {
                             ${newsData.views} просмотров
                         </div>
                     </div>
-                </div>
-                <div class="news-detail__content">
                     <h1 class="news-detail__title">${newsData.title}</h1>
                     <div class="news-detail__text">
                         ${this.formatNewsContent(newsData.content)}
