@@ -290,7 +290,7 @@ class NewsDetailManager {
                 }
                 return false;
             })
-            .slice(0, 3); // Берем только 3 похожие новости
+            .slice(0, 4); // Берем 4 похожие новости
 
         this.renderRelatedNews();
     }
@@ -309,17 +309,16 @@ class NewsDetailManager {
 
     createRelatedNewsCard(newsItem) {
         const cardDiv = document.createElement('div');
-        cardDiv.className = 'news-card news-card--related';
+        cardDiv.className = `news-card news-card--${newsItem.type}`;
         cardDiv.setAttribute('data-id', newsItem.id);
-
-        const truncatedContent = this.truncateText(newsItem.content, 100);
 
         let cardContent = '';
 
         if (newsItem.type === 'news' && newsItem.image) {
+            // Карточка новости с изображением - точно как на главной странице
             cardContent = `
                 <div class="news-card__image">
-                    <img src="${newsItem.image}" alt="${newsItem.title}" loading="lazy">
+                    <img src="${newsItem.image}" alt="${newsItem.title}">
                 </div>
                 <div class="news-card__content">
                     <div class="news-card__date">${formatDate(newsItem.date)}</div>
@@ -330,6 +329,9 @@ class NewsDetailManager {
                 </div>
             `;
         } else {
+            // Карточка статьи или акции (только текст) - точно как на главной странице
+            const truncatedContent = this.truncateTextByLines(newsItem.content, 4);
+
             cardContent = `
                 <div class="news-card__content">
                     <div class="news-card__date">${formatDate(newsItem.date)}</div>
@@ -344,12 +346,52 @@ class NewsDetailManager {
 
         cardDiv.innerHTML = cardContent;
 
-        // Добавляем обработчик клика
+        // Добавляем обработчик клика для перехода к полной статье
         cardDiv.addEventListener('click', () => {
             window.location.href = `news-detail.html?id=${newsItem.id}`;
         });
 
         return cardDiv;
+    }
+
+    // Функция для обрезки текста по количеству строк - точно как на главной странице
+    truncateTextByLines(text, maxLines) {
+        if (!text) return '';
+
+        // Создаем временный элемент для измерения
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.visibility = 'hidden';
+        tempDiv.style.height = 'auto';
+        tempDiv.style.width = '280px'; // Примерная ширина карточки
+        tempDiv.style.lineHeight = '1.25';
+        tempDiv.style.fontSize = '18px';
+        tempDiv.style.fontFamily = 'Inter, sans-serif';
+        tempDiv.style.wordWrap = 'break-word';
+
+        document.body.appendChild(tempDiv);
+
+        let result = '';
+        const words = text.trim().split(' ');
+
+        // Добавляем слова по одному, пока не превысим количество строк
+        for (let i = 0; i < words.length; i++) {
+            tempDiv.textContent = words.slice(0, i + 1).join(' ') + '...';
+            const lines = Math.round(tempDiv.scrollHeight / (parseInt(tempDiv.style.lineHeight) * parseInt(tempDiv.style.fontSize)));
+
+            if (lines > maxLines) {
+                result = words.slice(0, i).join(' ') + '...';
+                break;
+            }
+        }
+
+        // Если текст помещается в заданное количество строк, возвращаем его как есть
+        if (!result) {
+            result = text;
+        }
+
+        document.body.removeChild(tempDiv);
+        return result;
     }
 
     truncateText(text, maxLength) {
