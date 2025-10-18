@@ -104,6 +104,34 @@
             let currentProjectIndex = 0;
             let currentImageIndex = 0;
 
+            // Generate thumbnails for a project
+            function generateThumbnails(project) {
+                const thumbnailsContainer = document.getElementById('portfolioThumbnails');
+                thumbnailsContainer.innerHTML = '';
+
+                project.thumbnails.forEach((thumbnailSrc, index) => {
+                    const thumbnail = document.createElement('div');
+                    thumbnail.className = 'portfolio-result__thumbnail';
+                    thumbnail.dataset.image = index;
+
+                    const img = document.createElement('img');
+                    img.src = thumbnailSrc;
+                    img.alt = `${project.title} - вид ${index + 1}`;
+
+                    thumbnail.appendChild(img);
+                    thumbnailsContainer.appendChild(thumbnail);
+
+                    // Add click handler
+                    thumbnail.addEventListener('click', () => {
+                        updateImage(index);
+                    });
+                });
+
+                // Update thumbnails variable to include newly created thumbnails
+                const newThumbnails = document.querySelectorAll('.portfolio-result__thumbnail');
+                return newThumbnails;
+            }
+
             // Update portfolio display
             function updatePortfolio(projectIndex) {
                 const project = projects[projectIndex];
@@ -122,8 +150,11 @@
                     mainServices.appendChild(serviceItem);
                 });
 
+                // Generate and update thumbnails for current project
+                const newThumbnails = generateThumbnails(project);
+
                 // Update active thumbnail based on current image
-                thumbnails.forEach((thumb, i) => {
+                newThumbnails.forEach((thumb, i) => {
                     if (i === currentImageIndex) {
                         thumb.classList.add('active');
                     } else {
@@ -136,14 +167,14 @@
 
             // Update current image within project
             function updateImage(imageIndex) {
-                const project = projects[currentProjectIndex];
                 currentImageIndex = imageIndex;
 
                 // Update main image
-                mainImage.src = project.images[currentImageIndex];
+                mainImage.src = projects[currentProjectIndex].images[currentImageIndex];
 
-                // Update active thumbnail
-                thumbnails.forEach((thumb, i) => {
+                // Update active thumbnail - get current thumbnails and update their active state
+                const currentThumbnails = document.querySelectorAll('.portfolio-result__thumbnail');
+                currentThumbnails.forEach((thumb, i) => {
                     if (i === currentImageIndex) {
                         thumb.classList.add('active');
                     } else {
@@ -151,14 +182,6 @@
                     }
                 });
             }
-
-            // Thumbnail click handlers - switch images within current project
-            thumbnails.forEach((thumbnail) => {
-                thumbnail.addEventListener('click', () => {
-                    const imageIndex = parseInt(thumbnail.dataset.image);
-                    updateImage(imageIndex);
-                });
-            });
 
             // Navigation button handlers - switch between projects
             if (prevBtn && nextBtn) {
@@ -739,15 +762,7 @@
                                     <img src="img/Gallery-1.png" alt="Chevrolet Corvette - Результат антихрома" id="mainPortfolioImage">
                                 </div>
                                 <div class="portfolio-result__thumbnails" id="portfolioThumbnails">
-                                    <div class="portfolio-result__thumbnail active" data-image="0">
-                                        <img src="img/Gallery-1.png" alt="Chevrolet Corvette - вид 1">
-                                    </div>
-                                    <div class="portfolio-result__thumbnail" data-image="1">
-                                        <img src="img/Gallery-2.png" alt="Chevrolet Corvette - вид 2">
-                                    </div>
-                                    <div class="portfolio-result__thumbnail" data-image="2">
-                                        <img src="img/Gallery-3.png" alt="Chevrolet Corvette - вид 3">
-                                    </div>
+                                    <!-- Миниатюры будут генерироваться динамически через JavaScript -->
                                 </div>
                             </div>
                             <div class="portfolio-result__info">
