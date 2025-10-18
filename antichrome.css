@@ -2,7 +2,7 @@
 
 /* Antichrome Hero Section */
 .antichrome-hero {
-    padding: 150px 0 100px;
+    padding-top: 200px;
     background-color: #ffffff;
 }
 
@@ -26,15 +26,6 @@
     max-width: 680px;
 }
 
-.antichrome-hero__background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #0B0D10 0%, #1a1d22 100%);
-    z-index: 1;
-}
 
 .antichrome-hero__title {
     position: relative;
@@ -175,6 +166,10 @@
     }
 }
 
+
+
+
+
 @media (max-width: 992px) {
     .antichrome-hero {
         padding: 100px 0 80px;
@@ -182,7 +177,8 @@
 
     .antichrome-hero__content {
         flex-direction: column;
-        gap: 30px;
+        align-items: flex-start;
+        gap: 20px;
         min-height: auto;
     }
 
@@ -323,7 +319,7 @@
 
 /* Brands Section */
 .brands-section {
-    padding: 100px 0;
+    padding-top: 200px;
     background-color: #ffffff;
 }
 
@@ -336,13 +332,13 @@
     color: #000000;
     margin: 0 0 60px 0;
     max-width: 1420px;
-    text-align: center;
-    padding: 0 20px;
+    text-align: left;
+    max-width: 700px;
 }
 
 /* Antichrome Form Section */
 .antichrome-form-section {
-    padding: 150px 0 100px;
+    padding-top: 200px;
     background-color: #ffffff;
 }
 
@@ -352,7 +348,6 @@
     display: flex;
     gap: 100px;
     align-items: flex-start;
-    padding: 0 20px;
 }
 
 .antichrome-form__left {
@@ -369,12 +364,14 @@
 /* Form Title and Description */
 .antichrome-form__title {
     font-family: 'Inter', sans-serif;
-    font-size: 42px;
+    font-size: 54px;
     font-weight: 500;
     line-height: 120%;
     letter-spacing: -0.05em;
     color: #000000;
-    margin: 0 0 20px 0;
+    max-width: 1420px;
+    text-align: left;
+    max-width: 700px;
 }
 
 .antichrome-form__description {
@@ -385,6 +382,7 @@
     color: #6B7280;
     margin: 0 0 40px 0;
     max-width: 500px;
+    margin-top: 20px;
 }
 
 /* Brands Marquee */
@@ -1404,7 +1402,8 @@
 
 /* Statistics Cards Section */
 .statistics-section {
-    padding: 100px 0;
+    padding-top: 200px;
+    padding-bottom: 20px;
     background-color: #ffffff;
 }
 
@@ -1458,7 +1457,7 @@
 
 /* Advantages Cards Section */
 .advantages-section {
-    max-width: 1420px;
+    max-width: 1380px;
     margin: 0 auto;
     padding: 20px 0px;
     border-radius: 10px;
@@ -1689,7 +1688,7 @@
 
 /* Paint or Film Section */
 .paint-film-section {
-    padding: 100px 0;
+    padding-top: 200px;
     background-color: #ffffff;
 }
 
@@ -1701,7 +1700,8 @@
     letter-spacing: -0.05em;
     color: #000000;
     margin: 0 0 60px 0;
-    text-align: center;
+    text-align: left;
+    max-width: 650px;
 }
 
 .paint-film__content {
@@ -1990,7 +1990,7 @@
 
 /* Quote Section */
 .quote-section {
-    padding: 100px 0;
+    padding-top: 200px;
     background-color: #ffffff;
 }
 
@@ -2063,7 +2063,7 @@
 
 /* Portfolio Result Section */
 .portfolio-result-section {
-    padding: 100px 0;
+    padding-top: 200px;
     background-color: #ffffff;
 }
 
@@ -2075,7 +2075,7 @@
 
 .portfolio-result__content {
     text-align: left;
-    margin-bottom: 80px;
+    margin-bottom: 50px;
 }
 
 .portfolio-result__title {
@@ -2592,7 +2592,8 @@
 
 /* FAQ Section */
 .faq-section {
-    padding: 100px 0;
+    padding-top: 200px;
+    padding-bottom: 200px;
     background-color: #ffffff;
 }
 
