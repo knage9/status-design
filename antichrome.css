@@ -2151,16 +2151,15 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 500px;
     border-radius: 10px;
 }
 
 .portfolio-result__car-title {
     font-family: 'Inter', sans-serif;
-    font-size: 36px;
-    font-weight: 600;
+    font-size: 32px;
+    font-weight: 400;
     color: #ffffff;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .portfolio-result__services {
@@ -2171,12 +2170,12 @@
 
 .portfolio-result__service-item {
     font-family: 'Inter', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
     color: #E5E7EB;
     padding: 12px 20px;
     background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 5px;
     transition: all 0.3s ease;
     text-align: left;
 }
