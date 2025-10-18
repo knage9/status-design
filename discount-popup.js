@@ -88,8 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update CTA button state
     function updateCTAButton() {
-        const hasSelection = selectedMainService || selectedAdditionalServices.length > 0;
-        ctaButton.disabled = !hasSelection;
+        if (ctaButton) {
+            const hasSelection = selectedMainService || selectedAdditionalServices.length > 0;
+            ctaButton.disabled = !hasSelection;
+        }
     }
 
     // Main service selection

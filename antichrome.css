@@ -1686,3 +1686,298 @@
         line-height: 140%;
     }
 }
+
+/* Paint or Film Section */
+.paint-film-section {
+    padding: 100px 0;
+    background-color: #ffffff;
+}
+
+.paint-film__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin: 0 0 60px 0;
+    text-align: center;
+}
+
+.paint-film__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 1420px;
+    margin: 0 auto;
+}
+
+.paint-film__option {
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.paint-film__option--paint {
+    background: linear-gradient(135deg, #1458E4 0%, #0f47bd 100%);
+    color: #ffffff;
+}
+
+.paint-film__option--film {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    color: #000000;
+}
+
+/* Label with background like in form */
+.paint-film__label-wrapper {
+    margin-bottom: 30px;
+    align-self: flex-start;
+}
+
+.paint-film__label {
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    color: #000000;
+    padding: 15px 50px;
+    border: 1px solid rgba(11, 13, 16, 0.5);
+    border-radius: 10px;
+    background-color: rgba(11, 13, 16, 0.05);
+    width: fit-content;
+}
+
+.paint-film__option--paint .paint-film__label {
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.paint-film__items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 475px;
+}
+
+.paint-film__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.paint-film__icon-wrapper {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.paint-film__icon-wrapper--cross {
+    background-color: #ff4444;
+}
+
+.paint-film__text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 140%;
+    flex: 1;
+}
+
+.paint-film__check-icon {
+    color: #ffffff;
+}
+
+.paint-film__cross-icon {
+    color: #ffffff;
+}
+
+/* Scale bars at bottom */
+.paint-film__scale {
+    margin-top: 30px;
+    height: 8px;
+}
+
+.paint-film__scale-bar {
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.paint-film__scale-bar--active {
+    background-color: #000000;
+}
+
+/* Animations for Paint/Film Section */
+@keyframes paintFilmSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.paint-film__option--paint {
+    animation: paintFilmSlideIn 0.8s ease-out;
+}
+
+.paint-film__option--film {
+    animation: paintFilmSlideIn 0.8s ease-out 0.2s both;
+}
+
+/* Hover effects */
+.paint-film__option {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.paint-film__option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design for Paint/Film Section */
+@media (max-width: 1199px) {
+    .paint-film__content {
+        gap: 15px;
+    }
+
+    .paint-film__option {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 992px) {
+    .paint-film-section {
+        padding: 80px 0;
+    }
+
+    .paint-film__title {
+        font-size: 48px;
+        margin-bottom: 50px;
+    }
+
+    .paint-film__content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .paint-film__option {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .paint-film-section {
+        padding: 60px 0;
+    }
+
+    .paint-film__title {
+        font-size: 36px;
+        margin-bottom: 40px;
+        line-height: 110%;
+    }
+
+    .paint-film__content {
+        gap: 25px;
+    }
+
+    .paint-film__option {
+        padding: 18px;
+    }
+
+    .paint-film__label {
+        padding: 15px 30px;
+        font-size: 16px;
+    }
+
+    .paint-film__items {
+        gap: 18px;
+    }
+
+    .paint-film__icon-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+
+    .paint-film__text {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .paint-film-section {
+        padding: 40px 0;
+    }
+
+    .paint-film__title {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .paint-film__option {
+        padding: 16px;
+    }
+
+    .paint-film__label {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .paint-film__items {
+        gap: 16px;
+    }
+
+    .paint-film__icon-wrapper {
+        width: 35px;
+        height: 35px;
+    }
+
+    .paint-film__text {
+        font-size: 14px;
+        line-height: 130%;
+    }
+}
+
+@media (max-width: 360px) {
+    .paint-film__title {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+
+    .paint-film__option {
+        padding: 14px;
+    }
+
+    .paint-film__label {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .paint-film__items {
+        gap: 14px;
+    }
+
+    .paint-film__icon-wrapper {
+        width: 30px;
+        height: 30px;
+    }
+
+    .paint-film__text {
+        font-size: 13px;
+    }
+}

@@ -22,6 +22,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedAdditionalServices = [];
     let discount = 0;
 
+    // Service costs for discount calculation (same as contacts page)
+    const serviceCosts = {
+        'antigravity-film': 50000,  // Оклейка антигравийной пленкой
+        'disk-painting': 30000,     // Окрас колесных дисков
+        'cleaning': 15000,          // Химчистка
+        'ceramic': 25000,           // Керамика
+        'polish': 10000             // Полировка
+    };
+
     // Validation functions
     function validateName() {
         const name = nameInput.value.trim();
@@ -77,24 +86,33 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.disabled = !(isNameValid && isPhoneValid && isCarValid && hasMainService);
     }
 
+    // Enhanced discount calculation based on selected services (same as contacts page)
     function calculateDiscount() {
-        const servicesCount = selectedAdditionalServices.length;
-        if (servicesCount >= 3) {
-            discount = 15;
-        } else if (servicesCount >= 2) {
-            discount = 10;
-        } else if (servicesCount >= 1) {
-            discount = 5;
-        } else {
+        if (selectedAdditionalServices.length === 0) {
             discount = 0;
+            discountSection.style.display = 'none';
+            return;
         }
 
-        if (discount > 0) {
-            discountPercent.textContent = `-${discount}%`;
-            discountSection.style.display = 'block';
-        } else {
-            discountSection.style.display = 'none';
-        }
+        // Base discount based on quantity
+        const baseDiscounts = [0, 2, 4, 8, 12, 16, 20];
+        const baseDiscount = Math.min(baseDiscounts[selectedAdditionalServices.length] || 20, 20);
+
+        // Additional discount based on total cost
+        let totalCost = 0;
+        selectedAdditionalServices.forEach(service => {
+            totalCost += serviceCosts[service] || 0;
+        });
+
+        // 0.5% for every 10,000 rubles
+        const costBonus = Math.floor(totalCost / 10000) * 0.5;
+
+        // Total discount (max 20%)
+        discount = Math.min(baseDiscount + costBonus, 20);
+
+        // Update display
+        discountPercent.textContent = `-${Math.round(discount)}%`;
+        discountSection.style.display = 'block';
     }
 
     // Event listeners for inputs
@@ -107,7 +125,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (phoneInput) {
-        phoneInput.addEventListener('input', function() {
+        phoneInput.addEventListener('input', function(e) {
+            // Format phone number like in contacts.js
+            let value = e.target.value.replace(/\D/g, '');
+
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+
+            // Format phone number
+            if (value.length >= 6) {
+                value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, '+$1 ($2) $3-$4-$5');
+            } else if (value.length >= 3) {
+                value = value.replace(/(\d{1})(\d{3})/, '+$1 ($2');
+            } else if (value.length >= 1) {
+                value = '+' + value;
+            }
+
+            e.target.value = value;
             validatePhone();
             updateSubmitButton();
         });
@@ -124,21 +159,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    // Additional services selection
+    // Additional services selection (improved logic like in contacts.js)
     additionalOptions.forEach(option => {
         option.addEventListener('click', function() {
             const service = this.dataset.option;
 
-            if (this.classList.contains('additional-option--selected')) {
-                // Deselect service
-                this.classList.remove('additional-option--selected');
+            if (selectedAdditionalServices.includes(service)) {
+                // Remove service
                 selectedAdditionalServices = selectedAdditionalServices.filter(s => s !== service);
+                this.classList.remove('additional-option--selected');
             } else {
-                // Select service
-                this.classList.add('additional-option--selected');
+                // Add service
                 selectedAdditionalServices.push(service);
+                this.classList.add('additional-option--selected');
             }
 
+            // Update discount
             calculateDiscount();
         });
     });

@@ -82,11 +82,13 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             // Update main card
             const mainCard = document.querySelector('.review-card--main');
-            const mainText = mainCard.querySelector('.review-card__text');
-            const mainImage = mainCard.querySelector('.review-card__image img');
+            if (mainCard) {
+                const mainText = mainCard.querySelector('.review-card__text');
+                const mainImage = mainCard.querySelector('.review-card__image img');
 
-            mainText.textContent = data.main.text;
-            mainImage.src = data.main.image;
+                if (mainText) mainText.textContent = data.main.text;
+                if (mainImage) mainImage.src = data.main.image;
+            }
 
             // Update tags for main card
             const mainTagsContainer = document.querySelector('.review-card__tags--main');
@@ -101,8 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const sideText = sideCards[index].querySelector('.review-card__text');
                     const sideImage = sideCards[index].querySelector('.review-card__image img');
 
-                    sideText.textContent = sideData.text;
-                    sideImage.src = sideData.image;
+                    if (sideText) sideText.textContent = sideData.text;
+                    if (sideImage) sideImage.src = sideData.image;
 
                     // Update tags for side cards
                     const sideTagsContainers = document.querySelectorAll('.review-card__tags--side');
@@ -189,53 +191,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initialize reviews
-    updateReviews();
-
     // FAQ Accordion functionality (only for main page)
     const faqItems = document.querySelectorAll('.about-content .faq-item');
+    if (faqItems.length > 0) {
+        faqItems.forEach(item => {
+            const header = item.querySelector('.faq-header');
+            const content = item.querySelector('.faq-content');
+            const description = item.querySelector('.faq-description');
 
-    faqItems.forEach(item => {
-        const header = item.querySelector('.faq-header');
-        const content = item.querySelector('.faq-content');
-        const description = item.querySelector('.faq-description');
+            if (header) {
+                header.addEventListener('click', function() {
+                    const isActive = item.classList.contains('active');
 
-        header.addEventListener('click', function() {
-            const isActive = item.classList.contains('active');
+                    // Close all FAQ items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                            const otherContent = otherItem.querySelector('.faq-content');
+                            if (otherContent) {
+                                otherContent.classList.remove('active');
+                            }
+                        }
+                    });
 
-            // Close all FAQ items
-            faqItems.forEach(otherItem => {
-                if (otherItem !== item) {
-                    otherItem.classList.remove('active');
-                    const otherContent = otherItem.querySelector('.faq-content');
-                    if (otherContent) {
-                        otherContent.classList.remove('active');
+                    // Toggle current item
+                    if (isActive) {
+                        item.classList.remove('active');
+                        if (content) {
+                            content.classList.remove('active');
+                        }
+                    } else {
+                        item.classList.add('active');
+                        if (content) {
+                            content.classList.add('active');
+
+                            // Smooth scroll to expanded item
+                            setTimeout(() => {
+                                item.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                });
+                            }, 200);
+                        }
                     }
-                }
-            });
-
-            // Toggle current item
-            if (isActive) {
-                item.classList.remove('active');
-                if (content) {
-                    content.classList.remove('active');
-                }
-            } else {
-                item.classList.add('active');
-                if (content) {
-                    content.classList.add('active');
-
-                    // Smooth scroll to expanded item
-                    setTimeout(() => {
-                        item.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                    }, 200);
-                }
+                });
             }
         });
-    });
+    }
+
+    // Initialize reviews
+    updateReviews();
 });
 
 // Popup будет подключаться отдельно для главной страницы
