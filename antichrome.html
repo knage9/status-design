@@ -15,6 +15,177 @@
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
     <script src="antichrome-form.js" defer></script>
+    <script>
+        // Portfolio Gallery Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const thumbnails = document.querySelectorAll('.portfolio-result__thumbnail');
+            const mainImage = document.getElementById('mainPortfolioImage');
+            const mainTitle = document.getElementById('mainPortfolioTitle');
+            const mainServices = document.getElementById('mainPortfolioServices');
+            const prevBtn = document.querySelector('.portfolio-result__nav-btn--prev');
+            const nextBtn = document.querySelector('.portfolio-result__nav-btn--next');
+
+            // Portfolio projects data
+            const projects = [
+                {
+                    id: 0,
+                    title: 'Chevrolet Corvette',
+                    images: [
+                        'img/Gallery-1.png',
+                        'img/Gallery-2.png',
+                        'img/Gallery-3.png'
+                    ],
+                    thumbnails: [
+                        'img/Gallery-1.png',
+                        'img/Gallery-2.png',
+                        'img/Gallery-3.png'
+                    ],
+                    alt: 'Chevrolet Corvette - Результат антихрома',
+                    services: [
+                        'Оконные молдинги',
+                        'Молдинг крыши багажника',
+                        'Надписи и значки',
+                        'Решетка радиатора',
+                        'Молдинг заднего бампера',
+                        'Вставки глушителей',
+                        'Вставки переднего бампера',
+                        'Юбка заднего бампера'
+                    ]
+                },
+                {
+                    id: 1,
+                    title: 'Mercedes-Benz S-Class',
+                    images: [
+                        'img/Gallery-2.png',
+                        'img/Gallery-3.png',
+                        'img/Gallery-1.png'
+                    ],
+                    thumbnails: [
+                        'img/Gallery-2.png',
+                        'img/Gallery-3.png',
+                        'img/Gallery-1.png'
+                    ],
+                    alt: 'Mercedes-Benz S-Class - Полный антихром',
+                    services: [
+                        'Полный антихром кузова',
+                        'Решетка радиатора',
+                        'Оконные молдинги',
+                        'Дверные ручки',
+                        'Зеркала заднего вида',
+                        'Логотипы и эмблемы',
+                        'Патрубки выхлопной системы'
+                    ]
+                },
+                {
+                    id: 2,
+                    title: 'BMW X7',
+                    images: [
+                        'img/Gallery-3.png',
+                        'img/Gallery-1.png',
+                        'img/Gallery-2.png'
+                    ],
+                    thumbnails: [
+                        'img/Gallery-3.png',
+                        'img/Gallery-1.png',
+                        'img/Gallery-2.png'
+                    ],
+                    alt: 'BMW X7 - Спортивный антихром',
+                    services: [
+                        'Решетка радиатора M-Performance',
+                        'Оконные молдинги Shadow Line',
+                        'Дверные ручки',
+                        'Задние фонари',
+                        'Выхлопная система',
+                        'Логотипы BMW'
+                    ]
+                }
+            ];
+
+            let currentProjectIndex = 0;
+            let currentImageIndex = 0;
+
+            // Update portfolio display
+            function updatePortfolio(projectIndex) {
+                const project = projects[projectIndex];
+
+                // Update main content
+                mainImage.src = project.images[currentImageIndex];
+                mainImage.alt = project.alt;
+                mainTitle.textContent = project.title;
+
+                // Update services list
+                mainServices.innerHTML = '';
+                project.services.forEach(service => {
+                    const serviceItem = document.createElement('div');
+                    serviceItem.className = 'portfolio-result__service-item';
+                    serviceItem.textContent = service;
+                    mainServices.appendChild(serviceItem);
+                });
+
+                // Update active thumbnail based on current image
+                thumbnails.forEach((thumb, i) => {
+                    if (i === currentImageIndex) {
+                        thumb.classList.add('active');
+                    } else {
+                        thumb.classList.remove('active');
+                    }
+                });
+
+                currentProjectIndex = projectIndex;
+            }
+
+            // Update current image within project
+            function updateImage(imageIndex) {
+                const project = projects[currentProjectIndex];
+                currentImageIndex = imageIndex;
+
+                // Update main image
+                mainImage.src = project.images[currentImageIndex];
+
+                // Update active thumbnail
+                thumbnails.forEach((thumb, i) => {
+                    if (i === currentImageIndex) {
+                        thumb.classList.add('active');
+                    } else {
+                        thumb.classList.remove('active');
+                    }
+                });
+            }
+
+            // Thumbnail click handlers - switch images within current project
+            thumbnails.forEach((thumbnail) => {
+                thumbnail.addEventListener('click', () => {
+                    const imageIndex = parseInt(thumbnail.dataset.image);
+                    updateImage(imageIndex);
+                });
+            });
+
+            // Navigation button handlers - switch between projects
+            if (prevBtn && nextBtn) {
+                prevBtn.addEventListener('click', () => {
+                    const newProjectIndex = currentProjectIndex === 0 ? projects.length - 1 : currentProjectIndex - 1;
+                    currentImageIndex = 0; // Reset to first image of new project
+                    updatePortfolio(newProjectIndex);
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    const newProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
+                    currentImageIndex = 0; // Reset to first image of new project
+                    updatePortfolio(newProjectIndex);
+                });
+            }
+
+            // Auto-rotate gallery - switch between projects
+            setInterval(() => {
+                const nextProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
+                currentImageIndex = 0; // Reset to first image of new project
+                updatePortfolio(nextProjectIndex);
+            }, 6000); // Change project every 6 seconds
+
+            // Initialize first project
+            updatePortfolio(0);
+        });
+    </script>
 </head>
 <body>
     <!-- Burger Menu Overlay -->
@@ -525,6 +696,74 @@
                     </div>
                     <div class="paint-film__scale">
                         <div class="paint-film__scale-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote Section -->
+    <section class="quote-section">
+        <div class="container">
+            <blockquote class="quote">
+                <p class="quote__text">«Плёнки это всегда временное решение. По своему опыту скажу, чтобы забыть и закрыть этот вопрос раз и навсегда нужно именно красить, никаких плёнок»</p>
+                <cite class="quote__author">Алексей Клешнев. Основатель Status Design.</cite>
+            </blockquote>
+        </div>
+    </section>
+
+    <!-- Portfolio Result Section -->
+    <section class="portfolio-result-section">
+        <div class="container">
+            <div class="portfolio-result">
+                <div class="portfolio-result__content">
+                    <h2 class="portfolio-result__title">Результат, который говорит сам за себя.</h2>
+                    <p class="portfolio-result__description">
+                        Мы занимаемся дехромированием элементов автомобиля уже более 20 лет. За это время у нас накопился существенный опыт и у вас есть возможность ознакомиться с нашими работами
+                    </p>
+                </div>
+
+                <div class="portfolio-result__gallery">
+                    <div class="portfolio-result__main">
+                        <div class="portfolio-result__content-wrapper">
+                            <div class="portfolio-result__image">
+                                <img src="img/Gallery-1.png" alt="Chevrolet Corvette - Результат антихрома" id="mainPortfolioImage">
+                            </div>
+                            <div class="portfolio-result__info">
+                                <h3 class="portfolio-result__car-title" id="mainPortfolioTitle">Chevrolet Corvette</h3>
+                                <div class="portfolio-result__services" id="mainPortfolioServices">
+                                    <div class="portfolio-result__service-item">Оконные молдинги</div>
+                                    <div class="portfolio-result__service-item">Молдинг крыши багажника</div>
+                                    <div class="portfolio-result__service-item">Надписи и значки</div>
+                                    <div class="portfolio-result__service-item">Решетка радиатора</div>
+                                    <div class="portfolio-result__service-item">Молдинг заднего бампера</div>
+                                    <div class="portfolio-result__service-item">Вставки глушителей</div>
+                                    <div class="portfolio-result__service-item">Вставки переднего бампера</div>
+                                    <div class="portfolio-result__service-item">Юбка заднего бампера</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="portfolio-result__navigation">
+                            <button class="portfolio-result__nav-btn portfolio-result__nav-btn--prev">
+                                <img src="img/left.svg" alt="Предыдущий">
+                            </button>
+                            <button class="portfolio-result__nav-btn portfolio-result__nav-btn--next">
+                                <img src="img/right.svg" alt="Следующий">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="portfolio-result__thumbnails" id="portfolioThumbnails">
+                        <div class="portfolio-result__thumbnail active" data-image="0">
+                            <img src="img/Gallery-1.png" alt="Chevrolet Corvette - вид 1">
+                        </div>
+                        <div class="portfolio-result__thumbnail" data-image="1">
+                            <img src="img/Gallery-2.png" alt="Chevrolet Corvette - вид 2">
+                        </div>
+                        <div class="portfolio-result__thumbnail" data-image="2">
+                            <img src="img/Gallery-3.png" alt="Chevrolet Corvette - вид 3">
+                        </div>
                     </div>
                 </div>
             </div>
