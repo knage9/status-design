@@ -14,6 +14,7 @@
     <script src="script.js" defer></script>
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
+    <script src="antichrome-form.js" defer></script>
 </head>
 <body>
     <!-- Burger Menu Overlay -->
@@ -146,7 +147,113 @@
         </div>
     </section>
 
-    <!-- Другие секции можно добавить позже -->
+    <!-- Brands Section -->
+    <section class="brands-section">
+        <div class="container">
+            <h2 class="brands-section__title">Наш опыт — ваш автомобиль любой марки</h2>
+            <div class="brands-marquee">
+                <div class="brands-marquee__container">
+                    <div class="brands-marquee__track">
+                        <div class="brand-card">
+                            <img src="img/exeed.png" alt="EXEED" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/zekr.png" alt="ZEEKR" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/haval.png" alt="HAVAL" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/geely.png" alt="GEELY" class="brand-card__logo">
+                        </div>
+                        <!-- Дублируем для бесконечной прокрутки -->
+                        <div class="brand-card">
+                            <img src="img/exeed.png" alt="EXEED" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/zekr.png" alt="ZEEKR" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/haval.png" alt="HAVAL" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/geely.png" alt="GEELY" class="brand-card__logo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Antichrome Form Section -->
+    <section class="antichrome-form-section">
+        <div class="container">
+            <div class="antichrome-form__content">
+                <!-- Left Side -->
+                <div class="antichrome-form__left">
+                    <h3 class="antichrome-form__title">Хотите узнать цену? Заполните заявку</h3>
+                    <p class="antichrome-form__description">
+                        Оставьте контакт — проконсультируем по цене, расскажем подробности и предоставим индивидуальную скидку специально для вас.
+                    </p>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="antichrome-form__right">
+                    <form class="antichrome-form__form">
+                        <!-- Hidden field for service type -->
+                        <input type="hidden" name="mainService" value="antichrome">
+
+                        <div class="antichrome-form__additional-services">
+                            <div class="antichrome-form__additional-label">Добавьте дополнительные услуги</div>
+
+                            <!-- Discount Section -->
+                            <div class="antichrome-form__discount" id="antichromeDiscountSection" style="display: none;">
+                                <div class="antichrome-form__discount-wrapper">
+                                    <div class="antichrome-form__discount-badge">
+                                        <span class="antichrome-form__discount-percent" id="antichromeDiscountPercent">-10%</span>
+                                    </div>
+                                    <div class="antichrome-form__discount-text">
+                                        <span class="antichrome-form__discount-label">Ваша персональная скидка</span>
+                                    </div>
+                                </div>
+                                <div class="antichrome-form__discount-info">
+                                    <span class="antichrome-form__discount-description">Скидка рассчитывается от количества и стоимости выбранных услуг</span>
+                                </div>
+                            </div>
+
+                            <div class="antichrome-form__additional-section">
+                                <div class="antichrome-form__additional-options">
+                                    <button class="additional-option" data-option="antigravity-film" type="button">Оклейка антигравийной пленкой</button>
+                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас колесных дисков</button>
+                                    <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
+                                    <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
+                                    <button class="additional-option" data-option="polish" type="button">Полировка</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="antichrome-form__contact-info">
+                            <div class="antichrome-form__form-group">
+                                <input type="text" class="antichrome-form__input" id="antichromeFormName" placeholder="Ваше имя" required>
+                                <div class="antichrome-form__error" id="antichromeFormNameError"></div>
+                            </div>
+                            <div class="antichrome-form__form-group">
+                                <input type="tel" class="antichrome-form__input" id="antichromeFormPhone" placeholder="Телефон" required>
+                                <div class="antichrome-form__error" id="antichromeFormPhoneError"></div>
+                            </div>
+                            <div class="antichrome-form__form-group">
+                                <input type="text" class="antichrome-form__input" id="antichromeFormCar" placeholder="Марка и модель авто" required>
+                                <div class="antichrome-form__error" id="antichromeFormCarError"></div>
+                            </div>
+                        </div>
+
+                        <button class="antichrome-form__submit" disabled type="submit">Отправить заявку</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Multi-step Popup Modal -->
     <div class="popup-overlay" id="popupOverlay">
