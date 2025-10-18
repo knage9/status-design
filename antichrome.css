@@ -1813,10 +1813,16 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
+    position: relative;
+    overflow: hidden;
 }
 
 .paint-film__scale-bar--active {
-    background-color: #000000;
+    background: linear-gradient(90deg, #000000 80%, rgba(0, 0, 0, 0.2) 80%);
+}
+
+.paint-film__option--film .paint-film__scale-bar {
+    background: linear-gradient(90deg, #000000 15%, rgba(0, 0, 0, 0.2) 15%);
 }
 
 /* Animations for Paint/Film Section */
