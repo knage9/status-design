@@ -2102,8 +2102,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 40px;
+    align-items: flex-end;
+    gap: 20px;
 }
 
 .portfolio-result__main {
@@ -2186,12 +2186,9 @@
 }
 
 .portfolio-result__thumbnails {
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
     display: flex;
-    gap: 15px;
-    z-index: 10;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .portfolio-result__thumbnail {
@@ -2222,9 +2219,6 @@
 }
 
 .portfolio-result__navigation {
-    position: absolute;
-    top: 20px;
-    left: 20px;
     display: flex;
     gap: 10px;
     z-index: 10;
@@ -2326,262 +2320,3 @@
     background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
-/* Responsive Design for Portfolio Result */
-@media (max-width: 1199px) {
-    .portfolio-result__image {
-        width: 700px;
-        height: 460px;
-    }
-
-    .portfolio-result__info {
-        width: 450px;
-        padding: 18px;
-    }
-
-    .portfolio-result__car-title {
-        font-size: 32px;
-        margin-bottom: 35px;
-    }
-
-    .portfolio-result__service-item {
-        font-size: 15px;
-        padding: 10px 18px;
-    }
-}
-
-@media (max-width: 992px) {
-    .portfolio-result-section {
-        padding: 80px 0;
-    }
-
-    .portfolio-result__content {
-        margin-bottom: 60px;
-    }
-
-    .portfolio-result__title {
-        font-size: 48px;
-        margin-bottom: 25px;
-    }
-
-    .portfolio-result__description {
-        font-size: 16px;
-    }
-
-    .portfolio-result__image {
-        width: 600px;
-        height: 400px;
-        margin: 15px;
-    }
-
-    .portfolio-result__info {
-        width: 400px;
-        padding: 35px;
-    }
-
-    .portfolio-result__car-title {
-        font-size: 28px;
-        margin-bottom: 30px;
-    }
-
-    .portfolio-result__service-item {
-        font-size: 14px;
-        padding: 10px 16px;
-    }
-
-    .portfolio-result__nav-btn {
-        width: 45px;
-        height: 45px;
-    }
-
-    .portfolio-result__nav-btn img {
-        width: 18px;
-        height: 18px;
-    }
-}
-
-@media (max-width: 768px) {
-    .portfolio-result-section {
-        padding: 60px 0;
-    }
-
-    .portfolio-result__content {
-        margin-bottom: 50px;
-    }
-
-    .portfolio-result__title {
-        font-size: 36px;
-        line-height: 110%;
-        margin-bottom: 20px;
-    }
-
-    .portfolio-result__description {
-        font-size: 15px;
-    }
-
-    .portfolio-result__content-wrapper {
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-        padding: 15px;
-    }
-
-    .portfolio-result__image {
-        width: 100%;
-        max-width: 600px;
-        height: 350px;
-        margin: 0;
-    }
-
-    .portfolio-result__info {
-        position: static;
-        width: 100%;
-        max-width: 600px;
-        padding: 30px 20px;
-        min-width: auto;
-    }
-
-    .portfolio-result__car-title {
-        font-size: 24px;
-        margin-bottom: 25px;
-        text-align: center;
-    }
-
-    .portfolio-result__services {
-        gap: 10px;
-    }
-
-    .portfolio-result__service-item {
-        font-size: 14px;
-        padding: 12px 16px;
-        text-align: center;
-    }
-
-    .portfolio-result__thumbnails {
-        gap: 15px;
-    }
-
-    .portfolio-result__thumbnail {
-        width: 80px;
-        height: 64px;
-    }
-
-    .portfolio-result__navigation {
-        position: static;
-        margin-top: 20px;
-        justify-content: center;
-    }
-
-    .portfolio-result__nav-btn {
-        width: 40px;
-        height: 40px;
-    }
-
-    .portfolio-result__nav-btn img {
-        width: 16px;
-        height: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .portfolio-result-section {
-        padding: 40px 0;
-    }
-
-    .portfolio-result {
-        padding: 0 15px;
-    }
-
-    .portfolio-result__content {
-        margin-bottom: 40px;
-    }
-
-    .portfolio-result__title {
-        font-size: 28px;
-        margin-bottom: 18px;
-    }
-
-    .portfolio-result__description {
-        font-size: 14px;
-    }
-
-    .portfolio-result__image {
-        height: 300px;
-    }
-
-    .portfolio-result__info {
-        padding: 25px 20px;
-    }
-
-    .portfolio-result__car-title {
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-
-    .portfolio-result__service-item {
-        font-size: 13px;
-        padding: 10px 14px;
-    }
-
-    .portfolio-result__thumbnails {
-        gap: 12px;
-    }
-
-    .portfolio-result__thumbnail {
-        width: 70px;
-        height: 56px;
-    }
-
-    .portfolio-result__nav-btn {
-        width: 35px;
-        height: 35px;
-    }
-
-    .portfolio-result__nav-btn img {
-        width: 14px;
-        height: 14px;
-    }
-}
-
-@media (max-width: 360px) {
-    .portfolio-result__title {
-        font-size: 24px;
-        margin-bottom: 15px;
-    }
-
-    .portfolio-result__description {
-        font-size: 13px;
-    }
-
-    .portfolio-result__image {
-        height: 250px;
-    }
-
-    .portfolio-result__info {
-        padding: 20px 15px;
-    }
-
-    .portfolio-result__car-title {
-        font-size: 18px;
-        margin-bottom: 18px;
-    }
-
-    .portfolio-result__service-item {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
-
-    .portfolio-result__thumbnail {
-        width: 60px;
-        height: 48px;
-    }
-
-    .portfolio-result__nav-btn {
-        width: 30px;
-        height: 30px;
-    }
-
-    .portfolio-result__nav-btn img {
-        width: 12px;
-        height: 12px;
-    }
-}
