@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="contacts.css">
     <script src="header.js" defer></script>
     <script src="animations.js" defer></script>
+    <script src="script.js" defer></script>
     <script src="popup.js" defer></script>
+    <script src="discount-popup.js" defer></script>
     <script src="contacts.js" defer></script>
 </head>
 <body>
@@ -102,21 +104,6 @@
 
                         <div class="contacts__additional-services">
                             <div class="contacts__additional-label">Добавьте дополнительные</div>
-
-                            <!-- Discount Section -->
-                            <div class="contacts__discount" id="discountSection" style="display: none;">
-                                <div class="contacts__discount-wrapper">
-                                    <div class="contacts__discount-badge">
-                                        <span class="contacts__discount-percent" id="discountPercent">-10%</span>
-                                    </div>
-                                    <div class="contacts__discount-text">
-                                        <span class="contacts__discount-label">Ваша персональная скидка</span>
-                                    </div>
-                                </div>
-                                <div class="contacts__discount-info">
-                                    <span class="contacts__discount-description">Скидка рассчитывается от количества и стоимости выбранных услуг</span>
-                                </div>
-                            </div>
 
                             <div class="contacts__additional-section">
                                 <div class="contacts__additional-options">
@@ -269,7 +256,7 @@
                     <div class="popup__error" id="mainServiceError"></div>
                 </div>
 
-                <!-- Step 3: Additional Services -->
+                <!-- Discount Section -->
                 <div class="popup__discount" id="discountSection" style="display: none;">
                     <div class="popup__discount-wrapper">
                         <div class="popup__discount-badge">
@@ -280,6 +267,8 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Step 3: Additional Services -->
                 <div class="popup__step" data-step="3">
                     <div class="popup__additional-container">
                         <div class="popup__additional-services">

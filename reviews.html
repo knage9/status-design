@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="reviews.css">
     <script src="header.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="popup.js" defer></script>
+    <script src="discount-popup.js" defer></script>
     <script src="reviews.js" defer></script>
 </head>
 <body>
@@ -208,5 +211,515 @@
             </div>
         </div>
     </div>
+
+    <!-- Multi-step Popup Modal for Requests -->
+    <div class="popup-overlay" id="requestPopupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="requestPopupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут</h2>
+                </div>
+                <button class="popup__close" id="requestPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <!-- Step 1: Contact Information -->
+                <div class="popup__step popup__step--active" data-step="1">
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="requestUserName" placeholder="Ваше имя" required>
+                        <div class="popup__error" id="requestNameError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="tel" class="popup__input" id="requestUserPhone" placeholder="Телефон" required>
+                        <div class="popup__error" id="requestPhoneError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="requestCarModel" placeholder="Марка и модель авто" required>
+                        <div class="popup__error" id="requestCarError"></div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Main Service Selection -->
+                <div class="popup__step" data-step="2">
+                    <div class="popup__main-services">
+                        <button class="popup__service-btn" data-service="carbon" type="button">
+                            <span class="popup__service-text">Карбон</span>
+                        </button>
+                        <button class="popup__service-btn" data-service="antichrome" type="button">
+                            <span class="popup__service-text">Антихром с покраской</span>
+                        </button>
+                    </div>
+                    <div class="popup__error" id="requestMainServiceError"></div>
+                </div>
+
+                <!-- Step 3: Additional Services -->
+                <div class="popup__discount" id="requestDiscountSection" style="display: none;">
+                    <div class="popup__discount-wrapper">
+                        <div class="popup__discount-badge">
+                            <span class="popup__discount-percent" id="requestDiscountPercent">-10%</span>
+                        </div>
+                        <div class="popup__discount-text">
+                            <span class="popup__discount-label">Ваша персональная скидка</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup__step" data-step="3">
+                    <div class="popup__additional-container">
+                        <div class="popup__additional-services">
+                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
+                                <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
+                                <span class="popup__additional-text">Окрас колесных дисков</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="cleaning" type="button">
+                                <span class="popup__additional-text">Химчистка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="ceramic" type="button">
+                                <span class="popup__additional-text">Керамика</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="polish" type="button">
+                                <span class="popup__additional-text">Полировка</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Success Message -->
+                <div class="popup__step" data-step="4">
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--continue" id="requestContinueBtn">Продолжить</button>
+                <button class="popup__btn popup__btn--submit" id="requestSubmitBtn" style="display: none;">Отправить заявку</button>
+                <button class="popup__btn popup__btn--success" id="requestSuccessBtn" style="display: none;">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup Modal -->
+    <div class="popup-overlay popup-overlay--success" id="successPopupOverlay">
+        <div class="popup popup--success">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="successTitle">Ваш запрос в работе. Перезвоним в течение 15 минут.</h2>
+                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.</p>
+                </div>
+                <button class="popup__close" id="successPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+            </div>
+
+            <div class="popup__footer" style="padding: 20px;">
+                <button class="popup__btn popup__btn--success" id="reviewsSuccessBtn">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialize Request Popup -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Request popup elements
+            const requestPopupOverlay = document.getElementById('requestPopupOverlay');
+            const requestPopupClose = document.getElementById('requestPopupClose');
+            const requestContinueBtn = document.getElementById('requestContinueBtn');
+            const requestSubmitBtn = document.getElementById('requestSubmitBtn');
+            const requestSuccessBtn = document.getElementById('requestSuccessBtn');
+
+            // Request form elements
+            const requestUserName = document.getElementById('requestUserName');
+            const requestUserPhone = document.getElementById('requestUserPhone');
+            const requestCarModel = document.getElementById('requestCarModel');
+
+            // Request step elements
+            const requestPopupSteps = requestPopupOverlay.querySelectorAll('.popup__step');
+            const requestPopupTitle = document.getElementById('requestPopupTitle');
+
+            // Request service selection elements
+            const requestServiceBtns = requestPopupOverlay.querySelectorAll('.popup__service-btn');
+            const requestAdditionalBtns = requestPopupOverlay.querySelectorAll('.popup__additional-btn');
+
+            // Request error elements
+            const requestNameError = document.getElementById('requestNameError');
+            const requestPhoneError = document.getElementById('requestPhoneError');
+            const requestCarError = document.getElementById('requestCarError');
+            const requestMainServiceError = document.getElementById('requestMainServiceError');
+
+            // Request discount elements
+            const requestDiscountSection = document.getElementById('requestDiscountSection');
+            const requestDiscountPercent = document.getElementById('requestDiscountPercent');
+
+            // Check if request popup elements exist before adding event listeners
+            if (!requestPopupOverlay || !requestPopupClose || !requestContinueBtn || !requestSubmitBtn || !requestSuccessBtn) {
+                return; // Request popup elements not found on this page, exit silently
+            }
+
+            // Request state variables
+            let requestCurrentStep = 1;
+            let requestSelectedMainService = '';
+            let requestSelectedAdditionalServices = [];
+            let requestFormData = {
+                name: '',
+                phone: '',
+                carModel: '',
+                mainService: '',
+                additionalServices: [],
+                discount: 0,
+                timestamp: ''
+            };
+
+            // Phone number validation regex (Russia format)
+            const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
+
+            // Service costs for discount calculation
+            const serviceCosts = {
+                'antigravity-film': 50000,  // Оклейка антигравийной пленкой
+                'disk-painting': 30000,     // Окрас колесных дисков
+                'cleaning': 15000,          // Химчистка
+                'ceramic': 25000,           // Керамика
+                'polish': 10000             // Полировка
+            };
+
+            // Enhanced discount calculation based on selected services
+            function calculateRequestDiscount() {
+                if (requestSelectedAdditionalServices.length === 0) {
+                    return 0;
+                }
+
+                // Base discount based on quantity
+                const baseDiscounts = [0, 2, 4, 8, 12, 16, 20];
+                const baseDiscount = Math.min(baseDiscounts[requestSelectedAdditionalServices.length] || 20, 20);
+
+                // Additional discount based on total cost
+                let totalCost = 0;
+                requestSelectedAdditionalServices.forEach(service => {
+                    totalCost += serviceCosts[service] || 0;
+                });
+
+                // 0.5% for every 10,000 rubles
+                const costBonus = Math.floor(totalCost / 10000) * 0.5;
+
+                // Total discount (max 20%)
+                const totalDiscount = Math.min(baseDiscount + costBonus, 20);
+
+                return Math.round(totalDiscount);
+            }
+
+            // Update request discount display
+            function updateRequestDiscountDisplay() {
+                const discount = calculateRequestDiscount();
+                if (discount > 0) {
+                    requestDiscountPercent.textContent = `-${discount}%`;
+                    requestDiscountSection.style.display = 'flex';
+                } else {
+                    requestDiscountSection.style.display = 'none';
+                }
+                requestFormData.discount = discount;
+            }
+
+            // Request validation functions
+            function validateRequestName() {
+                const name = requestUserName.value.trim();
+                if (name.length < 2) {
+                    requestNameError.textContent = 'Имя должно содержать минимум 2 символа';
+                    requestNameError.classList.add('active');
+                    return false;
+                }
+                requestNameError.classList.remove('active');
+                return true;
+            }
+
+            function validateRequestPhone() {
+                const phone = requestUserPhone.value.trim();
+                if (!phoneRegex.test(phone)) {
+                    requestPhoneError.textContent = 'Введите корректный номер телефона';
+                    requestPhoneError.classList.add('active');
+                    return false;
+                }
+                requestPhoneError.classList.remove('active');
+                return true;
+            }
+
+            function validateRequestCarModel() {
+                const car = requestCarModel.value.trim();
+                if (car.length < 3) {
+                    requestCarError.textContent = 'Укажите марку и модель автомобиля';
+                    requestCarError.classList.add('active');
+                    return false;
+                }
+                requestCarError.classList.remove('active');
+                return true;
+            }
+
+            function validateRequestMainService() {
+                if (!requestSelectedMainService) {
+                    requestMainServiceError.textContent = 'Выберите основную услугу';
+                    requestMainServiceError.classList.add('active');
+                    return false;
+                }
+                requestMainServiceError.classList.remove('active');
+                return true;
+            }
+
+            // Request step navigation
+            function goToRequestStep(step) {
+                // Hide all steps
+                requestPopupSteps.forEach(stepEl => {
+                    stepEl.classList.remove('popup__step--active');
+                });
+
+                // Show target step
+                const targetStep = requestPopupOverlay.querySelector(`[data-step="${step}"]`);
+                if (targetStep) {
+                    targetStep.classList.add('popup__step--active');
+                }
+
+                requestCurrentStep = step;
+
+                // Update popup title and size based on step
+                updateRequestPopupTitle(step);
+                updateRequestPopupSize(step);
+
+                // Update button visibility and text
+                updateRequestStepButtons();
+            }
+
+            // Update request popup title based on current step
+            function updateRequestPopupTitle(step) {
+                const titles = {
+                    1: 'Мы перезвоним и ответим на все вопросы в течение 15 минут',
+                    2: 'Выберите основную услугу',
+                    3: 'Выберите дополнительные услуги',
+                    4: 'Ваш запрос в работе. Перезвоним в течение 15 минут.'
+                };
+
+                if (titles[step]) {
+                    requestPopupTitle.textContent = titles[step];
+                }
+            }
+
+            // Update request popup size based on current step
+            function updateRequestPopupSize(step) {
+                const popup = requestPopupOverlay.querySelector('.popup');
+
+                if (step === 4) {
+                    // Compact size for success step
+                    popup.classList.add('popup--compact');
+                } else {
+                    // Normal size for other steps
+                    popup.classList.remove('popup--compact');
+                }
+            }
+
+            function updateRequestStepButtons() {
+                requestContinueBtn.style.display = requestCurrentStep < 3 ? 'flex' : 'none';
+                requestSubmitBtn.style.display = requestCurrentStep === 3 ? 'flex' : 'none';
+                requestSuccessBtn.style.display = requestCurrentStep === 4 ? 'flex' : 'none';
+
+                // Update button text
+                if (requestCurrentStep === 1) {
+                    requestContinueBtn.textContent = 'Продолжить';
+                } else if (requestCurrentStep === 2) {
+                    requestContinueBtn.textContent = 'Продолжить';
+                }
+            }
+
+            // Open request popup
+            function openRequestPopup() {
+                requestPopupOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                requestCurrentStep = 1;
+                goToRequestStep(1);
+
+                // Reset form
+                resetRequestForm();
+
+                // Focus on first input
+                setTimeout(() => {
+                    requestUserName.focus();
+                }, 300);
+            }
+
+            // Close request popup
+            function closeRequestPopup() {
+                requestPopupOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                requestCurrentStep = 1;
+            }
+
+            // Reset request form data
+            function resetRequestForm() {
+                requestUserName.value = '';
+                requestUserPhone.value = '';
+                requestCarModel.value = '';
+                requestSelectedMainService = '';
+                requestSelectedAdditionalServices = [];
+
+                // Reset service buttons
+                requestServiceBtns.forEach(btn => btn.classList.remove('popup__service-btn--active'));
+                requestAdditionalBtns.forEach(btn => btn.classList.remove('popup__additional-btn--selected'));
+
+                // Hide discount
+                requestDiscountSection.style.display = 'none';
+
+                // Clear errors
+                requestPopupOverlay.querySelectorAll('.popup__error').forEach(error => {
+                    error.classList.remove('active');
+                });
+
+                requestFormData = {
+                    name: '',
+                    phone: '',
+                    carModel: '',
+                    mainService: '',
+                    additionalServices: [],
+                    discount: 0,
+                    timestamp: ''
+                };
+            }
+
+            // Step 1: Continue button
+            requestContinueBtn.addEventListener('click', function() {
+                if (requestCurrentStep === 1) {
+                    // Validate step 1
+                    const isNameValid = validateRequestName();
+                    const isPhoneValid = validateRequestPhone();
+                    const isCarValid = validateRequestCarModel();
+
+                    if (isNameValid && isPhoneValid && isCarValid) {
+                        // Save form data
+                        requestFormData.name = requestUserName.value.trim();
+                        requestFormData.phone = requestUserPhone.value.trim();
+                        requestFormData.carModel = requestCarModel.value.trim();
+                        requestFormData.timestamp = new Date().toISOString();
+
+                        goToRequestStep(2);
+                    }
+                } else if (requestCurrentStep === 2) {
+                    // Validate step 2
+                    if (validateRequestMainService()) {
+                        requestFormData.mainService = requestSelectedMainService;
+                        goToRequestStep(3);
+                        updateRequestDiscountDisplay();
+                    }
+                }
+            });
+
+            // Main service selection
+            requestServiceBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    requestServiceBtns.forEach(b => b.classList.remove('popup__service-btn--active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('popup__service-btn--active');
+                    requestSelectedMainService = this.dataset.service;
+
+                    // Clear error
+                    requestMainServiceError.classList.remove('active');
+                });
+            });
+
+            // Additional services selection
+            requestAdditionalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const service = this.dataset.service;
+
+                    if (requestSelectedAdditionalServices.includes(service)) {
+                        // Remove service
+                        requestSelectedAdditionalServices = requestSelectedAdditionalServices.filter(s => s !== service);
+                        this.classList.remove('popup__additional-btn--selected');
+                    } else {
+                        // Add service
+                        requestSelectedAdditionalServices.push(service);
+                        this.classList.add('popup__additional-btn--selected');
+                    }
+
+                    // Update discount
+                    updateRequestDiscountDisplay();
+                });
+            });
+
+            // Submit form
+            requestSubmitBtn.addEventListener('click', function() {
+                // Save additional services and discount
+                requestFormData.additionalServices = [...requestSelectedAdditionalServices];
+                requestFormData.discount = calculateRequestDiscount();
+
+                // Here you would typically send data to CRM
+                console.log('Request form data to send to CRM:', requestFormData);
+
+                // Show success step
+                goToRequestStep(4);
+
+                // You can uncomment this to actually send data to CRM
+                // sendToCRM(requestFormData);
+            });
+
+            // Success button
+            requestSuccessBtn.addEventListener('click', function() {
+                closeRequestPopup();
+            });
+
+            // Close popup events
+            requestPopupClose.addEventListener('click', closeRequestPopup);
+            requestPopupOverlay.addEventListener('click', function(e) {
+                if (e.target === requestPopupOverlay) {
+                    closeRequestPopup();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && requestPopupOverlay.classList.contains('active')) {
+                    closeRequestPopup();
+                }
+            });
+
+            // Real-time validation
+            requestUserName.addEventListener('input', validateRequestName);
+            requestUserPhone.addEventListener('input', validateRequestPhone);
+            requestCarModel.addEventListener('input', validateRequestCarModel);
+
+            // Phone number formatting
+            requestUserPhone.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+
+                if (value.length > 11) {
+                    value = value.slice(0, 11);
+                }
+
+                // Format phone number
+                if (value.length >= 6) {
+                    value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, '+$1 ($2) $3-$4-$5');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{1})(\d{3})/, '+$1 ($2');
+                } else if (value.length >= 1) {
+                    value = '+' + value;
+                }
+
+                e.target.value = value;
+                validateRequestPhone();
+            });
+
+            // Make openRequestPopup function globally available for other buttons on the site
+            window.openRequestPopup = openRequestPopup;
+
+            // Add event listeners to existing buttons on the site for requests
+            const requestButtons = document.querySelectorAll('.btn-primary, .footer__button, .burger-menu__btn');
+            requestButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openRequestPopup();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
