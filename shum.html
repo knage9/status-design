@@ -15,6 +15,8 @@
     <script src="shum-zones.js" defer></script>
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
+    <script src="shum-form.js" defer></script>
+    <script src="shum-results.js" defer></script>
 </head>
 <body>
     <!-- Burger Menu Overlay -->
@@ -148,39 +150,163 @@
             <div class="zones-content">
                 <div class="zones-image-container">
                     <img src="img/shum-preview.png" alt="Автомобиль с зонами шумоизоляции" class="zones-main-image" id="zonesMainImage">
-                    <div class="zones-popup" id="zonesPopup">
-                        <div class="zones-popup__content">
-                            <h3 class="zones-popup__title" id="zonesPopupTitle">Выберите зону</h3>
-                            <p class="zones-popup__description" id="zonesPopupDescription">Наведите курсор на интересующую зону для получения подробной информации</p>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="zones-buttons">
                     <button class="zone-btn" data-zone="hood" data-image="img/капот-шум.png" data-title="Капот" data-description="Шумоизоляция капота значительно снижает шум от двигателя и дорожные вибрации, создавая более комфортную атмосферу в салоне.">
                         <span class="zone-btn__title">Капот</span>
                         <span class="zone-btn__description">Снижает шум двигателя</span>
+                        <div class="zone-btn__full-description">Шумоизоляция капота значительно снижает шум от двигателя и дорожные вибрации, создавая более комфортную атмосферу в салоне.</div>
                     </button>
                     <button class="zone-btn" data-zone="roof" data-image="img/крыша-шум.png" data-title="Крыша" data-description="Шумоизоляция крыши эффективно блокирует шум дождя, ветра и внешние звуки, обеспечивая тишину даже в плохую погоду.">
                         <span class="zone-btn__title">Крыша</span>
                         <span class="zone-btn__description">Блокирует шум дождя</span>
+                        <div class="zone-btn__full-description">Шумоизоляция крыши эффективно блокирует шум дождя, ветра и внешние звуки, обеспечивая тишину даже в плохую погоду.</div>
                     </button>
                     <button class="zone-btn" data-zone="trunk" data-image="img/багажгик-шум.png" data-title="Багажник" data-description="Обработка багажного отделения устраняет шум от колес и дорожного покрытия, а также улучшает акустику музыки в автомобиле.">
                         <span class="zone-btn__title">Багажник</span>
                         <span class="zone-btn__description">Устраняет шум колес</span>
+                        <div class="zone-btn__full-description">Обработка багажного отделения устраняет шум от колес и дорожного покрытия, а также улучшает акустику музыки в автомобиле.</div>
                     </button>
                     <button class="zone-btn" data-zone="floor" data-image="img/дно-шум.png" data-title="Дно" data-description="Шумоизоляция пола салона и багажника максимально снижает шум от дорожного покрытия, вибрации и улучшает теплоизоляцию.">
                         <span class="zone-btn__title">Дно</span>
                         <span class="zone-btn__description">Максимальная шумоизоляция</span>
+                        <div class="zone-btn__full-description">Шумоизоляция пола салона и багажника максимально снижает шум от дорожного покрытия, вибрации и улучшает теплоизоляцию.</div>
                     </button>
                     <button class="zone-btn" data-zone="doors" data-image="img/двери-шум.png" data-title="Двери" data-description="Комплексная обработка дверей обеспечивает отличную звукоизоляцию от внешнего шума, улучшает качество музыки и снижает вибрации.">
                         <span class="zone-btn__title">Двери</span>
                         <span class="zone-btn__description">Звукоизоляция от внешнего шума</span>
+                        <div class="zone-btn__full-description">Комплексная обработка дверей обеспечивает отличную звукоизоляцию от внешнего шума, улучшает качество музыки и снижает вибрации.</div>
                     </button>
                     <button class="zone-btn" data-zone="arches" data-image="img/арки-шум.png" data-title="Арки снаружи" data-description="Обработка колесных арок снаружи эффективно блокирует шум от шин и дорожного покрытия, значительно повышая комфорт вождения.">
                         <span class="zone-btn__title">Арки снаружи</span>
                         <span class="zone-btn__description">Блокировка шума шин</span>
+                        <div class="zone-btn__full-description">Обработка колесных арок снаружи эффективно блокирует шум от шин и дорожного покрытия, значительно повышая комфорт вождения.</div>
                     </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shum Form Section -->
+    <section class="shum-form-section">
+        <div class="container">
+            <div class="shum-form__content">
+                <!-- Left Side -->
+                <div class="shum-form__left">
+                    <h3 class="shum-form__title">Хотите узнать цену на шумоизоляцию? Заполните заявку</h3>
+                    <p class="shum-form__description">
+                        Оставьте контакт — проконсультируем по цене, расскажем подробности и предоставим индивидуальную скидку специально для вас.
+                    </p>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="shum-form__right">
+                    <form class="shum-form__form">
+                        <!-- Hidden field for service type -->
+                        <input type="hidden" name="mainService" value="shum">
+
+                        <div class="shum-form__additional-services">
+                            <div class="shum-form__additional-label">Добавьте дополнительные услуги</div>
+
+                            <!-- Discount Section -->
+                            <div class="shum-form__discount" id="shumDiscountSection" style="display: none;">
+                                <div class="shum-form__discount-wrapper">
+                                    <div class="shum-form__discount-badge">
+                                        <span class="shum-form__discount-percent" id="shumDiscountPercent">-10%</span>
+                                    </div>
+                                    <div class="shum-form__discount-text">
+                                        <span class="shum-form__discount-label">Ваша персональная скидка</span>
+                                    </div>
+                                </div>
+                                <div class="shum-form__discount-info">
+                                    <span class="shum-form__discount-description">Скидка рассчитывается от количества и стоимости выбранных услуг</span>
+                                </div>
+                            </div>
+
+                            <div class="shum-form__additional-section">
+                                <div class="shum-form__additional-options">
+                                    <button class="additional-option" data-option="antigravity-film" type="button">Оклейка антигравийной пленкой</button>
+                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас колесных дисков</button>
+                                    <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
+                                    <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
+                                    <button class="additional-option" data-option="polish" type="button">Полировка</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="shum-form__contact-info">
+                            <div class="shum-form__form-group">
+                                <input type="text" class="shum-form__input" id="shumFormName" placeholder="Ваше имя" required>
+                                <div class="shum-form__error" id="shumFormNameError"></div>
+                            </div>
+                            <div class="shum-form__form-group">
+                                <input type="tel" class="shum-form__input" id="shumFormPhone" placeholder="Телефон" required>
+                                <div class="shum-form__error" id="shumFormPhoneError"></div>
+                            </div>
+                            <div class="shum-form__form-group">
+                                <input type="text" class="shum-form__input" id="shumFormCar" placeholder="Марка и модель авто" required>
+                                <div class="shum-form__error" id="shumFormCarError"></div>
+                            </div>
+                        </div>
+
+                        <button class="shum-form__submit" disabled type="submit">Отправить заявку</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shum Results Section -->
+    <section class="shum-results-section">
+        <div class="container">
+            <div class="shum-results">
+                <div class="shum-results__content">
+                    <h2 class="shum-results__title">Результат, который говорит сам за себя.</h2>
+                    <p class="shum-results__description">
+                        Мы занимаемся шумоизоляцией автомобилей уже более 5 лет. За это время у нас накопился существенный опыт и у вас есть возможность ознакомиться с нашими работами
+                    </p>
+                </div>
+
+                <div class="shum-results__gallery">
+                    <div class="shum-results__navigation">
+                        <button class="shum-results__nav-btn shum-results__nav-btn--prev">
+                            <img src="img/ep_left.svg" alt="Предыдущий">
+                        </button>
+                        <button class="shum-results__nav-btn shum-results__nav-btn--next">
+                            <img src="img/ep_right.svg" alt="Следующий">
+                        </button>
+                    </div>
+                    <div class="shum-results__main">
+                        <div class="shum-results__content-wrapper">
+                            <div class="shum-results__image-block">
+                                <div class="shum-results__image">
+                                    <img src="img/Gallery-1.png" alt="Mercedes GLC - Шумоизоляция с арками" id="mainShumImage">
+                                </div>
+                                <div class="shum-results__thumbnails" id="shumThumbnails">
+                                    <!-- Миниатюры будут генерироваться динамически через JavaScript -->
+                                </div>
+                            </div>
+                            <div class="shum-results__info">
+                                <h3 class="shum-results__car-title" id="mainShumTitle">Mercedes GLC</h3>
+                                <div class="shum-results__services" id="mainShumServices">
+                                    <div class="shum-results__service-item">
+                                        <div class="shum-results__service-badge">12 часов</div>
+                                        <div class="shum-results__service-text">Время на работу</div>
+                                    </div>
+                                    <div class="shum-results__service-item">
+                                        <div class="shum-results__service-badge">2 года</div>
+                                        <div class="shum-results__service-text">Гарантия</div>
+                                    </div>
+                                    <div class="shum-results__service-item">
+                                        <div class="shum-results__service-badge">88 000₽</div>
+                                        <div class="shum-results__service-text">Стоимость</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

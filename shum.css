@@ -405,6 +405,7 @@
     letter-spacing: -0.05em;
     color: #000000;
     margin-bottom: 15px;
+    max-width: 500px;
 }
 
 .zones-subtitle {
@@ -430,65 +431,22 @@
     overflow: hidden;
     background-color: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
+    max-width: 100%;
 }
 
 .zones-main-image {
-    width: 100%;
-    height: 100%;
-    max-height: 500px;
+    max-width: 100%;
+    height: auto;
     object-fit: contain;
     display: block;
     transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     background-color: #ffffff;
 }
 
-.zones-popup {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #0B0D10;
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 10px;
-    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 10;
-    max-width: 220px;
-    text-align: left;
-}
 
-.zones-popup.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.zones-popup__content {
-    position: relative;
-}
-
-.zones-popup__title {
-    font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 100%;
-    letter-spacing: -0.05%;
-    margin-bottom: 10px;
-    color: #ffffff;
-}
-
-.zones-popup__description {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 125%;
-    color: rgba(255, 255, 255, 0.8);
-    margin: 0;
-}
 
 .zones-buttons {
     flex: 1;
@@ -502,20 +460,18 @@
     background-color: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    padding: 16px;
+    padding: 20px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     text-align: left;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    min-height: 100px;
+    gap: 12px;
+    min-height: 140px;
+    position: relative;
 }
 
 .zone-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border-color: #000000;
     transform: translateY(-2px);
 }
 
@@ -551,10 +507,36 @@
     line-height: 125%;
     color: #A9B0B8;
     margin: 0;
+    opacity: 1;
+    transition: all 0.3s ease;
 }
 
 .zone-btn.active .zone-btn__description {
-    color: rgba(255, 255, 255, 0.8);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* Полное описание зоны в кнопке */
+.zone-btn__full-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 140%;
+    color: #6B7280;
+    margin-top: 8px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.zone-btn.active .zone-btn__full-description {
+    color: rgba(255, 255, 255, 0.9);
+    opacity: 1;
+    max-height: 200px;
+    margin-top: 12px;
 }
 
 /* Анимации для блока зон */
@@ -622,9 +604,7 @@
         font-size: 16px;
     }
 
-    .zones-main-image {
-        height: 450px;
-    }
+
 
     .zones-buttons {
         grid-template-columns: repeat(2, 1fr);
@@ -720,9 +700,7 @@
         height: 450px;
     }
 
-    .zones-main-image {
-        max-height: 450px;
-    }
+
 
     .zones-buttons {
         grid-template-columns: repeat(3, 1fr);
@@ -739,18 +717,7 @@
         font-size: 16px;
     }
 
-    .zones-popup {
-        max-width: 300px;
-        padding: 25px;
-    }
 
-    .zones-popup__title {
-        font-size: 20px;
-    }
-
-    .zones-popup__description {
-        font-size: 14px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -842,9 +809,7 @@
         max-width: 500px;
     }
 
-    .zones-main-image {
-        height: 350px;
-    }
+
 
     .zones-buttons {
         grid-template-columns: repeat(2, 1fr);
@@ -861,19 +826,7 @@
         margin-bottom: 30px;
     }
 
-    .zones-popup {
-        max-width: 280px;
-        padding: 20px;
-    }
 
-    .zones-popup__title {
-        font-size: 18px;
-        margin-bottom: 12px;
-    }
-
-    .zones-popup__description {
-        font-size: 13px;
-    }
 
     .zone-btn {
         padding: 15px;
@@ -990,9 +943,7 @@
         max-width: 400px;
     }
 
-    .zones-main-image {
-        height: 300px;
-    }
+
 
     .zones-buttons {
         grid-template-columns: 1fr;
@@ -1009,19 +960,7 @@
         margin-bottom: 25px;
     }
 
-    .zones-popup {
-        max-width: 250px;
-        padding: 15px;
-    }
 
-    .zones-popup__title {
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-
-    .zones-popup__description {
-        font-size: 12px;
-    }
 
     .zone-btn {
         padding: 12px;
@@ -1114,9 +1053,7 @@
         max-width: 350px;
     }
 
-    .zones-main-image {
-        height: 250px;
-    }
+
 
     .zones-buttons {
         gap: 8px;
@@ -1132,19 +1069,7 @@
         margin-bottom: 20px;
     }
 
-    .zones-popup {
-        max-width: 220px;
-        padding: 12px;
-    }
 
-    .zones-popup__title {
-        font-size: 14px;
-        margin-bottom: 8px;
-    }
-
-    .zones-popup__description {
-        font-size: 11px;
-    }
 
     .zone-btn {
         padding: 10px;
@@ -1157,5 +1082,752 @@
 
     .zone-btn .zone-btn__description {
         font-size: 11px;
+    }
+}
+
+/* Shum Form Section - Адаптировано из антихрома */
+.shum-form-section {
+    padding-top: 200px;
+    background-color: #ffffff;
+}
+
+.shum-form__content {
+    max-width: 1420px;
+    margin: 0 auto;
+    display: flex;
+    gap: 100px;
+    align-items: flex-start;
+}
+
+.shum-form__left {
+    flex: 1;
+    max-width: 600px;
+}
+
+.shum-form__right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Form Title and Description */
+.shum-form__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    max-width: 1420px;
+    text-align: left;
+    max-width: 700px;
+}
+
+.shum-form__description {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 125%;
+    color: #6B7280;
+    margin: 0 0 40px 0;
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+/* Additional Services Section */
+.shum-form__additional-services {
+    margin-bottom: 30px;
+}
+
+.shum-form__additional-label {
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    color: #000000;
+    padding: 15px 50px;
+    margin: 0 0 20px 0;
+    border: 1px solid rgba(11, 13, 16, 0.5);
+    border-radius: 10px;
+    background-color: rgba(11, 13, 16, 0.05);
+    width: fit-content;
+}
+
+/* Discount Section */
+.shum-form__discount {
+    margin-bottom: 20px;
+}
+
+.shum-form__discount-wrapper {
+    background-color: #0B0D10;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.shum-form__discount-badge {
+    width: 105px;
+    height: 49px;
+    background-color: #1458E4;
+    border-radius: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.shum-form__discount-percent {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+}
+
+.shum-form__discount-text {
+    flex: 1;
+}
+
+.shum-form__discount-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.05em;
+    color: #ffffff;
+}
+
+.shum-form__discount-info {
+    margin-top: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 100%;
+}
+
+.shum-form__discount-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #A9B0B8;
+}
+
+.shum-form__additional-section {
+    background-color: #0B0D10;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.shum-form__additional-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+.additional-option {
+    background-color: rgba(134, 134, 134, 0.2);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    padding: 20px 40px;
+    border-radius: 1000px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 200px;
+    flex: 0 1 auto;
+}
+
+.additional-option:hover:not(.additional-option--selected) {
+    background-color: rgba(134, 134, 134, 0.3);
+}
+
+.additional-option--selected {
+    background-color: #1458E4;
+}
+
+/* Contact Information Form */
+.shum-form__contact-info {
+    background-color: #0B0D10;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.shum-form__form-group {
+    margin-bottom: 20px;
+}
+
+.shum-form__form-group:last-child {
+    margin-bottom: 0;
+}
+
+.shum-form__input {
+    width: 100%;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 0 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 120%;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.shum-form__input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.shum-form__input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.shum-form__input:hover:not(:focus) {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.shum-form__input:invalid {
+    border-color: #ff4444;
+}
+
+.shum-form__error {
+    color: #ff4444;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 120%;
+    min-height: 18px;
+    margin-top: 5px;
+    display: none;
+}
+
+.shum-form__error.active {
+    display: block;
+}
+
+/* Submit Button */
+.shum-form__submit {
+    width: 100%;
+    height: 60px;
+    border: 1px solid #000000;
+    border-radius: 1000px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: transparent;
+    color: #000000;
+}
+
+.shum-form__submit:not(:disabled) {
+    background-color: #1458E4;
+    color: #ffffff;
+    border-color: #1458E4;
+}
+
+.shum-form__submit:not(:disabled):hover {
+    background-color: #0f47bd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 88, 228, 0.3);
+}
+
+.shum-form__submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Animations for Shum Form */
+.shum-form__left {
+    animation: slideInFromLeft 0.8s ease-out;
+}
+
+.shum-form__right {
+    animation: slideInFromRight 0.8s ease-out;
+}
+
+/* Hover effects for additional options */
+.additional-option {
+    position: relative;
+    overflow: hidden;
+}
+
+.additional-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent);
+    transition: left 0.5s ease;
+}
+
+.additional-option:hover::before {
+    left: 100%;
+}
+
+/* Shum Results Section - Адаптировано из антихрома */
+.shum-results-section {
+    padding-top: 200px;
+    background-color: #ffffff;
+}
+
+.shum-results {
+    max-width: 1420px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.shum-results__content {
+    text-align: left;
+    margin-bottom: 50px;
+}
+
+.shum-results__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin-bottom: 30px;
+}
+
+.shum-results__description {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 140%;
+    color: #6B7280;
+    max-width: 800px;
+    margin: 0;
+}
+
+.shum-results__gallery {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.shum-results__main {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.shum-results__content-wrapper {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background-color: #0B0D10;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+}
+
+.shum-results__image {
+    width: 830px;
+    height: 530px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.shum-results__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.shum-results__info {
+    flex: 1;
+    padding: 20px;
+    background-color: #000000;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.shum-results__car-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.shum-results__services {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.shum-results__service-item {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #E5E7EB;
+    padding: 12px 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.shum-results__service-item:hover {
+    background-color: rgba(20, 88, 228, 0.2);
+    transform: translateX(5px);
+}
+
+.shum-results__thumbnails {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.shum-results__thumbnail {
+    width: 100px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    position: relative;
+}
+
+.shum-results__thumbnail:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.shum-results__thumbnail.active {
+    border-color: #1458E4;
+    transform: scale(1.05);
+}
+
+.shum-results__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shum-results__navigation {
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.shum-results__nav-btn {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    color: #000000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shum-results__nav-btn:hover {
+    background-color: #1458E4;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 88, 228, 0.3);
+}
+
+.shum-results__nav-btn img {
+    width: 20px;
+    height: 20px;
+    filter: none;
+}
+
+/* Анимации для новых блоков */
+@keyframes formSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes resultsSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.shum-form-section {
+    animation: formSlideIn 0.8s ease-out;
+}
+
+.shum-results-section {
+    animation: resultsSlideIn 0.8s ease-out;
+}
+
+/* Responsive Design для новых блоков */
+@media (max-width: 1199px) {
+    .shum-form__content {
+        gap: 40px;
+        padding: 50px;
+    }
+
+    .shum-form__title {
+        font-size: 32px;
+    }
+
+    .shum-form__description {
+        font-size: 15px;
+    }
+
+    .shum-results__content-wrapper {
+        gap: 30px;
+        padding: 30px;
+    }
+
+    .shum-results__car-title {
+        font-size: 28px;
+    }
+
+    .shum-results__navigation {
+        left: -60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .shum-form-section {
+        padding: 80px 0;
+    }
+
+    .shum-form__content {
+        flex-direction: column;
+        gap: 40px;
+        padding: 40px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .shum-form__left {
+        max-width: 100%;
+    }
+
+    .shum-form__right {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .shum-form__title {
+        font-size: 28px;
+    }
+
+    .shum-results-section {
+        padding: 80px 0;
+    }
+
+    .shum-results__gallery {
+        gap: 30px;
+    }
+
+    .shum-results__content-wrapper {
+        flex-direction: column;
+        gap: 30px;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .shum-results__image-block {
+        width: 100%;
+    }
+
+    .shum-results__info {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+
+    .shum-results__navigation {
+        position: static;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .shum-form-section {
+        padding: 60px 0;
+    }
+
+    .shum-form__content {
+        padding: 30px;
+        gap: 30px;
+    }
+
+    .shum-form__title {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .shum-form__description {
+        font-size: 14px;
+    }
+
+    .shum-form__additional-options {
+        justify-content: center;
+    }
+
+    .additional-option {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    .shum-results-section {
+        padding: 60px 0;
+    }
+
+    .shum-results {
+        gap: 40px;
+    }
+
+    .shum-results__title {
+        font-size: 36px;
+        margin-bottom: 15px;
+    }
+
+    .shum-results__description {
+        font-size: 16px;
+    }
+
+    .shum-results__content-wrapper {
+        padding: 25px;
+        gap: 25px;
+    }
+
+    .shum-results__car-title {
+        font-size: 24px;
+    }
+
+    .shum-results__service-badge {
+        font-size: 14px;
+        padding: 10px 16px;
+        min-width: 100px;
+    }
+
+    .shum-results__service-text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .shum-form-section {
+        padding: 40px 0;
+    }
+
+    .shum-form__content {
+        padding: 20px;
+        gap: 25px;
+    }
+
+    .shum-form__title {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .shum-form__description {
+        font-size: 13px;
+    }
+
+    .shum-form__input {
+        height: 44px;
+        font-size: 13px;
+    }
+
+    .shum-form__submit {
+        height: 44px;
+        font-size: 14px;
+    }
+
+    .shum-results-section {
+        padding: 40px 0;
+    }
+
+    .shum-results {
+        gap: 30px;
+    }
+
+    .shum-results__title {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+
+    .shum-results__description {
+        font-size: 14px;
+    }
+
+    .shum-results__content-wrapper {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .shum-results__car-title {
+        font-size: 20px;
+    }
+
+    .shum-results__service-item {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .shum-results__service-badge {
+        min-width: auto;
     }
 }
