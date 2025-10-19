@@ -61,6 +61,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Add click handlers for additional service cards
+    const additionalServiceCards = document.querySelectorAll('.additional-service');
+    additionalServiceCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.openPopup) {
+                window.openPopup();
+            }
+        });
+
+        // Add cursor pointer style
+        card.style.cursor = 'pointer';
+    });
+
     // Add click handlers for footer button
     const footerButton = document.querySelector('.footer__button');
     if (footerButton) {
