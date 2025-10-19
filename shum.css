@@ -1778,7 +1778,7 @@
     }
 }
 
-/* Shum Results Section - Адаптировано из антихрома */
+/* Shum Results Section - Улучшенный дизайн галереи */
 .shum-results-section {
     padding-top: 200px;
     background-color: #ffffff;
@@ -1858,6 +1858,11 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.3s ease;
+}
+
+.shum-results__image:hover img {
+    transform: scale(1.05);
 }
 
 .shum-results__info {
@@ -1895,11 +1900,30 @@
     border-radius: 5px;
     transition: all 0.3s ease;
     text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .shum-results__service-item:hover {
     background-color: rgba(20, 88, 228, 0.2);
     transform: translateX(5px);
+}
+
+.shum-results__service-badge {
+    background-color: #1458E4;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+}
+
+.shum-results__service-text {
+    flex: 1;
+    color: #E5E7EB;
 }
 
 .shum-results__thumbnails {
@@ -1927,12 +1951,18 @@
 .shum-results__thumbnail.active {
     border-color: #1458E4;
     transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(20, 88, 228, 0.5);
 }
 
 .shum-results__thumbnail img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.shum-results__thumbnail:hover img {
+    transform: scale(1.1);
 }
 
 .shum-results__navigation {
@@ -1969,6 +1999,93 @@
     filter: none;
 }
 
+/* Анимации для блока результатов */
+@keyframes portfolioResultFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes thumbnailSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes imageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.shum-results__content {
+    animation: portfolioResultFadeIn 0.8s ease-out;
+}
+
+.shum-results__main {
+    animation: portfolioResultFadeIn 0.8s ease-out 0.2s both;
+}
+
+.shum-results__thumbnails {
+    animation: thumbnailSlideIn 0.8s ease-out 0.4s both;
+}
+
+.shum-results__navigation {
+    animation: portfolioResultFadeIn 0.8s ease-out 0.6s both;
+}
+
+/* Hover эффекты для лучшей интерактивности */
+.shum-results__main {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.shum-results__info {
+    position: relative;
+}
+
+.shum-results__info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Дополнительные стили для лучшего внешнего вида */
+.shum-results__content-wrapper {
+    position: relative;
+}
+
+.shum-results__content-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(20, 88, 228, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+    pointer-events: none;
+    border-radius: 10px;
+}
+
 /* Анимации для новых блоков */
 @keyframes formSlideIn {
     from {
@@ -2000,7 +2117,14 @@
     animation: resultsSlideIn 0.8s ease-out;
 }
 
-/* Responsive Design для новых блоков */
+/* Responsive Design для улучшенного блока результатов */
+@media (max-width: 1380px) {
+    .shum-results__image {
+        width: 650px;
+        height: 400px;
+    }
+}
+
 @media (max-width: 1199px) {
     .shum-form__content {
         gap: 40px;
@@ -2015,17 +2139,39 @@
         font-size: 15px;
     }
 
+    .shum-results__main {
+        gap: 15px;
+    }
+
     .shum-results__content-wrapper {
-        gap: 30px;
-        padding: 30px;
+        gap: 15px;
+        padding: 18px;
+    }
+
+    .shum-results__image {
+        width: 700px;
+        height: 530px;
+    }
+
+    .shum-results__info {
+        padding: 18px;
     }
 
     .shum-results__car-title {
         font-size: 28px;
+        margin-bottom: 18px;
     }
 
-    .shum-results__navigation {
-        left: -60px;
+    .shum-results__service-item {
+        font-size: 16px;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 1110px) {
+    .shum-results__image {
+        width: 500px;
+        height: 300px;
     }
 }
 
@@ -2059,33 +2205,55 @@
         padding: 80px 0;
     }
 
-    .shum-results__gallery {
-        gap: 30px;
+    .shum-results__content {
+        margin-bottom: 60px;
+    }
+
+    .shum-results__title {
+        font-size: 48px;
+        margin-bottom: 25px;
+    }
+
+    .shum-results__description {
+        font-size: 16px;
+    }
+
+    .shum-results__main {
+        gap: 20px;
     }
 
     .shum-results__content-wrapper {
         flex-direction: column;
-        gap: 30px;
-        padding: 30px;
-        text-align: center;
+        gap: 20px;
+        padding: 20px;
     }
 
-    .shum-results__image-block {
-        width: 100%;
+    .shum-results__image {
+        width: 650px;
+        height: 400px;
     }
 
     .shum-results__info {
+        order: 2;
         width: 100%;
-        align-items: center;
-        text-align: center;
+        padding: 20px;
     }
 
-    .shum-results__navigation {
-        position: static;
-        transform: none;
-        flex-direction: row;
-        justify-content: center;
-        margin-bottom: 20px;
+    .shum-results__car-title {
+        font-size: 26px;
+        margin-bottom: 16px;
+    }
+
+    .shum-results__service-item {
+        font-size: 18px;
+        padding: 10px 14px;
+    }
+}
+
+@media (max-width: 850px) {
+    .shum-results__image {
+        width: 500px;
+        height: 350px;
     }
 }
 
@@ -2143,14 +2311,36 @@
         font-size: 24px;
     }
 
+    .shum-results__service-item {
+        font-size: 16px;
+        padding: 10px 14px;
+    }
+
     .shum-results__service-badge {
         font-size: 14px;
-        padding: 10px 16px;
-        min-width: 100px;
+        padding: 8px 14px;
+        min-width: 70px;
     }
 
     .shum-results__service-text {
         font-size: 14px;
+    }
+}
+
+@media (max-width: 600px) {
+    .shum-results__image {
+        width: 340px;
+        height: 220px;
+    }
+
+    .shum-results__car-title {
+        font-size: 22px;
+        margin-bottom: 16px;
+    }
+
+    .shum-results__service-item {
+        font-size: 16px;
+        padding: 10px 14px;
     }
 }
 
@@ -2200,22 +2390,149 @@
         font-size: 14px;
     }
 
+    .shum-results__gallery {
+        gap: 12px;
+    }
+
+    .shum-results__main {
+        gap: 12px;
+    }
+
     .shum-results__content-wrapper {
-        padding: 20px;
-        gap: 20px;
+        padding: 14px;
+        gap: 14px;
+    }
+
+    .shum-results__image {
+        width: 270px;
+        height: 200px;
+    }
+
+    .shum-results__info {
+        padding: 14px;
+        border-radius: 6px;
     }
 
     .shum-results__car-title {
         font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .shum-results__services {
+        gap: 8px;
     }
 
     .shum-results__service-item {
+        font-size: 13px;
+        padding: 8px 10px;
+        border-radius: 4px;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
         text-align: center;
     }
 
     .shum-results__service-badge {
         min-width: auto;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .shum-results__service-text {
+        font-size: 13px;
+    }
+
+    .shum-results__thumbnails {
+        gap: 6px;
+        margin-top: 14px;
+    }
+
+    .shum-results__thumbnail {
+        width: 70px;
+        height: 56px;
+        border-radius: 4px;
+        border-width: 2px;
+    }
+
+    .shum-results__nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .shum-results__nav-btn img {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+@media (max-width: 400px) {
+    .shum-results__image {
+        width: 230px;
+        height: 160px;
+    }
+}
+
+@media (max-width: 360px) {
+    .shum-results__title {
+        font-size: 24px;
+        margin-bottom: 14px;
+    }
+
+    .shum-results__description {
+        font-size: 13px;
+    }
+
+    .shum-results__content-wrapper {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .shum-results__image {
+        width: 200px;
+        height: 140px;
+    }
+
+    .shum-results__info {
+        padding: 12px;
+        border-radius: 5px;
+    }
+
+    .shum-results__car-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .shum-results__service-item {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+
+    .shum-results__service-badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .shum-results__service-text {
+        font-size: 12px;
+    }
+
+    .shum-results__thumbnails {
+        gap: 4px;
+        margin-top: 12px;
+    }
+
+    .shum-results__thumbnail {
+        width: 60px;
+        height: 48px;
+        border-radius: 3px;
+    }
+
+    .shum-results__nav-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .shum-results__nav-btn img {
+        width: 12px;
+        height: 12px;
     }
 }

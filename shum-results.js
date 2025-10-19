@@ -1,13 +1,14 @@
-// Shum Results Gallery Functionality (адаптировано из антихрома)
+// Shum Results Gallery Functionality - Улучшенная версия
 document.addEventListener('DOMContentLoaded', function() {
-    const thumbnails = document.querySelectorAll('.shum-results__thumbnail');
+    // DOM элементы
+    const thumbnailsContainer = document.getElementById('shumThumbnails');
     const mainImage = document.getElementById('mainShumImage');
     const mainTitle = document.getElementById('mainShumTitle');
     const mainServices = document.getElementById('mainShumServices');
     const prevBtn = document.querySelector('.shum-results__nav-btn--prev');
     const nextBtn = document.querySelector('.shum-results__nav-btn--next');
 
-    // Shum projects data (адаптировано для шумоизоляции)
+    // Данные проектов шумоизоляции
     const projects = [
         {
             id: 0,
@@ -73,10 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentProjectIndex = 0;
     let currentImageIndex = 0;
+    let isAutoRotate = true;
+    let autoRotateInterval;
 
-    // Generate thumbnails for a project
+    // Генерация миниатюр для проекта
     function generateThumbnails(project) {
-        const thumbnailsContainer = document.getElementById('shumThumbnails');
+        if (!thumbnailsContainer) return [];
+
         thumbnailsContainer.innerHTML = '';
 
         project.thumbnails.forEach((thumbnailSrc, index) => {
@@ -87,33 +91,62 @@ document.addEventListener('DOMContentLoaded', function() {
             const img = document.createElement('img');
             img.src = thumbnailSrc;
             img.alt = `${project.title} - вид ${index + 1}`;
+            img.loading = 'lazy';
 
             thumbnail.appendChild(img);
             thumbnailsContainer.appendChild(thumbnail);
 
-            // Add click handler
+            // Обработчик клика по миниатюре
             thumbnail.addEventListener('click', () => {
                 updateImage(index);
+                resetAutoRotate();
             });
         });
 
-        // Update thumbnails variable to include newly created thumbnails
-        const newThumbnails = document.querySelectorAll('.shum-results__thumbnail');
-        return newThumbnails;
+        return document.querySelectorAll('.shum-results__thumbnail');
     }
 
-    // Update portfolio display
-    function updateProject(projectIndex) {
+    // Обновление отображения проекта
+    function updateProject(projectIndex, animate = true) {
         const project = projects[projectIndex];
+        if (!project) return;
 
-        // Update main content
-        mainImage.src = project.images[currentImageIndex];
-        mainImage.alt = project.alt;
-        mainTitle.textContent = project.title;
+        // Анимация перехода
+        if (animate) {
+            mainImage.style.opacity = '0';
+        }
 
-        // Update services list
+        setTimeout(() => {
+            // Обновление основного изображения
+            mainImage.src = project.images[currentImageIndex];
+            mainImage.alt = project.alt;
+            mainTitle.textContent = project.title;
+
+            // Обновление списка услуг
+            updateServices(project.services);
+
+            // Генерация и обновление миниатюр
+            const newThumbnails = generateThumbnails(project);
+
+            // Обновление активной миниатюры
+            updateActiveThumbnail(newThumbnails);
+
+            currentProjectIndex = projectIndex;
+
+            // Восстановление прозрачности
+            if (animate) {
+                mainImage.style.opacity = '1';
+            }
+        }, animate ? 150 : 0);
+    }
+
+    // Обновление списка услуг
+    function updateServices(services) {
+        if (!mainServices) return;
+
         mainServices.innerHTML = '';
-        project.services.forEach(service => {
+
+        services.forEach(service => {
             const serviceItem = document.createElement('div');
             serviceItem.className = 'shum-results__service-item';
             serviceItem.innerHTML = `
@@ -122,62 +155,149 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             mainServices.appendChild(serviceItem);
         });
+    }
 
-        // Generate and update thumbnails for current project
-        const newThumbnails = generateThumbnails(project);
-
-        // Update active thumbnail based on current image
-        newThumbnails.forEach((thumb, i) => {
+    // Обновление активной миниатюры
+    function updateActiveThumbnail(thumbnails) {
+        thumbnails.forEach((thumb, i) => {
             if (i === currentImageIndex) {
                 thumb.classList.add('active');
             } else {
                 thumb.classList.remove('active');
             }
         });
-
-        currentProjectIndex = projectIndex;
     }
 
-    // Update current image within project
+    // Обновление текущего изображения в рамках проекта
     function updateImage(imageIndex) {
+        if (imageIndex < 0 || imageIndex >= projects[currentProjectIndex].images.length) return;
+
         currentImageIndex = imageIndex;
 
-        // Update main image
+        // Обновление основного изображения
         mainImage.src = projects[currentProjectIndex].images[currentImageIndex];
 
-        // Update active thumbnail - get current thumbnails and update their active state
+        // Обновление активной миниатюры
         const currentThumbnails = document.querySelectorAll('.shum-results__thumbnail');
-        currentThumbnails.forEach((thumb, i) => {
-            if (i === currentImageIndex) {
-                thumb.classList.add('active');
-            } else {
-                thumb.classList.remove('active');
+        updateActiveThumbnail(currentThumbnails);
+    }
+
+    // Сброс автопрокрутки
+    function resetAutoRotate() {
+        isAutoRotate = false;
+        clearInterval(autoRotateInterval);
+
+        setTimeout(() => {
+            isAutoRotate = true;
+            startAutoRotate();
+        }, 10000); // Возобновить автопрокрутку через 10 секунд после взаимодействия
+    }
+
+    // Запуск автопрокрутки
+    function startAutoRotate() {
+        autoRotateInterval = setInterval(() => {
+            if (isAutoRotate) {
+                const nextProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
+                currentImageIndex = 0;
+                updateProject(nextProjectIndex);
             }
+        }, 8000); // Смена проекта каждые 8 секунд
+    }
+
+    // Обработчики кнопок навигации
+    function setupNavigation() {
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                const newProjectIndex = currentProjectIndex === 0 ? projects.length - 1 : currentProjectIndex - 1;
+                currentImageIndex = 0;
+                updateProject(newProjectIndex);
+                resetAutoRotate();
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                const newProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
+                currentImageIndex = 0;
+                updateProject(newProjectIndex);
+                resetAutoRotate();
+            });
+        }
+    }
+
+    // Проверка видимости элемента
+    function isElementVisible(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    // Пауза автопрокрутки при невидимости страницы
+    function handleVisibilityChange() {
+        if (document.hidden) {
+            clearInterval(autoRotateInterval);
+        } else if (isAutoRotate) {
+            startAutoRotate();
+        }
+    }
+
+    // Инициализация галереи
+    function initializeGallery() {
+        if (projects.length === 0) return;
+
+        // Настройка навигации
+        setupNavigation();
+
+        // Запуск автопрокрутки
+        startAutoRotate();
+
+        // Обработка изменения видимости страницы
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Инициализация первого проекта
+        updateProject(0, false);
+
+        // Предзагрузка следующих изображений
+        preloadImages();
+    }
+
+    // Предзагрузка изображений для плавных переходов
+    function preloadImages() {
+        projects.forEach(project => {
+            project.images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
         });
     }
 
-    // Navigation button handlers - switch between projects
-    if (prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', () => {
-            const newProjectIndex = currentProjectIndex === 0 ? projects.length - 1 : currentProjectIndex - 1;
-            currentImageIndex = 0; // Reset to first image of new project
-            updateProject(newProjectIndex);
-        });
+    // Обработка ошибок загрузки изображений
+    function handleImageError(img) {
+        img.src = 'img/placeholder.png'; // Замените на путь к изображению-заглушке
+        img.alt = 'Изображение недоступно';
+    }
 
-        nextBtn.addEventListener('click', () => {
-            const newProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
-            currentImageIndex = 0; // Reset to first image of new project
-            updateProject(newProjectIndex);
+    // Добавление обработчиков ошибок для изображений
+    function setupImageErrorHandlers() {
+        const images = document.querySelectorAll('#mainShumImage, .shum-results__thumbnail img');
+        images.forEach(img => {
+            img.addEventListener('error', function() {
+                handleImageError(this);
+            });
         });
     }
 
-    // Auto-rotate gallery - switch between projects
-    setInterval(() => {
-        const nextProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
-        currentImageIndex = 0; // Reset to first image of new project
-        updateProject(nextProjectIndex);
-    }, 8000); // Change project every 8 seconds
+    // Инициализация при загрузке DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeGallery);
+    } else {
+        initializeGallery();
+    }
 
-    // Initialize first project
-    updateProject(0);
+    // Настройка обработчиков ошибок изображений после инициализации
+    setTimeout(setupImageErrorHandlers, 100);
 });
