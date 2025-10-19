@@ -26,6 +26,11 @@ class ReviewsManager {
         this.applyFilters(); // Применяем фильтры при инициализации
         this.updateActiveFilterButtons(); // Обновляем активные кнопки фильтров
         this.renderReviews();
+
+        // Добавляем обработчик изменения размера окна для мобильной адаптации
+        window.addEventListener('resize', () => {
+            this.handleWindowResize();
+        });
     }
 
     // Обновление активных кнопок фильтров
@@ -761,18 +766,21 @@ class ReviewsManager {
         // Разные высоты для разных этапов
         let targetHeight;
 
+        // Проверяем, мобильное ли устройство
+        const isMobile = window.innerWidth <= 768;
+
         switch (this.currentStep) {
             case 1:
-                targetHeight = '600px'; // Первый этап - стандартная высота
+                targetHeight = isMobile ? '500px' : '600px'; // Первый этап - стандартная высота
                 break;
             case 2:
-                targetHeight = '700px'; // Второй этап - увеличенная высота для кнопок услуг
+                targetHeight = isMobile ? '100vh' : '700px'; // Второй этап - увеличенная высота для кнопок услуг
                 break;
             case 3:
-                targetHeight = '300px'; // Третий этап - стандартная высота
+                targetHeight = isMobile ? '300px' : '300px'; // Третий этап - стандартная высота
                 break;
             default:
-                targetHeight = '700px';
+                targetHeight = isMobile ? '100vh' : '700px';
         }
 
         // Плавно изменяем высоту
@@ -965,6 +973,15 @@ class ReviewsManager {
 
         // Обновляем попап
         this.updatePopupStep();
+    }
+
+    // Обработка изменения размера окна
+    handleWindowResize() {
+        // Если попап активен, обновляем его высоту
+        const popup = document.getElementById('reviewPopupOverlay');
+        if (popup && popup.classList.contains('active')) {
+            this.updatePopupHeight();
+        }
     }
 }
 
