@@ -4022,11 +4022,7 @@ body {
         font-size: 16px;
     }
 
-    .popup__discount-wrapper {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
+
 
     .popup__discount-badge {
         width: 90px;
@@ -4074,7 +4070,6 @@ body {
     .popup-overlay {
         padding: 10px;
     }
-
 
 
     .popup__title-bg {
@@ -4125,8 +4120,8 @@ body {
     }
 
     .popup__discount-wrapper {
-        padding: 15px;
-        gap: 12px;
+        padding: 10px;
+        gap: 10px;
     }
 
     .popup__discount-badge {
@@ -4139,7 +4134,7 @@ body {
     }
 
     .popup__discount-label {
-        font-size: 18px;
+        font-size: 16px;
     }
 
     .popup__success-content {
@@ -4162,6 +4157,12 @@ body {
     .popup__btn {
         height: 52px;
         font-size: 15px;
+    }
+}
+
+@media (max-width: 360px) {
+    .popup__title{
+        font-size: 18px;
     }
 }
 
