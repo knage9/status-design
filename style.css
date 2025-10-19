@@ -3947,12 +3947,8 @@ body {
 
     .popup {
         width: 100%;
-        height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 30px);
-        max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 30px);
-        border-radius: 0;
-        border: none;
-        margin-top: env(safe-area-inset-top, 0px);
-        margin-bottom: env(safe-area-inset-bottom, 0px);
+        height: 500px;
+        border-radius: 10px;
     }
 
     .popup__header {
