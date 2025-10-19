@@ -774,13 +774,13 @@ class ReviewsManager {
                 targetHeight = isMobile ? '500px' : '600px'; // Первый этап - стандартная высота
                 break;
             case 2:
-                targetHeight = isMobile ? '100vh' : '700px'; // Второй этап - увеличенная высота для кнопок услуг
+                targetHeight = isMobile ? '500px' : '700px'; // Второй этап - единая высота для всех устройств
                 break;
             case 3:
                 targetHeight = isMobile ? '300px' : '300px'; // Третий этап - стандартная высота
                 break;
             default:
-                targetHeight = isMobile ? '100vh' : '700px';
+                targetHeight = isMobile ? '500px' : '700px';
         }
 
         // Плавно изменяем высоту
