@@ -12,6 +12,7 @@
     <script src="header.js" defer></script>
     <script src="animations.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="shum-zones.js" defer></script>
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
 </head>
@@ -131,6 +132,55 @@
                     <p class="feature-backdrop__description">
                         Мы используем премиальные материалы COMFORTMAT — премиальную шумоизоляцию с 2009 года. Она экологична, сертифицирована и разработана по стандартам, которые превышают требования рынка. Это гарантирует комфорт, долговечность и безопасность.
                     </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Soundproofing Zones Section -->
+    <section class="soundproofing-zones">
+        <div class="container">
+            <div class="zones-header">
+                <h2 class="zones-title">Шумоизоляция под ваш автомобиль</h2>
+                <p class="zones-subtitle">Полная шумоизоляция или частичная под ключевые зоны.</p>
+            </div>
+
+            <div class="zones-content">
+                <div class="zones-image-container">
+                    <img src="img/shum-preview.png" alt="Автомобиль с зонами шумоизоляции" class="zones-main-image" id="zonesMainImage">
+                    <div class="zones-popup" id="zonesPopup">
+                        <div class="zones-popup__content">
+                            <h3 class="zones-popup__title" id="zonesPopupTitle">Выберите зону</h3>
+                            <p class="zones-popup__description" id="zonesPopupDescription">Наведите курсор на интересующую зону для получения подробной информации</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="zones-buttons">
+                    <button class="zone-btn" data-zone="hood" data-image="img/капот-шум.png" data-title="Капот" data-description="Шумоизоляция капота значительно снижает шум от двигателя и дорожные вибрации, создавая более комфортную атмосферу в салоне.">
+                        <span class="zone-btn__title">Капот</span>
+                        <span class="zone-btn__description">Снижает шум двигателя</span>
+                    </button>
+                    <button class="zone-btn" data-zone="roof" data-image="img/крыша-шум.png" data-title="Крыша" data-description="Шумоизоляция крыши эффективно блокирует шум дождя, ветра и внешние звуки, обеспечивая тишину даже в плохую погоду.">
+                        <span class="zone-btn__title">Крыша</span>
+                        <span class="zone-btn__description">Блокирует шум дождя</span>
+                    </button>
+                    <button class="zone-btn" data-zone="trunk" data-image="img/багажгик-шум.png" data-title="Багажник" data-description="Обработка багажного отделения устраняет шум от колес и дорожного покрытия, а также улучшает акустику музыки в автомобиле.">
+                        <span class="zone-btn__title">Багажник</span>
+                        <span class="zone-btn__description">Устраняет шум колес</span>
+                    </button>
+                    <button class="zone-btn" data-zone="floor" data-image="img/дно-шум.png" data-title="Дно" data-description="Шумоизоляция пола салона и багажника максимально снижает шум от дорожного покрытия, вибрации и улучшает теплоизоляцию.">
+                        <span class="zone-btn__title">Дно</span>
+                        <span class="zone-btn__description">Максимальная шумоизоляция</span>
+                    </button>
+                    <button class="zone-btn" data-zone="doors" data-image="img/двери-шум.png" data-title="Двери" data-description="Комплексная обработка дверей обеспечивает отличную звукоизоляцию от внешнего шума, улучшает качество музыки и снижает вибрации.">
+                        <span class="zone-btn__title">Двери</span>
+                        <span class="zone-btn__description">Звукоизоляция от внешнего шума</span>
+                    </button>
+                    <button class="zone-btn" data-zone="arches" data-image="img/арки-шум.png" data-title="Арки снаружи" data-description="Обработка колесных арок снаружи эффективно блокирует шум от шин и дорожного покрытия, значительно повышая комфорт вождения.">
+                        <span class="zone-btn__title">Арки снаружи</span>
+                        <span class="zone-btn__description">Блокировка шума шин</span>
+                    </button>
                 </div>
             </div>
         </div>
