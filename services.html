@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все услуги - Премиум тюнинг автомобилей в Москве</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="services.css">
+    <script src="header.js" defer></script>
+    <script src="animations.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="popup.js" defer></script>
+    <script src="discount-popup.js" defer></script>
+    <script src="services.js" defer></script>
+</head>
+<body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <img src="img/logo.svg" alt="SD Logo">
+                    </div>
+                    <nav class="nav">
+                        <a href="index.html" class="nav__link">О компании</a>
+                        <a href="portfolio.html" class="nav__link">Портфолио</a>
+                        <a href="reviews.html" class="nav__link">Отзывы</a>
+                        <a href="news.html" class="nav__link">Новости</a>
+                        <a href="contacts.html" class="nav__link">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                        <div class="burger-menu__content">
+                            <a href="index.html" class="burger-menu__link">О компании</a>
+                            <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
+                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                            <a href="news.html" class="burger-menu__link">Новости</a>
+                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                            <button class="burger-menu__btn">Оставить заявку</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Services Hero Section -->
+    <section class="services-hero">
+        <div class="container">
+            <div class="services-hero__content">
+                <h1 class="services-hero__title">Все наши услуги</h1>
+                <p class="services-hero__description">
+                    Полный спектр премиум услуг по тюнингу и уходу за автомобилями.
+                    От комплексного антихрома до профессиональной шумоизоляции — мы сделаем ваш автомобиль идеальным.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Services Section -->
+    <section class="main-services-section">
+        <div class="container">
+            <div class="services-grid">
+                <!-- Антихром -->
+                <div class="service-card service-card--primary">
+                    <div class="service-card__image">
+                        <img src="img/chrome-icon-1.png" alt="Антихром">
+                    </div>
+                    <div class="service-card__content">
+                        <h3 class="service-card__title">Антихром</h3>
+                        <p class="service-card__description">
+                            Полное или частичное удаление хромированных элементов с последующей покраской в цвет кузова или матовый чёрный.
+                        </p>
+                        <div class="service-card__features">
+                            <div class="service-feature">
+                                <span class="service-feature__label">от 15 000₽</span>
+                            </div>
+                            <div class="service-feature">
+                                <span class="service-feature__label">1-2 дня</span>
+                            </div>
+                        </div>
+                        <a href="antichrome.html" class="service-card__button">Подробнее</a>
+                    </div>
+                </div>
+
+                <!-- Карбон -->
+                <div class="service-card service-card--secondary">
+                    <div class="service-card__image">
+                        <img src="img/carbon.png" alt="Карбон">
+                    </div>
+                    <div class="service-card__content">
+                        <h3 class="service-card__title">Карбон</h3>
+                        <p class="service-card__description">
+                            Оклейка деталей салона и экстерьера карбоновой плёнкой премиум качества с гарантией 2 года.
+                        </p>
+                        <div class="service-card__features">
+                            <div class="service-feature">
+                                <span class="service-feature__label">от 80 000₽</span>
+                            </div>
+                            <div class="service-feature">
+                                <span class="service-feature__label">2-3 дня</span>
+                            </div>
+                        </div>
+                        <button class="service-card__button">Подробнее</button>
+                    </div>
+                </div>
+
+                <!-- Шумоизоляция -->
+                <div class="service-card service-card--tertiary">
+                    <div class="service-card__image">
+                        <img src="img/shum-icon.png" alt="Шумоизоляция">
+                    </div>
+                    <div class="service-card__content">
+                        <h3 class="service-card__title">Шумоизоляция</h3>
+                        <p class="service-card__description">
+                            Премиальная шумоизоляция автомобиля материалами COMFORTMAT. Полная или частичная обработка.
+                        </p>
+                        <div class="service-card__features">
+                            <div class="service-feature">
+                                <span class="service-feature__label">от 25 000₽</span>
+                            </div>
+                            <div class="service-feature">
+                                <span class="service-feature__label">1-3 дня</span>
+                            </div>
+                        </div>
+                        <a href="shum.html" class="service-card__button">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Services Section -->
+    <section class="additional-services-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Дополнительные услуги</h2>
+                <p class="section-description">Профессиональные услуги по уходу и тюнингу вашего автомобиля</p>
+            </div>
+
+            <div class="additional-services-grid">
+                <div class="additional-service">
+                    <div class="additional-service__icon">
+                        <img src="img/chrome-icon-2.png" alt="Антигравийная пленка">
+                    </div>
+                    <div class="additional-service__content">
+                        <h3 class="additional-service__title">Антигравийная пленка</h3>
+                        <p class="additional-service__description">Профессиональная оклейка кузова защитной пленкой от сколов и царапин</p>
+                        <div class="additional-service__price">от 50 000₽</div>
+                    </div>
+                </div>
+
+                <div class="additional-service">
+                    <div class="additional-service__icon">
+                        <img src="img/chrome-icon-3.png" alt="Окрас дисков">
+                    </div>
+                    <div class="additional-service__content">
+                        <h3 class="additional-service__title">Окрас колесных дисков</h3>
+                        <p class="additional-service__description">Покраска дисков в любой цвет с порошковым или жидким покрытием</p>
+                        <div class="additional-service__price">от 30 000₽</div>
+                    </div>
+                </div>
+
+                <div class="additional-service">
+                    <div class="additional-service__icon">
+                        <img src="img/chrome-icon-4.png" alt="Химчистка">
+                    </div>
+                    <div class="additional-service__content">
+                        <h3 class="additional-service__title">Химчистка салона</h3>
+                        <p class="additional-service__description">Глубокая очистка салона с использованием профессиональной химии</p>
+                        <div class="additional-service__price">от 15 000₽</div>
+                    </div>
+                </div>
+
+                <div class="additional-service">
+                    <div class="additional-service__icon">
+                        <img src="img/chrome-icon-1.png" alt="Керамика">
+                    </div>
+                    <div class="additional-service__content">
+                        <h3 class="additional-service__title">Керамическое покрытие</h3>
+                        <p class="additional-service__description">Нанесение керамического покрытия для защиты ЛКП и блеска</p>
+                        <div class="additional-service__price">от 25 000₽</div>
+                    </div>
+                </div>
+
+                <div class="additional-service">
+                    <div class="additional-service__icon">
+                        <img src="img/chrome-icon-2.png" alt="Полировка">
+                    </div>
+                    <div class="additional-service__content">
+                        <h3 class="additional-service__title">Полировка кузова</h3>
+                        <p class="additional-service__description">Восстановительная полировка для удаления царапин и блеска</p>
+                        <div class="additional-service__price">от 10 000₽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Combined Services Section -->
+    <section class="combined-services">
+        <div class="container">
+            <div class="combined-services__content">
+                <div class="combined-services__left">
+                    <h2 class="combined-services__title">Комплексные решения</h2>
+                    <p class="combined-services__description">
+                        Выберите несколько услуг и получите дополнительную скидку.
+                        Мы выполним все работы в одном месте с гарантией качества.
+                    </p>
+                </div>
+
+                <div class="combined-services__form">
+                    <form class="services__form">
+                        <div class="services__main-label">Выберите основную услугу</div>
+
+                        <div class="services__main-section">
+                            <div class="services__image-block">
+                                <img src="img/carbon.png" alt="Carbon" class="services__bg-image">
+                                <div class="services__main-options">
+                                    <button class="main-option" data-service="carbon" type="button">Карбон</button>
+                                    <button class="main-option" data-service="antichrome" type="button">Антихром с покраской</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="services__additional-label">Добавьте дополнительные услуги</div>
+
+                        <div class="services__additional-section">
+                            <div class="services__additional-options">
+                                <button class="additional-option" data-option="antigravity-film" type="button">Антигравийная пленка</button>
+                                <button class="additional-option" data-option="disk-painting" type="button">Окрас дисков</button>
+                                <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
+                                <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
+                                <button class="additional-option" data-option="polish" type="button">Полировка</button>
+                            </div>
+                        </div>
+
+                        <button class="services__cta" disabled type="submit">Рассчитать стоимость комплекса</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="process-header">
+                <h2 class="process-title">Как мы работаем</h2>
+                <p class="process-description">Прозрачный процесс от первого звонка до сдачи автомобиля</p>
+            </div>
+
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="process-step__number">01</div>
+                    <div class="process-step__content">
+                        <h3 class="process-step__title">Консультация</h3>
+                        <p class="process-step__description">Обсуждаем ваши пожелания, показываем образцы материалов, рассчитываем стоимость</p>
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="process-step__number">02</div>
+                    <div class="process-step__content">
+                        <h3 class="process-step__title">Подготовка</h3>
+                        <p class="process-step__description">Демонтаж необходимых элементов, подготовка поверхностей к работе</p>
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="process-step__number">03</div>
+                    <div class="process-step__content">
+                        <h3 class="process-step__title">Выполнение работ</h3>
+                        <p class="process-step__description">Профессиональное выполнение выбранных услуг с контролем качества</p>
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="process-step__number">04</div>
+                    <div class="process-step__content">
+                        <h3 class="process-step__title">Сдача автомобиля</h3>
+                        <p class="process-step__description">Финальная проверка, уборка, предоставление гарантии и рекомендаций</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="services-faq-section">
+        <div class="container">
+            <div class="services-faq-container">
+                <div class="services-faq-item">
+                    <div class="services-faq-header">
+                        <h3 class="services-faq-title">Можно ли выполнить несколько услуг за один визит?</h3>
+                        <div class="services-faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="services-faq-icon">
+                        </div>
+                    </div>
+                    <div class="services-faq-content">
+                        <p class="services-faq-description">Да, мы можем выполнить комплекс услуг за один визит. Это сэкономит ваше время и позволит получить дополнительную скидку на общую стоимость работ.</p>
+                    </div>
+                </div>
+
+                <div class="services-faq-item">
+                    <div class="services-faq-header">
+                        <h3 class="services-faq-title">Как рассчитывается стоимость комплексных услуг?</h3>
+                        <div class="services-faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="services-faq-icon">
+                        </div>
+                    </div>
+                    <div class="services-faq-content">
+                        <p class="services-faq-description">Стоимость рассчитывается индивидуально с учетом выбранных услуг, модели автомобиля и объема работ. При комплексном заказе предоставляется дополнительная скидка от 5% до 20%.</p>
+                    </div>
+                </div>
+
+                <div class="services-faq-item">
+                    <div class="services-faq-header">
+                        <h3 class="services-faq-title">Какие гарантии вы предоставляете?</h3>
+                        <div class="services-faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="services-faq-icon">
+                        </div>
+                    </div>
+                    <div class="services-faq-content">
+                        <p class="services-faq-description">На все виды работ предоставляется гарантия от 6 месяцев до 2 лет в зависимости от типа услуги. Гарантия распространяется как на материалы, так и на качество выполнения работ.</p>
+                    </div>
+                </div>
+
+                <div class="services-faq-item">
+                    <div class="services-faq-header">
+                        <h3 class="services-faq-title">Можно ли посмотреть образцы материалов?</h3>
+                        <div class="services-faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="services-faq-icon">
+                        </div>
+                    </div>
+                    <div class="services-faq-content">
+                        <p class="services-faq-description">Да, в нашем шоуруме представлены образцы всех материалов: карбоновые пленки различных текстур, цвета покраски для антихрома, материалы для шумоизоляции и защитные пленки.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="img/footer-img.png" alt="Footer image">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <a href="privacy.html" class="footer__privacy">Политика конфиденциальности</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Multi-step Popup Modal (same as index.html) -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут</h2>
+                </div>
+                <button class="popup__close" id="popupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <!-- Step 1: Contact Information -->
+                <div class="popup__step popup__step--active" data-step="1">
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="userName" placeholder="Ваше имя" required>
+                        <div class="popup__error" id="nameError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="tel" class="popup__input" id="userPhone" placeholder="Телефон" required>
+                        <div class="popup__error" id="phoneError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто" required>
+                        <div class="popup__error" id="carError"></div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Main Service Selection -->
+                <div class="popup__step" data-step="2">
+                    <div class="popup__main-services">
+                        <button class="popup__service-btn" data-service="carbon" type="button">
+                            <span class="popup__service-text">Карбон</span>
+                        </button>
+                        <button class="popup__service-btn" data-service="antichrome" type="button">
+                            <span class="popup__service-text">Антихром с покраской</span>
+                        </button>
+                        <button class="popup__service-btn" data-service="shum" type="button">
+                            <span class="popup__service-text">Шумоизоляция</span>
+                        </button>
+                    </div>
+                    <div class="popup__error" id="mainServiceError"></div>
+                </div>
+
+                <!-- Step 3: Additional Services -->
+                <div class="popup__step" data-step="3">
+                    <div class="popup__additional-container">
+                        <div class="popup__additional-services">
+                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
+                                <span class="popup__additional-text">Антигравийная пленка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
+                                <span class="popup__additional-text">Окрас дисков</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="cleaning" type="button">
+                                <span class="popup__additional-text">Химчистка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="ceramic" type="button">
+                                <span class="popup__additional-text">Керамика</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="polish" type="button">
+                                <span class="popup__additional-text">Полировка</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Success Message -->
+                <div class="popup__step" data-step="4">
+                    <div class="popup__success">
+                        <div class="popup__success-content">
+                            <h2 class="popup__success-title">Ваш запрос в работе</h2>
+                            <p class="popup__success-description">Перезвоним в течение 15 минут</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
+                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить заявку</button>
+                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discount Popup Modal -->
+    <div class="popup-overlay" id="discountPopupOverlay">
+        <div class="popup popup--discount">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="discountTitle">Ваша персональная скидка</h2>
+                    <p class="popup__discount-description">Заполните форму и закрепите скидку</p>
+                </div>
+                <button class="popup__close" id="discountPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <div class="popup__form-section">
+                    <div class="popup__form">
+                        <div class="popup__form-group">
+                            <input type="text" class="popup__input" id="discountUserName" placeholder="Ваше имя" required>
+                            <div class="popup__error" id="discountNameError"></div>
+                        </div>
+                        <div class="popup__form-group">
+                            <input type="tel" class="popup__input" id="discountUserPhone" placeholder="Телефон" required>
+                            <div class="popup__error" id="discountPhoneError"></div>
+                        </div>
+                        <div class="popup__form-group">
+                            <input type="text" class="popup__input" id="discountCarModel" placeholder="Марка и модель авто" required>
+                            <div class="popup__error" id="discountCarError"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--submit" id="discountSubmitBtn">Отправить заявку</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup Modal -->
+    <div class="popup-overlay popup-overlay--success" id="successPopupOverlay">
+        <div class="popup popup--success">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="successTitle">Ваш запрос в работе</h2>
+                    <p class="popup__success-description">Перезвоним в течение 15 минут</p>
+                </div>
+                <button class="popup__close" id="successPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--success" id="discountSuccessBtn">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
