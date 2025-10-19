@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountSection = document.getElementById('discountSection');
     const discountPercent = document.getElementById('discountPercent');
 
+    // Check if popup elements exist before adding event listeners
+    if (!popupOverlay || !popupClose || !continueBtn || !submitBtn || !successBtn) {
+        return; // Popup elements not found on this page, exit silently
+    }
+
     // State variables
     let currentStep = 1;
     let selectedMainService = '';

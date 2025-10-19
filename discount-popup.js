@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const discountUserPhone = document.getElementById('discountUserPhone');
     const discountCarModel = document.getElementById('discountCarModel');
 
+    // Check if discount popup elements exist before adding event listeners
+    if (!discountPopupOverlay || !discountPopupClose || !discountSubmitBtn ||
+        !discountUserName || !discountUserPhone || !discountCarModel) {
+        return; // Discount popup elements not found on this page, exit silently
+    }
+
     // Discount display elements
     const discountTitle = document.getElementById('discountTitle');
 

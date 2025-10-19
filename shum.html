@@ -18,6 +18,56 @@
     <script src="shum-form.js" defer></script>
     <script src="shum-results.js" defer></script>
     <script src="process-steps.js" defer></script>
+    <script>
+        // FAQ Accordion functionality for shum page
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-section .faq-item');
+            if (faqItems.length > 0) {
+                faqItems.forEach(item => {
+                    const header = item.querySelector('.faq-header');
+                    const content = item.querySelector('.faq-content');
+
+                    if (header) {
+                        header.addEventListener('click', function() {
+                            const isActive = item.classList.contains('active');
+
+                            // Close all FAQ items
+                            faqItems.forEach(otherItem => {
+                                if (otherItem !== item) {
+                                    otherItem.classList.remove('active');
+                                    const otherContent = otherItem.querySelector('.faq-content');
+                                    if (otherContent) {
+                                        otherContent.classList.remove('active');
+                                    }
+                                }
+                            });
+
+                            // Toggle current item
+                            if (isActive) {
+                                item.classList.remove('active');
+                                if (content) {
+                                    content.classList.remove('active');
+                                }
+                            } else {
+                                item.classList.add('active');
+                                if (content) {
+                                    content.classList.add('active');
+
+                                    // Smooth scroll to expanded item
+                                    setTimeout(() => {
+                                        item.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'center'
+                                        });
+                                    }, 200);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Burger Menu Overlay -->
@@ -360,6 +410,85 @@
                                 <div class="process-step__details-item">Гарантия на проделанную работу</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Как долго длится процедура шумоизоляции автомобиля?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Время процедуры зависит от выбранных зон шумоизоляции. Полная шумоизоляция автомобиля занимает обычно 2-3 дня, частичная обработка ключевых зон может быть выполнена за 1 день. Мы всегда согласовываем точные сроки заранее.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Безопасны ли материалы, останется ли запах в салоне?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Мы используем сертифицированные, экологичные материалы — они полностью безопасны и не оставляют запаха в салоне. Материалы COMFORTMAT соответствуют всем стандартам качества и безопасности.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Сохраняется ли заводская гарантия на автомобиль?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Шумоизоляция не влияет на заводскую гарантию автомобиля, поскольку мы не затрагиваем основные узлы и агрегаты. Мы работаем только с элементами интерьера и кузовными панелями, не нарушая целостность основных систем.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Останутся ли следы разборки или вмешательства?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">После шумоизоляции не остается никаких видимых следов вмешательства. Мы выполняем разборку и сборку максимально аккуратно, все элементы интерьера возвращаются на свои места без повреждений. Автомобиль выглядит как новый.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Даете ли вы подменный автомобиль на время работ?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Да, мы предоставляем подменный автомобиль на время проведения работ по шумоизоляции. Это позволяет нашим клиентам не менять свои планы и оставаться мобильными во время обслуживания их основного автомобиля.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Есть ли гарантия на результаты работ?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="img/plus.svg" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Мы предоставляем гарантию на все выполненные работы по шумоизоляции. Гарантийный срок составляет 2 года с момента сдачи автомобиля. В течение этого периода мы устраняем любые возможные дефекты за свой счет.</p>
                     </div>
                 </div>
             </div>
