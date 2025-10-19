@@ -1390,6 +1390,343 @@
     left: 100%;
 }
 
+/* Process Steps Section */
+.process-steps-section {
+    padding: 150px 0 200px;
+    background-color: #ffffff;
+}
+
+.process-steps {
+    max-width: 1420px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.process-steps__content {
+    text-align: left;
+}
+
+.process-steps__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin-bottom: 80px;
+    max-width: 800px;
+}
+
+.process-steps__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: start;
+    position: relative;
+}
+
+.process-step {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.process-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.process-step__number {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 100%;
+    color: #1458E4;
+    margin-bottom: 20px;
+    background-color: rgba(20, 88, 228, 0.1);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.process-step__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 120%;
+    color: #000000;
+    margin: 0;
+}
+
+.process-step--with-details {
+    background-color: #1458E4;
+    border-color: #1458E4;
+}
+
+.process-step--with-details .process-step__number {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.process-step--with-details .process-step__title {
+    color: #ffffff;
+}
+
+.process-step-details {
+    background-color: #0B0D10;
+    border-radius: 10px;
+    padding: 40px;
+    color: #ffffff;
+    position: relative;
+}
+
+.process-step-details__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 120%;
+    color: #ffffff;
+    margin-bottom: 30px;
+}
+
+.process-step-details__list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.process-step-details__item {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 140%;
+    color: rgba(255, 255, 255, 0.9);
+    padding-left: 20px;
+    position: relative;
+}
+
+.process-step-details__item::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #1458E4;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Hover Effects for Process Steps */
+.process-step-hover-details {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #0B0D10;
+    border-radius: 10px;
+    padding: 30px;
+    margin-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.process-step:hover .process-step-hover-details {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.process-step-hover-details__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.process-step-hover-details__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.process-step-hover-details__item {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    padding-left: 15px;
+    position: relative;
+}
+
+.process-step-hover-details__item::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #1458E4;
+    font-size: 16px;
+}
+
+/* Анимации для блока этапов */
+@keyframes processStepsSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.process-steps-section {
+    animation: processStepsSlideIn 0.8s ease-out;
+}
+
+/* Responsive Design для блока этапов */
+@media (max-width: 1199px) {
+    .process-steps__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .process-steps__title {
+        font-size: 48px;
+        margin-bottom: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .process-steps-section {
+        padding: 80px 0 100px;
+    }
+
+    .process-steps__grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .process-steps__title {
+        font-size: 42px;
+        margin-bottom: 50px;
+        text-align: center;
+    }
+
+    .process-step {
+        padding: 30px 25px;
+        min-height: 160px;
+    }
+
+    .process-step-details {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .process-steps-section {
+        padding: 60px 0 80px;
+    }
+
+    .process-steps__title {
+        font-size: 36px;
+        margin-bottom: 40px;
+    }
+
+    .process-steps__grid {
+        gap: 15px;
+    }
+
+    .process-step {
+        padding: 25px 20px;
+        min-height: 140px;
+    }
+
+    .process-step__number {
+        font-size: 28px;
+        width: 50px;
+        height: 50px;
+        margin-bottom: 15px;
+    }
+
+    .process-step__title {
+        font-size: 16px;
+    }
+
+    .process-step-details {
+        padding: 25px;
+    }
+
+    .process-step-details__title {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .process-step-details__item {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .process-steps-section {
+        padding: 40px 0 60px;
+    }
+
+    .process-steps__title {
+        font-size: 28px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .process-steps__grid {
+        gap: 12px;
+    }
+
+    .process-step {
+        padding: 20px 15px;
+        min-height: 120px;
+    }
+
+    .process-step__number {
+        font-size: 24px;
+        width: 45px;
+        height: 45px;
+        margin-bottom: 12px;
+    }
+
+    .process-step__title {
+        font-size: 14px;
+    }
+
+    .process-step-details {
+        padding: 20px;
+    }
+
+    .process-step-details__title {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .process-step-details__item {
+        font-size: 14px;
+    }
+}
+
 /* Shum Results Section - Адаптировано из антихрома */
 .shum-results-section {
     padding-top: 200px;
