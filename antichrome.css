@@ -24,6 +24,7 @@
     border-radius: 10px;
     overflow: hidden;
     max-width: 680px;
+    height: auto;
 }
 
 
@@ -96,14 +97,15 @@
 .antichrome-hero__right {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 }
 
 .antichrome-hero__image {
     width: 100%;
     max-width: 680px;
-    height: 100%;
+    height: auto;
+    min-width: 550px;
     min-height: 500px;
     border-radius: 10px;
     overflow: hidden;
@@ -168,16 +170,14 @@
 
 
 
-
-
 @media (max-width: 992px) {
     .antichrome-hero {
-        padding: 100px 0 80px;
+        padding: 0px
     }
 
     .antichrome-hero__content {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 20px;
         min-height: auto;
     }
@@ -192,6 +192,7 @@
     }
 
     .antichrome-hero__image {
+        min-width: 250px;
         min-height: 400px;
     }
 
@@ -1601,6 +1602,7 @@
     }
 }
 
+
 @media (max-width: 768px) {
     .statistics-section {
         padding: 60px 0;
@@ -2579,15 +2581,6 @@
         border-radius: 3px;
     }
 
-    .portfolio-result__nav-btn {
-        width: 36px;
-        height: 36px;
-    }
-
-    .portfolio-result__nav-btn img {
-        width: 12px;
-        height: 12px;
-    }
 }
 
 /* FAQ Section */
@@ -2847,5 +2840,109 @@
     .faq-description {
         font-size: 14px;
         line-height: 1.4;
+    }
+}
+
+@media (max-width: 992px) {
+    .brands-section{
+        padding-top: 100px;
+    }
+    
+    .anti-section{
+        padding-top: 100px;
+    }
+    .statistics-section{
+        padding-top: 100px;
+    }
+    .antichrome-form-section{
+        padding-top: 100px;
+    }
+    .paint-film-section{
+        padding-top: 100px;
+        padding-bottom: 0px;
+    }
+    .quote-section{
+        padding-top: 100px;
+    }
+    .portfolio-result-section{
+        padding-top: 100px;
+        padding-bottom: 0px;
+    }
+    .faq-section{
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .antichrome-hero{
+        padding-bottom: 0px;
+    }
+    .antichrome-hero__left{
+        width: 100%;
+    }
+    .brands-section{
+        padding-top: 100px;
+    }
+
+    .brands-section__title{
+        font-size: 28px;
+        max-width: 400px;
+    }
+    .brands-section__title{
+        margin-bottom: 50px;
+    }
+    .anti-section{
+        padding-top: 100px;
+    }
+    .statistics-section{
+        padding-top: 100px;
+    }
+    .antichrome-form-section{
+        padding-top: 100px;
+        padding-bottom: 0px;
+    }
+    .paint-film-section{
+        padding-top: 100px;
+        padding-bottom: 0px;
+    }
+    .quote-section{
+        padding-top: 100px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .quote__text{
+        font-size: 22px;
+    }
+    .portfolio-result-section{
+        padding-top: 100px;
+        padding-bottom: 0px;
+    }
+    .portfolio-result__title{
+        font-size: 28px;
+        max-width: 400px;
+    }
+    .faq-section{
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+}
+
+
+@media (max-width: 468px) {
+    .brands-section__title{
+        font-size: 24px;
+    }
+    .quote__text{
+        font-size: 18px;
+    }
+    .quote__author{
+        font-size: 16px;
+    }
+    .portfolio-result__title{
+        font-size: 24px;
+    }
+    .paint-film__title{
+        font-size: 24px;
     }
 }
