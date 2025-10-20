@@ -519,6 +519,32 @@ body {
     color: white;
 }
 
+/* Page Tabs Responsive */
+@media (max-width: 500px) {
+    .page-tabs .tabs{
+        padding: 10px;
+    }
+    .page-tabs .tabs__wrapper{
+        gap: 10px;
+    }
+    .page-tabs .tabs__item{
+        padding: 15px 20px;
+    }
+}
+
+@media (max-width: 390px) {
+    .page-tabs .tabs{
+        padding: 10px;
+    }
+    .page-tabs .tabs__wrapper{
+        gap: 8px;
+    }
+    .page-tabs .tabs__item{
+        font-size: 15px;
+        padding: 15px;
+    }
+}
+
 /* Features Section */
 .features {
     padding: 150px 0 100px;
