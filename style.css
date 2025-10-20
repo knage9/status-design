@@ -4586,3 +4586,71 @@ body {
         font-size: 16px;
     }
 }
+
+/* Back to Top Button in Footer */
+.footer__back-to-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0 40px 0;
+    background-color: #0B0D10;
+}
+
+.footer__back-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    padding: 15px 25px;
+    border-radius: 1000px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    text-decoration: none;
+}
+
+.footer__back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+
+.footer__back-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.footer__back-btn:hover svg {
+    transform: translateY(-2px);
+}
+
+/* Back to Top Button in Footer Responsive */
+@media (max-width: 768px) {
+    .footer__back-to-top {
+        padding: 15px 0 30px 0;
+    }
+
+    .footer__back-btn {
+        font-size: 15px;
+        padding: 12px 20px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer__back-to-top {
+        padding: 12px 0 25px 0;
+    }
+
+    .footer__back-btn {
+        font-size: 14px;
+        padding: 10px 18px;
+        gap: 6px;
+    }
+}
