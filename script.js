@@ -241,6 +241,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize reviews
     updateReviews();
+
+    // Services form image switching functionality
+    const servicesImageBlock = document.querySelector('.services__image-block');
+    const servicesBgImage = document.querySelector('.services__bg-image');
+    const mainOptions = document.querySelectorAll('.main-option');
+
+    // Default dark background
+    if (servicesImageBlock) {
+        servicesImageBlock.style.backgroundColor = '#0B0D10';
+    }
+
+    // Handle main service selection
+    if (mainOptions.length > 0) {
+        mainOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const service = this.getAttribute('data-service');
+
+                // Remove active class from all options
+                mainOptions.forEach(opt => opt.classList.remove('main-option--active'));
+
+                // Add active class to clicked option
+                this.classList.add('main-option--active');
+
+                // Change image based on selected service
+                if (servicesBgImage) {
+                    if (service === 'carbon') {
+                        servicesBgImage.src = 'img/carbon.png';
+                        servicesBgImage.alt = 'Carbon service';
+                    } else if (service === 'antichrome') {
+                        servicesBgImage.src = 'img/antichrome.png';
+                        servicesBgImage.alt = 'Antichrome service';
+                    }
+                }
+
+                // Update background color based on selection
+                if (servicesImageBlock) {
+                    if (service === 'carbon') {
+                        servicesImageBlock.style.backgroundColor = '#0B0D10'; // Dark background for carbon
+                    } else if (service === 'antichrome') {
+                        servicesImageBlock.style.backgroundColor = '#1a1a1a'; // Slightly different dark for antichrome
+                    }
+                }
+            });
+        });
+    }
 });
 
 // Popup будет подключаться отдельно для главной страницы
