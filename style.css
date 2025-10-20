@@ -161,7 +161,7 @@ body {
 /* Header */
 .header {
     position: fixed;
-    top: 40px;
+    top: 20px;
     left: 0;
     right: 0;
     z-index: 1000;
@@ -285,12 +285,12 @@ body {
 
 .hero__background {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
     z-index: -1;
-    border-radius: 5px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -336,7 +336,7 @@ body {
 
 .hero__tabs {
     position: fixed;
-    bottom: 40px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
@@ -678,7 +678,7 @@ body {
 /* Page Tabs Section */
 .page-tabs {
     position: fixed;
-    bottom: 40px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
