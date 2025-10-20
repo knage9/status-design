@@ -1,0 +1,578 @@
+
+
+/* Carbon Technology Section */
+.carbon-tech-section {
+    padding: 100px 0;
+    background-color: #ffffff;
+}
+
+.carbon-tech__title {
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.carbon-tech__content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+.carbon-tech__item {
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(20, 88, 228, 0.02) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(20, 88, 228, 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+}
+
+.carbon-tech__item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+        rgba(20, 88, 228, 0.05) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(20, 88, 228, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+.carbon-tech__item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(20, 88, 228, 0.15);
+    border-color: rgba(20, 88, 228, 0.3);
+}
+
+.carbon-tech__item:hover::before {
+    opacity: 1;
+}
+
+.carbon-tech__icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    background: linear-gradient(135deg, #1458E4 0%, #0f47bd 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.carbon-tech__item:hover .carbon-tech__icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 10px 30px rgba(20, 88, 228, 0.4);
+}
+
+.carbon-tech__icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.carbon-tech__title-card {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 120%;
+    color: #000000;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.carbon-tech__item:hover .carbon-tech__title-card {
+    color: #1458E4;
+    transform: translateY(-2px);
+}
+
+.carbon-tech__description {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 140%;
+    color: #6B7C93;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.carbon-tech__item:hover .carbon-tech__description {
+    color: #1458E4;
+    transform: translateY(-2px);
+}
+
+/* Carbon Textures Section */
+.carbon-textures-section {
+    padding: 100px 0;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.carbon-textures__title {
+    font-size: 54px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.carbon-textures__subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 140%;
+    color: #6B7C93;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.carbon-textures__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-bottom: 50px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carbon-texture {
+    text-align: center;
+    padding: 40px 30px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.carbon-texture:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-color: rgba(20, 88, 228, 0.2);
+}
+
+.carbon-texture__preview {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 25px;
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.carbon-texture:hover .carbon-texture__preview {
+    transform: scale(1.02);
+}
+
+/* Carbon texture backgrounds - realistic carbon fiber patterns */
+.carbon-texture__preview--classic {
+    background:
+        linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%),
+        linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 25%, #1a1a1a 50%, #2a2a2a 75%, #1a1a1a 100%);
+    background-size: 100% 8px, 8px 100%;
+    position: relative;
+}
+
+.carbon-texture__preview--classic::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255,255,255,0.03) 2px,
+            rgba(255,255,255,0.03) 4px
+        );
+    background-size: 8px 8px;
+}
+
+.carbon-texture__preview--forged {
+    background:
+        radial-gradient(ellipse at 20% 30%, #2a2a2a 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 70%, #2a2a2a 0%, transparent 40%),
+        radial-gradient(ellipse at 60% 80%, #1a1a1a 0%, transparent 30%),
+        radial-gradient(ellipse at 30% 20%, #2a2a2a 0%, transparent 35%),
+        linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+.carbon-texture__preview--holographic {
+    background:
+        linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%),
+        linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 25%, #1a1a1a 50%, #2a2a2a 75%, #1a1a1a 100%);
+    background-size: 100% 6px, 6px 100%;
+    position: relative;
+}
+
+.carbon-texture__preview--holographic::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(
+            30deg,
+            transparent,
+            transparent 1px,
+            rgba(20, 88, 228, 0.1) 1px,
+            rgba(20, 88, 228, 0.1) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+    background-size: 6px 6px;
+}
+
+.carbon-texture__preview--metallic {
+    background:
+        linear-gradient(0deg, #1a1a1a 0%, #3a3a3a 50%, #1a1a1a 100%),
+        linear-gradient(90deg, #1a1a1a 0%, #3a3a3a 25%, #1a1a1a 50%, #3a3a3a 75%, #1a1a1a 100%);
+    background-size: 100% 8px, 8px 100%;
+    position: relative;
+}
+
+.carbon-texture__preview--metallic::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255,255,255,0.08) 2px,
+            rgba(255,255,255,0.08) 4px
+        );
+    background-size: 8px 8px;
+}
+
+.carbon-texture__preview--matte {
+    background:
+        linear-gradient(0deg, #1a1a1a 0%, #252525 50%, #1a1a1a 100%),
+        linear-gradient(90deg, #1a1a1a 0%, #252525 25%, #1a1a1a 50%, #252525 75%, #1a1a1a 100%);
+    background-size: 100% 10px, 10px 100%;
+    position: relative;
+}
+
+.carbon-texture__preview--matte::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 3px,
+            rgba(0,0,0,0.1) 3px,
+            rgba(0,0,0,0.1) 6px
+        );
+    background-size: 10px 10px;
+}
+
+.carbon-texture__preview--colored {
+    background:
+        linear-gradient(0deg, #1a1a1a 0%, #1458E4 30%, #1a1a1a 60%, #1458E4 100%),
+        linear-gradient(90deg, #1a1a1a 0%, #1458E4 25%, #1a1a1a 50%, #1458E4 75%, #1a1a1a 100%);
+    background-size: 100% 8px, 8px 100%;
+    position: relative;
+}
+
+.carbon-texture__preview--colored::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(20, 88, 228, 0.15) 2px,
+            rgba(20, 88, 228, 0.15) 4px
+        );
+    background-size: 8px 8px;
+}
+
+.carbon-texture__name {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 120%;
+    color: #000000;
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+.carbon-texture:hover .carbon-texture__name {
+    color: #1458E4;
+}
+
+.carbon-texture__description {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 140%;
+    color: #6B7C93;
+    transition: color 0.3s ease;
+}
+
+.carbon-texture:hover .carbon-texture__description {
+    color: #1458E4;
+}
+
+.carbon-textures__cta {
+    text-align: center;
+}
+
+.carbon-textures__cta-text {
+    font-size: 18px;
+    font-weight: 400;
+    color: #6B7C93;
+    margin-bottom: 25px;
+}
+
+.carbon-textures__cta .btn-primary {
+    background-color: #1458E4;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 20px 50px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.carbon-textures__cta .btn-primary:hover {
+    background-color: #0f47bd;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(20, 88, 228, 0.3);
+}
+
+/* Carbon Tech Section Responsive */
+@media (max-width: 1199px) {
+    .carbon-tech__content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .carbon-tech__title {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 768px) {
+    .carbon-tech-section {
+        padding: 60px 0;
+    }
+
+    .carbon-tech__title {
+        font-size: 32px;
+        margin-bottom: 40px;
+    }
+
+    .carbon-tech__content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .carbon-tech__item {
+        padding: 25px 20px;
+    }
+
+    .carbon-tech__icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 20px;
+    }
+
+    .carbon-tech__icon img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .carbon-tech__title-card {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .carbon-tech__description {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carbon-tech-section {
+        padding: 40px 0;
+    }
+
+    .carbon-tech__title {
+        font-size: 26px;
+        margin-bottom: 30px;
+    }
+
+    .carbon-tech__item {
+        padding: 20px 15px;
+    }
+
+    .carbon-tech__icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 15px;
+    }
+
+    .carbon-tech__icon img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .carbon-tech__title-card {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .carbon-tech__description {
+        font-size: 14px;
+    }
+}
+
+/* Carbon Textures Section Responsive */
+@media (max-width: 1199px) {
+    .carbon-textures__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+
+    .carbon-textures__title {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 768px) {
+    .carbon-textures-section {
+        padding: 60px 0;
+    }
+
+    .carbon-textures__title {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+
+    .carbon-textures__subtitle {
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .carbon-textures__grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .carbon-texture {
+        padding: 25px 20px;
+    }
+
+    .carbon-texture__preview {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+
+    .carbon-texture__name {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    .carbon-texture__description {
+        font-size: 15px;
+    }
+
+    .carbon-textures__cta-text {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .carbon-textures__cta .btn-primary {
+        font-size: 16px;
+        padding: 18px 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carbon-textures-section {
+        padding: 40px 0;
+    }
+
+    .carbon-textures__title {
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+
+    .carbon-textures__subtitle {
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .carbon-textures__grid {
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .carbon-texture {
+        padding: 20px 15px;
+    }
+
+    .carbon-texture__preview {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+    }
+
+    .carbon-texture__name {
+        font-size: 18px;
+        margin-bottom: 6px;
+    }
+
+    .carbon-texture__description {
+        font-size: 14px;
+    }
+
+    .carbon-textures__cta-text {
+        font-size: 15px;
+        margin-bottom: 18px;
+    }
+
+    .carbon-textures__cta .btn-primary {
+        font-size: 14px;
+        padding: 16px 30px;
+    }
+}
