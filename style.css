@@ -348,6 +348,8 @@ body {
     border: 1px solid rgba(33, 33, 33, 0.2);
     border-radius: 1000px;
     backdrop-filter: blur(10px);
+    outline: none;
+    box-shadow: none;
 }
 
 .tabs__wrapper {
@@ -412,6 +414,215 @@ body {
 .tabs__item:hover{
     background-color: rgb(20, 88, 228, 0.3);
     color: white;
+}
+
+/* Tabs Scroll Animation - Enhanced */
+.tabs--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: blur(0px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 1000px;
+}
+
+.tabs--hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(150%) scale(0.9);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: blur(2px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    pointer-events: none; /* Отключаем взаимодействие со скрытыми табами */
+}
+
+/* Enhanced animations for different tab types */
+.hero__tabs.tabs--visible {
+    animation: heroTabsAppear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.hero__tabs.tabs--hidden {
+    animation: heroTabsDisappear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.page-tabs.tabs--visible {
+    animation: pageTabsAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.page-tabs.tabs--hidden {
+    animation: pageTabsDisappear 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.bottom-tabs.tabs--visible {
+    animation: bottomTabsAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.bottom-tabs.tabs--hidden {
+    animation: bottomTabsDisappear 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Keyframes for enhanced tab animations */
+@keyframes heroTabsAppear {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(200%) scale(0.8);
+        filter: blur(4px);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translateX(-50%) translateY(-20%) scale(1.05);
+        filter: blur(1px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+        filter: blur(0px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+}
+
+@keyframes heroTabsDisappear {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+        filter: blur(0px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: translateX(-50%) translateY(50%) scale(0.95);
+        filter: blur(1px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(150%) scale(0.9);
+        filter: blur(2px);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+@keyframes pageTabsAppear {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100%) scale(0.85);
+        filter: blur(3px);
+    }
+    60% {
+        opacity: 0.8;
+        transform: translateX(-50%) translateY(-10%) scale(1.02);
+        filter: blur(0.5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+
+@keyframes pageTabsDisappear {
+    0% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(80%) scale(0.95);
+        filter: blur(1px);
+    }
+}
+
+@keyframes bottomTabsAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        filter: blur(2px);
+    }
+    70% {
+        opacity: 0.9;
+        transform: translateY(-5px) scale(1.02);
+        filter: blur(0.3px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+
+@keyframes bottomTabsDisappear {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+        filter: blur(1px);
+    }
+}
+
+/* Enhanced tab items animation */
+.tabs__item {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tabs__item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent);
+    transition: left 0.6s ease;
+}
+
+.tabs--visible .tabs__item {
+    animation: tabItemGlow 2s ease-in-out infinite;
+    animation-delay: calc(var(--item-index, 0) * 0.2s);
+}
+
+@keyframes tabItemGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(20, 88, 228, 0);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(20, 88, 228, 0.3);
+    }
+}
+
+/* Responsive adjustments for tab animations */
+@media (max-width: 768px) {
+    .tabs--hidden {
+        transform: translateX(-50%) translateY(120%) scale(0.9);
+    }
+
+    .hero__tabs.tabs--hidden {
+        transform: translateX(-50%) translateY(120%) scale(0.85);
+    }
+
+    .page-tabs.tabs--hidden {
+        transform: translateX(-50%) translateY(100%) scale(0.9);
+    }
+}
+
+@media (max-width: 480px) {
+    .tabs--hidden {
+        transform: translateX(-50%) translateY(100%) scale(0.85);
+    }
+
+    .hero__tabs.tabs--hidden {
+        transform: translateX(-50%) translateY(100%) scale(0.8);
+    }
 }
 
 /* Bottom Tabs Section */

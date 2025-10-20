@@ -155,6 +155,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Tabs scroll behavior for all pages
+    const initTabsScrollBehavior = () => {
+        // Находим все типы табов на странице
+        const heroTabs = document.querySelector('.hero__tabs');
+        const pageTabs = document.querySelector('.page-tabs');
+        const bottomTabs = document.querySelector('.bottom-tabs');
+
+        const allTabs = [];
+        if (heroTabs) allTabs.push(heroTabs);
+        if (pageTabs) allTabs.push(pageTabs);
+        if (bottomTabs) allTabs.push(bottomTabs);
+
+        if (allTabs.length === 0) return;
+
+        let lastScrollY = window.scrollY;
+        let isScrollingDown = false;
+        let scrollTimeout;
+
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            const scrollDifference = currentScrollY - lastScrollY;
+
+            // Определяем направление скролла
+            if (scrollDifference > 3) {
+                isScrollingDown = true;
+            } else if (scrollDifference < -3) {
+                isScrollingDown = false;
+            }
+
+            // Очищаем предыдущий таймаут
+            clearTimeout(scrollTimeout);
+
+            // Устанавливаем новый таймаут для применения изменений
+            scrollTimeout = setTimeout(() => {
+                if (isScrollingDown && currentScrollY > 80) {
+                    // Скрываем все табы при скролле вниз
+                    allTabs.forEach(tabs => {
+                        tabs.classList.add('tabs--hidden');
+                        tabs.classList.remove('tabs--visible');
+                    });
+                } else {
+                    // Показываем все табы при скролле вверх
+                    allTabs.forEach(tabs => {
+                        tabs.classList.add('tabs--visible');
+                        tabs.classList.remove('tabs--hidden');
+                    });
+                }
+            }, 30); // Уменьшенная задержка для более отзывчивого поведения
+
+            lastScrollY = currentScrollY;
+        };
+
+        // Добавляем обработчик скролла
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Инициализируем состояние (табы видимы при загрузке)
+        allTabs.forEach(tabs => {
+            tabs.classList.add('tabs--visible');
+        });
+    };
+
     // Initialize all animations
     animateOnScroll();
     addAutoShimmer();
@@ -162,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
     animateFeatureCards();
     animateAboutSection();
     initContactParallax();
+    initTabsScrollBehavior();
 
     // Re-run animations on dynamic content changes
     const observer = new MutationObserver(() => {
@@ -169,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
         addAutoShimmer();
         enhanceImages();
         animateFeatureCards();
+        initTabsScrollBehavior();
     });
 
     observer.observe(document.body, {
