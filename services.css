@@ -2,7 +2,7 @@
 
 /* Services Hero Section */
 .services-hero {
-    padding: 150px 0 100px;
+    padding: 200px 0px 0px;
     background-color: #ffffff;
 }
 
@@ -10,7 +10,7 @@
     max-width: 1420px;
     margin: 0 auto;
     padding: 0 20px;
-    text-align: center;
+    text-align: left;
 }
 
 .services-hero__title {
@@ -19,7 +19,7 @@
     line-height: 100%;
     letter-spacing: -0.05em;
     color: #000000;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .services-hero__description {
@@ -28,7 +28,7 @@
     line-height: 125%;
     color: #A9B0B8;
     max-width: 800px;
-    margin: 0 auto;
+
 }
 
 /* Main Services Section */
@@ -186,8 +186,8 @@
 }
 
 .section-header {
-    text-align: center;
-    margin-bottom: 60px;
+    text-align: left;
+    margin-bottom: 50px;
     max-width: 1420px;
     margin-left: auto;
     margin-right: auto;
@@ -209,7 +209,6 @@
     line-height: 125%;
     color: #A9B0B8;
     max-width: 600px;
-    margin: 0 auto;
 }
 
 .additional-services-grid {
@@ -460,7 +459,8 @@
 .services-faq-item {
     width: 100%;
     max-width: 940px;
-    background-color: rgba(134, 134, 134, 0.2);
+    background-color: rgba(134, 134, 134, 0.1);
+    border: 1px solid rgba(134, 134, 134, 0.1);
     border-radius: 10px;
     backdrop-filter: blur(10px);
     overflow: hidden;
@@ -520,7 +520,8 @@
     font-size: 18px;
     font-weight: 400;
     line-height: 1.4;
-    color: #A9B0B8;
+    color: #0B0D10;
+    max-width: 700px;
     margin: 0;
     opacity: 0;
     transform: translateY(-10px);
@@ -577,9 +578,6 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .services-hero {
-        padding: 80px 0 60px;
-    }
 
     .services-hero__title {
         font-size: 42px;
@@ -727,9 +725,6 @@
 }
 
 @media (max-width: 480px) {
-    .services-hero {
-        padding: 60px 0 40px;
-    }
 
     .services-hero__title {
         font-size: 32px;
@@ -874,305 +869,3 @@
     }
 }
 
-/* Additional Mobile Responsive for Services Page */
-@media (max-width: 768px) {
-    .services-hero {
-        padding: 80px 0 60px;
-    }
-
-    .services-hero__title {
-        font-size: 42px;
-        margin-bottom: 20px;
-    }
-
-    .services-hero__description {
-        font-size: 18px;
-    }
-
-    .main-services-section {
-        padding: 60px 0;
-    }
-
-    .services-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 0 20px;
-    }
-
-    .service-card {
-        padding: 25px 20px;
-    }
-
-    .service-card__title {
-        font-size: 22px;
-    }
-
-    .service-card__description {
-        font-size: 15px;
-    }
-
-    .additional-services-section {
-        padding: 60px 0;
-    }
-
-    .section-title {
-        font-size: 32px;
-        margin-bottom: 15px;
-    }
-
-    .section-description {
-        font-size: 16px;
-    }
-
-    .additional-services-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        padding: 0 20px;
-    }
-
-    .additional-service {
-        padding: 25px 15px;
-    }
-
-    .additional-service__title {
-        font-size: 16px;
-    }
-
-    .additional-service__description {
-        font-size: 13px;
-    }
-
-    .combined-services {
-        padding: 60px 0;
-    }
-
-    .combined-services__title {
-        font-size: 32px;
-    }
-
-    .combined-services__description {
-        font-size: 16px;
-    }
-
-    .process-section {
-        padding: 60px 0;
-    }
-
-    .process-header {
-        margin-bottom: 50px;
-    }
-
-    .process-title {
-        font-size: 32px;
-        margin-bottom: 15px;
-    }
-
-    .process-description {
-        font-size: 16px;
-    }
-
-    .process-steps {
-        flex-direction: column;
-        gap: 30px;
-        padding: 0 20px;
-    }
-
-    .process-step {
-        max-width: 100%;
-        gap: 15px;
-    }
-
-    .process-step__number {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-    }
-
-    .process-step__title {
-        font-size: 18px;
-    }
-
-    .process-step__description {
-        font-size: 15px;
-    }
-
-    /* FAQ Mobile */
-    .services-faq-section {
-        padding: 60px 0;
-    }
-
-    .services-faq-header {
-        padding: 20px;
-    }
-
-    .services-faq-title {
-        font-size: 18px;
-    }
-
-    .services-faq-icon-wrapper {
-        width: 40px;
-        height: 40px;
-    }
-
-    .services-faq-icon {
-        width: 16px;
-        height: 16px;
-    }
-
-    .services-faq-content.active {
-        max-height: 250px;
-        padding: 0 20px 20px 20px;
-    }
-
-    .services-faq-description {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .services-hero {
-        padding: 60px 0 40px;
-    }
-
-    .services-hero__title {
-        font-size: 32px;
-        margin-bottom: 15px;
-    }
-
-    .services-hero__description {
-        font-size: 16px;
-    }
-
-    .services-grid {
-        padding: 0 15px;
-    }
-
-    .service-card {
-        padding: 20px 15px;
-        gap: 15px;
-    }
-
-    .service-card__title {
-        font-size: 20px;
-    }
-
-    .service-card__description {
-        font-size: 14px;
-    }
-
-    .service-card__features {
-        gap: 15px;
-    }
-
-    .service-feature__label {
-        font-size: 12px;
-        padding: 6px 12px;
-    }
-
-    .service-card__button {
-        font-size: 14px;
-        padding: 12px 24px;
-    }
-
-    .section-title {
-        font-size: 26px;
-    }
-
-    .section-description {
-        font-size: 15px;
-    }
-
-    .additional-services-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 0 15px;
-    }
-
-    .additional-service {
-        padding: 20px 15px;
-    }
-
-    .additional-service__icon {
-        width: 50px;
-        height: 50px;
-        margin-bottom: 15px;
-    }
-
-    .additional-service__icon img {
-        width: 25px;
-        height: 25px;
-    }
-
-    .additional-service__title {
-        font-size: 15px;
-        margin-bottom: 12px;
-    }
-
-    .additional-service__description {
-        font-size: 12px;
-        margin-bottom: 12px;
-    }
-
-    .additional-service__price {
-        font-size: 14px;
-    }
-
-    .combined-services__title {
-        font-size: 26px;
-    }
-
-    .combined-services__description {
-        font-size: 15px;
-    }
-
-    .process-title {
-        font-size: 26px;
-    }
-
-    .process-description {
-        font-size: 15px;
-    }
-
-    .process-step__number {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-    }
-
-    .process-step__title {
-        font-size: 16px;
-    }
-
-    .process-step__description {
-        font-size: 14px;
-    }
-
-    /* FAQ Extra Small Mobile */
-    .services-faq-header {
-        padding: 18px;
-    }
-
-    .services-faq-title {
-        font-size: 16px;
-        line-height: 1.3;
-    }
-
-    .services-faq-icon-wrapper {
-        width: 36px;
-        height: 36px;
-    }
-
-    .services-faq-icon {
-        width: 14px;
-        height: 14px;
-    }
-
-    .services-faq-content.active {
-        max-height: 300px;
-        padding: 0 18px 18px 18px;
-    }
-
-    .services-faq-description {
-        font-size: 15px;
-    }
-}
