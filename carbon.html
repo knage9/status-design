@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карбон - Тюнинг премиум класса в Москве</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="antichrome.css">
+    <script src="header.js" defer></script>
+    <script src="animations.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="popup.js" defer></script>
+    <script src="discount-popup.js" defer></script>
+    <script src="antichrome-form.js" defer></script>
+</head>
+<body>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="img/logo.svg" alt="SD Logo">
+                        </a>
+                    </div>
+                    <nav class="nav">
+                        <a href="portfolio.html" class="nav__link">Портфолио</a>
+                        <a href="reviews.html" class="nav__link">Отзывы</a>
+                        <a href="news.html" class="nav__link">Новости</a>
+                        <a href="contacts.html" class="nav__link">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                        <div class="burger-menu__content">
+                            <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
+                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                            <a href="news.html" class="burger-menu__link">Новости</a>
+                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                            <button class="burger-menu__btn">Оставить заявку</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Carbon Hero Section -->
+    <section class="antichrome-hero">
+        <div class="container">
+            <div class="antichrome-hero__content">
+                <div class="antichrome-hero__left">
+                    <div class="antichrome-hero__background"></div>
+                    <h2 class="antichrome-hero__title">
+                        <span class="antichrome-hero__title-highlight">Карбон</span>
+                        <span class="antichrome-hero__title-text">Спортивный характер и премиальный вид.</span>
+                    </h2>
+                    <p class="antichrome-hero__description">
+                        Мы оклеиваем детали салона и экстерьера карбоновой плёнкой премиум качества. Карбон подчёркивает спортивный характер автомобиля и создаёт неповторимый премиальный образ.
+                    </p>
+                    <button class="antichrome-hero__btn btn-primary">Оставить заявку</button>
+                </div>
+                <div class="antichrome-hero__right">
+                    <div class="antichrome-hero__image">
+                        <img src="img/carbon.png" alt="Карбон тюнинг">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Cards Section -->
+    <section class="statistics-section">
+        <div class="container">
+            <div class="statistics-cards">
+                <div class="stat-card">
+                    <div class="stat-card__number">500+</div>
+                    <div class="stat-card__subtitle">деталей</div>
+                    <div class="stat-card__description">Оклеено карбоном</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">2 года</div>
+                    <div class="stat-card__subtitle">гарантии</div>
+                    <div class="stat-card__description">На все работы</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">15</div>
+                    <div class="stat-card__subtitle">текстур</div>
+                    <div class="stat-card__description">Карбоновой плёнки</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">1 день</div>
+                    <div class="stat-card__subtitle">монтаж</div>
+                    <div class="stat-card__description">Среднее время работы</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carbon Form Section -->
+    <section class="antichrome-form-section">
+        <div class="container">
+            <div class="antichrome-form__content">
+                <!-- Left Side -->
+                <div class="antichrome-form__left">
+                    <h3 class="antichrome-form__title">Хотите узнать цену? Заполните заявку</h3>
+                    <p class="antichrome-form__description">
+                        Оставьте контакт — проконсультируем по цене, покажем образцы карбона и предоставим индивидуальную скидку специально для вас.
+                    </p>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="antichrome-form__right">
+                    <form class="antichrome-form__form">
+                        <!-- Hidden field for service type -->
+                        <input type="hidden" name="mainService" value="carbon">
+
+                        <div class="antichrome-form__additional-services">
+                            <div class="antichrome-form__additional-label">Добавьте дополнительные услуги</div>
+
+                            <!-- Discount Section -->
+                            <div class="antichrome-form__discount" id="carbonDiscountSection" style="display: none;">
+                                <div class="antichrome-form__discount-wrapper">
+                                    <div class="antichrome-form__discount-badge">
+                                        <span class="antichrome-form__discount-percent" id="carbonDiscountPercent">-10%</span>
+                                    </div>
+                                    <div class="antichrome-form__discount-text">
+                                        <span class="antichrome-form__discount-label">Ваша персональная скидка</span>
+                                    </div>
+                                </div>
+                                <div class="antichrome-form__discount-info">
+                                    <span class="antichrome-form__discount-description">Скидка рассчитывается от количества и стоимости выбранных услуг</span>
+                                </div>
+                            </div>
+
+                            <div class="antichrome-form__additional-section">
+                                <div class="antichrome-form__additional-options">
+                                    <button class="additional-option" data-option="antigravity-film" type="button">Оклейка антигравийной пленкой</button>
+                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас колесных дисков</button>
+                                    <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
+                                    <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
+                                    <button class="additional-option" data-option="polish" type="button">Полировка</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="antichrome-form__contact-info">
+                            <div class="antichrome-form__form-group">
+                                <input type="text" class="antichrome-form__input" id="carbonFormName" placeholder="Ваше имя" required>
+                                <div class="antichrome-form__error" id="carbonFormNameError"></div>
+                            </div>
+                            <div class="antichrome-form__form-group">
+                                <input type="tel" class="antichrome-form__input" id="carbonFormPhone" placeholder="Телефон" required>
+                                <div class="antichrome-form__error" id="carbonFormPhoneError"></div>
+                            </div>
+                            <div class="antichrome-form__form-group">
+                                <input type="text" class="antichrome-form__input" id="carbonFormCar" placeholder="Марка и модель авто" required>
+                                <div class="antichrome-form__error" id="carbonFormCarError"></div>
+                            </div>
+                        </div>
+
+                        <button class="antichrome-form__submit" disabled type="submit">Отправить заявку</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="img/footer-img.png" alt="Footer image">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <a href="privacy.html" class="footer__privacy">Политика конфиденциальности</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
