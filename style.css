@@ -464,6 +464,61 @@ body {
     color: white;
 }
 
+/* Page Tabs Section */
+.page-tabs {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background-color: transparent;
+    padding: 0;
+}
+
+.page-tabs .tabs {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(33, 33, 33, 0.2);
+    border-radius: 1000px;
+    backdrop-filter: blur(10px);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.page-tabs .tabs__wrapper {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.page-tabs .tabs__item {
+    background-color: #ffffff;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 120%;
+    letter-spacing: -0.02em;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 1000px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-tabs .tabs__item--active {
+    background-color: #0B0D10;
+    color: white;
+}
+
+.page-tabs .tabs__item:hover{
+    background-color: rgb(20, 88, 228, 0.3);
+    color: white;
+}
+
 /* Features Section */
 .features {
     padding: 150px 0 100px;
