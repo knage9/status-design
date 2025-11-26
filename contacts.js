@@ -1,5 +1,5 @@
 // Contacts Page Functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Form elements
     const contactForm = document.querySelector('.contacts__form');
     const mainOptions = document.querySelectorAll('.main-option');
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Main service selection
     mainOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             // Remove active class from all options
             mainOptions.forEach(opt => opt.classList.remove('main-option--active'));
             // Add active class to clicked option
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Additional services selection
     additionalOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const service = this.dataset.option;
 
             if (selectedAdditionalServices.includes(service)) {
@@ -163,23 +163,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Real-time validation
-    contactName.addEventListener('input', function() {
+    contactName.addEventListener('input', function () {
         validateName();
         updateSubmitButton();
     });
 
-    contactPhone.addEventListener('input', function() {
+    contactPhone.addEventListener('input', function () {
         validatePhone();
         updateSubmitButton();
     });
 
-    contactCar.addEventListener('input', function() {
+    contactCar.addEventListener('input', function () {
         validateCarModel();
         updateSubmitButton();
     });
 
     // Phone number formatting
-    contactPhone.addEventListener('input', function(e) {
+    contactPhone.addEventListener('input', function (e) {
         let value = e.target.value.replace(/\D/g, '');
 
         if (value.length > 11) {
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Form submission
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
         // Validate all fields
@@ -230,19 +230,19 @@ document.addEventListener('DOMContentLoaded', function() {
             timestamp: new Date().toISOString()
         };
 
-        // Simulate API call to CRM
-        setTimeout(() => {
-            console.log('Form data to send to CRM:', formData);
+        console.log('Form data to send to CRM:', formData);
 
+        // Send data to CRM immediately
+        sendToCRM(formData);
+
+        // Show success popup after a short delay
+        setTimeout(() => {
             // Show success popup
             showSuccessPopup();
 
             // Reset loading state
             submitBtn.classList.remove('loading');
             submitBtn.textContent = 'Отправить заявку';
-
-            // You can uncomment this to actually send data to CRM
-            // sendToCRM(formData);
         }, 1500);
     });
 
@@ -302,46 +302,78 @@ document.addEventListener('DOMContentLoaded', function() {
     // Success popup event listeners
     successPopupClose.addEventListener('click', closeSuccessPopup);
     successBtn.addEventListener('click', closeSuccessPopup);
-    successPopup.addEventListener('click', function(e) {
+    successPopup.addEventListener('click', function (e) {
         if (e.target === successPopup) {
             closeSuccessPopup();
         }
     });
 
     // Close popup on Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && successPopup.classList.contains('active')) {
             closeSuccessPopup();
         }
     });
 
-    // Function to send data to CRM (placeholder)
+    // Function to send data to CRM
     function sendToCRM(data) {
-        // This is where you would integrate with your CRM system
-        // For example, using fetch to send data to your backend
+        const webhookUrl = 'https://app.sbercrm.com/react-gateway/api/webhook/9c5fc3c2-1761-43a8-980a-21c18f85476e';
 
-        fetch('/api/submit-contacts-form', {
+        // CRM Dictionary Mappings
+        const mainServiceMap = {
+            'carbon': 'karbon',
+            'antichrome': 'antikhrom'
+        };
+
+        const additionalServiceMap = {
+            'ceramic': 'keramika',
+            'antigravity-film': 'oklejka_antigravijnoj_plenkoj',
+            'disk-painting': 'okras_kolesnykh_diskov',
+            'polish': 'polirovka',
+            'cleaning': 'khimchistka'
+        };
+
+        // Map values
+        const mappedMainService = mainServiceMap[data.mainService] || data.mainService;
+        const mappedAdditionalServices = data.additionalServices.map(service => additionalServiceMap[service] || service);
+
+        // Map data to CRM fields
+        const crmData = {
+            "name": `Заявка от ${data.name}`, // Required field "Заявка"
+            "userName$c": data.name,
+            "userPhone$c": data.phone,
+            "car_model$c": data.carModel,
+            "main_service$c": mappedMainService,
+            "additional_services$c": mappedAdditionalServices.join(','), // Send as String
+            "discount$c": data.discount
+        };
+
+        console.log('Sending contacts form to CRM:', crmData);
+
+        fetch(webhookUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(crmData)
         })
-        .then(response => response.json())
-        .then(result => {
-            console.log('CRM response:', result);
-            showSuccessPopup();
-        })
-        .catch(error => {
-            console.error('CRM error:', error);
-            // Show error message or retry
-        })
-        .finally(() => {
-            // Reset loading state
-            submitBtn.classList.remove('loading');
-            submitBtn.textContent = 'Отправить заявку';
-            submitBtn.disabled = false;
-        });
+            .then(response => {
+                if (response.ok) {
+                    console.log('CRM request successful');
+                } else {
+                    console.error('CRM request failed', response.statusText);
+                    response.text().then(text => console.error('CRM Error Details:', text));
+                }
+            })
+            .catch(error => {
+                console.error('CRM error:', error);
+            })
+            .finally(() => {
+                // Reset loading state
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = 'Отправить заявку';
+                submitBtn.disabled = false;
+            });
     }
 
     // Initialize form state
