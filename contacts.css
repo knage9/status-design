@@ -179,9 +179,19 @@
 }
 
 /* Discount Section */
+
+.popup__discount-wrapper {
+    background-color: #0B0D10;
+}
+
+.popup__discount-label {
+    color: #ffffff;
+}
+
 .contacts__discount {
     margin-bottom: 20px;
 }
+
 
 .contacts__discount-wrapper {
     background-color: #0B0D10;
