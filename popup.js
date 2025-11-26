@@ -1,5 +1,5 @@
 // Multi-step Popup Functionality (for main page)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Popup elements
     const popupOverlay = document.getElementById('popupOverlay');
     const popupClose = document.getElementById('popupClose');
@@ -241,26 +241,10 @@ document.addEventListener('DOMContentLoaded', function() {
         additionalBtns.forEach(btn => btn.classList.remove('popup__additional-btn--selected'));
 
         // Hide discount
-        discountSection.style.display = 'none';
-
-        // Clear errors
-        document.querySelectorAll('.popup__error').forEach(error => {
-            error.classList.remove('active');
-        });
-
-        formData = {
-            name: '',
-            phone: '',
-            carModel: '',
-            mainService: '',
-            additionalServices: [],
-            discount: 0,
-            timestamp: ''
-        };
+        updateDiscountDisplay();
     }
-
     // Step 1: Continue button
-    continueBtn.addEventListener('click', function() {
+    continueBtn.addEventListener('click', function () {
         if (currentStep === 1) {
             // Validate step 1
             const isNameValid = validateName();
@@ -288,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Main service selection
     serviceBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             // Remove active class from all buttons
             serviceBtns.forEach(b => b.classList.remove('popup__service-btn--active'));
 
@@ -303,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Additional services selection
     additionalBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const service = this.dataset.service;
 
             if (selectedAdditionalServices.includes(service)) {
@@ -322,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Submit form
-    submitBtn.addEventListener('click', function() {
+    submitBtn.addEventListener('click', function () {
         // Save additional services and discount
         formData.additionalServices = [...selectedAdditionalServices];
         formData.discount = calculateDiscount();
@@ -333,25 +317,25 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show success step
         goToStep(4);
 
-        // You can uncomment this to actually send data to CRM
-        // sendToCRM(formData);
+        // Send data to CRM
+        sendToCRM(formData);
     });
 
     // Success button
-    successBtn.addEventListener('click', function() {
+    successBtn.addEventListener('click', function () {
         closePopup();
     });
 
     // Close popup events
     popupClose.addEventListener('click', closePopup);
-    popupOverlay.addEventListener('click', function(e) {
+    popupOverlay.addEventListener('click', function (e) {
         if (e.target === popupOverlay) {
             closePopup();
         }
     });
 
     // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && popupOverlay.classList.contains('active')) {
             closePopup();
         }
@@ -363,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     carModel.addEventListener('input', validateCarModel);
 
     // Phone number formatting
-    userPhone.addEventListener('input', function(e) {
+    userPhone.addEventListener('input', function (e) {
         let value = e.target.value.replace(/\D/g, '');
 
         if (value.length > 11) {
@@ -382,37 +366,65 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = value;
         validatePhone();
     });
-
-    // Function to send data to CRM (placeholder)
-    function sendToCRM(data) {
-        // This is where you would integrate with your CRM system
-        // For example, using fetch to send data to your backend
-
-        fetch('/api/submit-form', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log('CRM response:', result);
-        })
-        .catch(error => {
-            console.error('CRM error:', error);
-        });
-    }
-
-    // Make openPopup function globally available for other buttons on the site
-    window.openPopup = openPopup;
-
-    // Add event listeners to existing buttons on the site
     const existingButtons = document.querySelectorAll('.btn-primary, .about-btn, .footer__button, .burger-menu__btn');
     existingButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             e.preventDefault();
             openPopup();
         });
     });
+
+    // Function to send data to CRM
+    function sendToCRM(data) {
+        const webhookUrl = 'https://app.sbercrm.com/react-gateway/api/webhook/9c5fc3c2-1761-43a8-980a-21c18f85476e';
+
+        // CRM Dictionary Mappings
+        const mainServiceMap = {
+            'carbon': 'karbon',
+            'antichrome': 'antikhrom'
+        };
+
+        const additionalServiceMap = {
+            'ceramic': 'keramika',
+            'antigravity-film': 'oklejka_antigravijnoj_plenkoj',
+            'disk-painting': 'okras_kolesnykh_diskov',
+            'polish': 'polirovka',
+            'cleaning': 'khimchistka'
+        };
+        // Map values
+        const mappedMainService = mainServiceMap[data.mainService] || data.mainService;
+        const mappedAdditionalServices = data.additionalServices.map(service => additionalServiceMap[service] || service);
+
+        // Map data to CRM fields
+        const crmData = {
+            "name": `Заявка от ${data.name}`, // Required field "Заявка"
+            "userName$c": data.name,
+            "userPhone$c": data.phone,
+            "car_model$c": data.carModel,
+            "main_service$c": mappedMainService,
+            "additional_services$c": mappedAdditionalServices.join(','), // Send as String
+            "discount$c": data.discount
+        };
+
+        console.log('Sending to CRM:', crmData);
+
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(crmData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('CRM request successful');
+                } else {
+                    console.error('CRM request failed', response.statusText);
+                    response.text().then(text => console.error('CRM Error Details:', text));
+                }
+            })
+            .catch(error => {
+                console.error('CRM error:', error);
+            });
+    }
 });

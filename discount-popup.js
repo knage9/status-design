@@ -1,5 +1,5 @@
 // Discount Popup Functionality (for main page services form)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Services form elements
     const mainOptions = document.querySelectorAll('.main-option');
     const additionalOptions = document.querySelectorAll('.additional-option');
@@ -26,25 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Error elements
     const discountNameError = document.getElementById('discountNameError');
-    const discountPhoneError = document.getElementById('discountPhoneError');
-    const discountCarError = document.getElementById('discountCarError');
-
-    // State variables
-    let selectedMainService = '';
-    let selectedAdditionalServices = [];
-    let discountPopupData = {
-        name: '',
-        phone: '',
-        carModel: '',
-        mainService: '',
-        additionalServices: [],
-        discount: 0,
-        timestamp: ''
-    };
-
-    // Phone number validation regex (Russia format)
-    const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
-
     // Service costs for discount calculation
     const serviceCosts = {
         'carbon': 80000,           // Карбон
@@ -102,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Main service selection
     mainOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             // Remove active class from all options
             mainOptions.forEach(opt => opt.classList.remove('main-option--active'));
             // Add active class to clicked option
@@ -115,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Additional services selection
     additionalOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const service = this.dataset.option;
 
             if (selectedAdditionalServices.includes(service)) {
@@ -264,89 +245,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         discountPhoneError.classList.remove('active');
-        return true;
-    }
+        // CTA button click handler
+        if (ctaButton) {
+            ctaButton.addEventListener('click', function (e) {
+                e.preventDefault();
 
-    function validateDiscountCarModel() {
-        const car = discountCarModel.value.trim();
-        if (car.length < 3) {
-            discountCarError.textContent = 'Укажите марку и модель автомобиля';
-            discountCarError.classList.add('active');
-            return false;
-        }
-        discountCarError.classList.remove('active');
-        return true;
-    }
-
-    // Phone number formatting
-    discountUserPhone.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-
-        if (value.length > 11) {
-            value = value.slice(0, 11);
+                if (!ctaButton.disabled) {
+                    openDiscountPopup();
+                }
+            });
         }
 
-        // Format phone number
-        if (value.length >= 6) {
-            value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, '+$1 ($2) $3-$4-$5');
-        } else if (value.length >= 3) {
-            value = value.replace(/(\d{1})(\d{3})/, '+$1 ($2');
-        } else if (value.length >= 1) {
-            value = '+' + value;
-        }
+        // Discount popup submit
+        if (discountSubmitBtn) {
+            discountSubmitBtn.addEventListener('click', function () {
+                // Validate all fields
+                const isNameValid = validateDiscountName();
+                const isPhoneValid = validateDiscountPhone();
+                const isCarValid = validateDiscountCarModel();
 
-        e.target.value = value;
-        validateDiscountPhone();
-    });
+                if (!isNameValid || !isPhoneValid || !isCarValid) {
+                    return;
+                }
 
-    // Real-time validation
-    discountUserName.addEventListener('input', validateDiscountName);
-    discountUserPhone.addEventListener('input', validateDiscountPhone);
-    discountCarModel.addEventListener('input', validateDiscountCarModel);
-
-    // CTA button click handler
-    if (ctaButton) {
-        ctaButton.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            if (!ctaButton.disabled) {
-                openDiscountPopup();
-            }
-        });
-    }
-
-    // Discount popup submit
-    if (discountSubmitBtn) {
-        discountSubmitBtn.addEventListener('click', function() {
-            // Validate all fields
-            const isNameValid = validateDiscountName();
-            const isPhoneValid = validateDiscountPhone();
-            const isCarValid = validateDiscountCarModel();
-
-            if (!isNameValid || !isPhoneValid || !isCarValid) {
-                return;
-            }
-
-            // Show loading state
-            discountSubmitBtn.classList.add('loading');
-            discountSubmitBtn.textContent = 'Отправляем...';
-            discountSubmitBtn.disabled = true;
-
-            // Prepare form data
-            discountPopupData = {
-                name: discountUserName.value.trim(),
-                phone: discountUserPhone.value.trim(),
-                carModel: discountCarModel.value.trim(),
-                mainService: selectedMainService,
-                additionalServices: [...selectedAdditionalServices],
-                discount: calculateDiscount(),
-                timestamp: new Date().toISOString()
-            };
-
-            // Simulate API call to CRM
-            setTimeout(() => {
-                console.log('Discount popup data to send to CRM:', discountPopupData);
-
+                // Show loading state
+                discountSubmitBtn.classList.add('loading');
+                discountSubmitBtn.textContent = 'Отправляем...';
                 // Close discount popup
                 closeDiscountPopup();
 
@@ -358,10 +282,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 discountSubmitBtn.textContent = 'Отправить заявку';
                 discountSubmitBtn.disabled = false;
 
-                // You can uncomment this to actually send data to CRM
-                // sendDiscountToCRM(discountPopupData);
-            }, 1500);
-        });
+                // Send data to CRM
+                sendDiscountToCRM(discountPopupData);
+            });
+        }
     }
 
     // Close popup events
@@ -370,43 +294,102 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (discountPopupOverlay) {
-        discountPopupOverlay.addEventListener('click', function(e) {
+        discountPopupOverlay.addEventListener('click', function (e) {
             if (e.target === discountPopupOverlay) {
                 closeDiscountPopup();
             }
         });
     }
 
-    // Close popup on Escape key
-    document.addEventListener('keydown', function(e) {
+    // Close on Escape key
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && discountPopupOverlay && discountPopupOverlay.classList.contains('active')) {
             closeDiscountPopup();
         }
     });
 
-    // Function to send data to CRM (placeholder)
+    // Handle success popup overlay click
+    function handleSuccessOverlayClick(e) {
+        const successPopupOverlay = document.getElementById('successPopupOverlay');
+        if (e.target === successPopupOverlay) {
+            successPopupOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            resetMainPageForm();
+        }
+    }
+
+    // Handle success popup escape key
+    function handleSuccessEscapeKey(e) {
+        const successPopupOverlay = document.getElementById('successPopupOverlay');
+        if (e.key === 'Escape' && successPopupOverlay && successPopupOverlay.classList.contains('active')) {
+            successPopupOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            resetMainPageForm();
+            document.removeEventListener('keydown', handleSuccessEscapeKey);
+        }
+    }
+
+
+
+    // Function to send data to CRM
     function sendDiscountToCRM(data) {
-        // This is where you would integrate with your CRM system
-        fetch('/api/submit-discount-form', {
+        const webhookUrl = 'https://app.sbercrm.com/react-gateway/api/webhook/9c5fc3c2-1761-43a8-980a-21c18f85476e';
+
+        // CRM Dictionary Mappings
+        const mainServiceMap = {
+            'carbon': 'karbon',
+            'antichrome': 'antikhrom'
+        };
+
+        const additionalServiceMap = {
+            'ceramic': 'keramika',
+            'antigravity-film': 'oklejka_antigravijnoj_plenkoj',
+            'disk-painting': 'okras_kolesnykh_diskov',
+            'polish': 'polirovka',
+            'cleaning': 'khimchistka'
+        };
+
+        // Map values
+        const mappedMainService = mainServiceMap[data.mainService] || data.mainService;
+        const mappedAdditionalServices = data.additionalServices.map(service => additionalServiceMap[service] || service);
+
+        // Map data to CRM fields
+        const crmData = {
+            "name": `Заявка от ${data.name}`, // Required field "Заявка"
+            "userName$c": data.name,
+            "userPhone$c": data.phone,
+            "car_model$c": data.carModel,
+            "main_service$c": mappedMainService,
+            "additional_services$c": mappedAdditionalServices.join(','), // Send as String
+            "discount$c": data.discount
+        };
+
+        console.log('Sending discount form to CRM:', crmData);
+
+        fetch(webhookUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(crmData)
         })
-        .then(response => response.json())
-        .then(result => {
-            console.log('CRM response:', result);
-        })
-        .catch(error => {
-            console.error('CRM error:', error);
-        })
-        .finally(() => {
-            // Reset loading state
-            discountSubmitBtn.classList.remove('loading');
-            discountSubmitBtn.textContent = 'Отправить заявку';
-            discountSubmitBtn.disabled = false;
-        });
+            .then(response => {
+                if (response.ok) {
+                    console.log('CRM request successful');
+                } else {
+                    console.error('CRM request failed', response.statusText);
+                    response.text().then(text => console.error('CRM Error Details:', text));
+                }
+            })
+            .catch(error => {
+                console.error('CRM error:', error);
+            })
+            .finally(() => {
+                // Reset loading state
+                discountSubmitBtn.classList.remove('loading');
+                discountSubmitBtn.textContent = 'Отправить заявку';
+                discountSubmitBtn.disabled = false;
+            });
     }
 
     // Initialize button state
