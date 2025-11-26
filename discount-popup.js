@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Error elements
     const discountNameError = document.getElementById('discountNameError');
+    const discountPhoneError = document.getElementById('discountPhoneError');
+    const discountCarError = document.getElementById('discountCarError');
+
+    // State variables
+    let selectedMainService = '';
+    let selectedAdditionalServices = [];
+    let discountPopupData = {};
+
+    // Phone number validation regex (Russia format)
+    const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
+
     // Service costs for discount calculation
     const serviceCosts = {
         'carbon': 80000,           // Карбон
@@ -245,32 +256,92 @@ document.addEventListener('DOMContentLoaded', function () {
             return false;
         }
         discountPhoneError.classList.remove('active');
-        // CTA button click handler
-        if (ctaButton) {
-            ctaButton.addEventListener('click', function (e) {
-                e.preventDefault();
+        return true;
+    }
 
-                if (!ctaButton.disabled) {
-                    openDiscountPopup();
-                }
-            });
+    function validateDiscountCarModel() {
+        const car = discountCarModel.value.trim();
+        if (car.length < 3) {
+            discountCarError.textContent = 'Укажите марку и модель автомобиля';
+            discountCarError.classList.add('active');
+            return false;
+        }
+        discountCarError.classList.remove('active');
+        return true;
+    }
+
+    // Phone number formatting
+    discountUserPhone.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.length > 11) {
+            value = value.slice(0, 11);
         }
 
-        // Discount popup submit
-        if (discountSubmitBtn) {
-            discountSubmitBtn.addEventListener('click', function () {
-                // Validate all fields
-                const isNameValid = validateDiscountName();
-                const isPhoneValid = validateDiscountPhone();
-                const isCarValid = validateDiscountCarModel();
+        // Format phone number
+        if (value.length >= 6) {
+            value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, '+$1 ($2) $3-$4-$5');
+        } else if (value.length >= 3) {
+            value = value.replace(/(\d{1})(\d{3})/, '+$1 ($2');
+        } else if (value.length >= 1) {
+            value = '+' + value;
+        }
 
-                if (!isNameValid || !isPhoneValid || !isCarValid) {
-                    return;
-                }
+        e.target.value = value;
+        validateDiscountPhone();
+    });
 
-                // Show loading state
-                discountSubmitBtn.classList.add('loading');
-                discountSubmitBtn.textContent = 'Отправляем...';
+    // Real-time validation
+    discountUserName.addEventListener('input', validateDiscountName);
+    discountUserPhone.addEventListener('input', validateDiscountPhone);
+    discountCarModel.addEventListener('input', validateDiscountCarModel);
+
+    // CTA button click handler
+    if (ctaButton) {
+        ctaButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (!ctaButton.disabled) {
+                openDiscountPopup();
+            }
+        });
+    }
+
+    // Discount popup submit
+    if (discountSubmitBtn) {
+        discountSubmitBtn.addEventListener('click', function () {
+            // Validate all fields
+            const isNameValid = validateDiscountName();
+            const isPhoneValid = validateDiscountPhone();
+            const isCarValid = validateDiscountCarModel();
+
+            if (!isNameValid || !isPhoneValid || !isCarValid) {
+                return;
+            }
+
+            // Show loading state
+            discountSubmitBtn.classList.add('loading');
+            discountSubmitBtn.textContent = 'Отправляем...';
+            discountSubmitBtn.disabled = true;
+
+            // Prepare form data
+            discountPopupData = {
+                name: discountUserName.value.trim(),
+                phone: discountUserPhone.value.trim(),
+                carModel: discountCarModel.value.trim(),
+                mainService: selectedMainService,
+                additionalServices: [...selectedAdditionalServices],
+                discount: calculateDiscount(),
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('Discount popup data to send to CRM:', discountPopupData);
+
+            // Send data to CRM immediately
+            sendDiscountToCRM(discountPopupData);
+
+            // Show success after a short delay
+            setTimeout(() => {
                 // Close discount popup
                 closeDiscountPopup();
 
@@ -281,11 +352,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 discountSubmitBtn.classList.remove('loading');
                 discountSubmitBtn.textContent = 'Отправить заявку';
                 discountSubmitBtn.disabled = false;
-
-                // Send data to CRM
-                sendDiscountToCRM(discountPopupData);
-            });
-        }
+            }, 1500);
+        });
     }
 
     // Close popup events
@@ -344,7 +412,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const additionalServiceMap = {
             'ceramic': 'keramika',
             'antigravity-film': 'oklejka_antigravijnoj_plenkoj',
+            'film': 'oklejka_antigravijnoj_plenkoj', // index.html uses 'film'
             'disk-painting': 'okras_kolesnykh_diskov',
+            'disks': 'okras_kolesnykh_diskov', // index.html uses 'disks'
             'polish': 'polirovka',
             'cleaning': 'khimchistka'
         };
