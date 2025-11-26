@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const discount = calculateDiscount();
         if (discount > 0) {
             discountPercent.textContent = `-${discount}%`;
-            discountSection.style.display = 'block';
+            discountSection.style.display = 'flex';
         } else {
             discountSection.style.display = 'none';
         }
@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedMainService = this.dataset.service;
 
             updateSubmitButton();
+            updateDiscountDisplay(); // Update discount when main service is selected
         });
     });
 
