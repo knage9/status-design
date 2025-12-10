@@ -1,3 +1,4 @@
+
 // Multi-step Popup Functionality (for main page)
 document.addEventListener('DOMContentLoaded', function () {
     // Popup elements
@@ -408,6 +409,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log('Sending to CRM:', crmData);
 
+        // Send to Sber CRM
         fetch(webhookUrl, {
             method: 'POST',
             headers: {
@@ -426,5 +428,46 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('CRM error:', error);
             });
+
+        // Send to backend API (non-blocking)
+        fetch('http://localhost:3000/api/requests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: data.name,
+                phone: data.phone,
+                carModel: data.carModel,
+                mainService: data.mainService,
+                additionalServices: data.additionalServices,
+                discount: data.discount,
+                source: 'POPUP'
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Backend save successful');
+                } else {
+                    console.error('Backend save failed', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Backend save error:', error);
+            });
+    }
+    // Экспортируем функцию в глобальную область, если попап на странице есть
+    if (popupOverlay) {
+        window.openPopup = function () {
+            popupOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            currentStep = 1;
+            goToStep(1);
+            resetForm();
+            setTimeout(() => {
+                userName?.focus();
+            }, 300);
+        };
     }
 });
+

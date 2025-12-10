@@ -17,11 +17,42 @@ class NewsManager {
         this.renderNews();
     }
 
-    loadNewsData() {
-        // Загружаем данные из общего источника
-        this.newsData = NEWS_DATA;
-        this.filteredNews = [...this.newsData];
+    async loadNewsData() {
+        try {
+            const response = await fetch('http://localhost:3000/api/posts');
+            if (!response.ok) throw new Error('Failed to fetch news');
+
+            const data = await response.json();
+
+            this.newsData = data.map(item => {
+                const rawDate = item.datePublished || item.dateCreated;
+
+                return {
+                    id: item.id,
+                    title: item.title,
+                    rawDate,
+                    date: new Date(rawDate).toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    }),
+                    type: item.type === 'NEWS' ? 'news' : 'article',
+                    category: item.category === 'NEWS' ? 'news' : 'articles',
+                    content: item.content,
+                    image: item.image ? `http://localhost:3000${item.image}` : null,
+                    views: item.views,
+                    tags: item.tags || [],
+                    slug: item.slug
+                };
+            });
+
+            // вместо прямого рендера
+            this.applyFilters(); // тут и фильтрация, и sortNews(), и renderNews()
+        } catch (error) {
+            console.error('Error loading news:', error);
+        }
     }
+
 
     setupEventListeners() {
         // Фильтры сортировки
@@ -127,16 +158,18 @@ class NewsManager {
         this.filteredNews.sort((a, b) => {
             switch (this.currentSort) {
                 case 'date':
-                    return new Date(b.date) - new Date(a.date);
+                    return new Date(b.rawDate) - new Date(a.rawDate); // новая выше
                 case 'popular':
-                    return b.views - a.views;
+                    return (b.views || 0) - (a.views || 0);
                 case 'title':
-                    return a.title.localeCompare(b.title);
+                    return a.title.localeCompare(b.title, 'ru');
                 default:
                     return 0;
             }
         });
     }
+
+
 
     renderNews() {
         const grid = document.getElementById('newsGrid');
@@ -183,7 +216,7 @@ class NewsManager {
                     <img src="${newsItem.image}" alt="${newsItem.title}">
                 </div>
                 <div class="news-card__content">
-                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
+                    <div class="news-card__date">${newsItem.date}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <div class="news-card__tags">
                         ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
@@ -196,7 +229,7 @@ class NewsManager {
 
             cardContent = `
                 <div class="news-card__content">
-                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
+                    <div class="news-card__date">${newsItem.date}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <p class="news-card__description">${truncatedContent}</p>
                     <div class="news-card__tags">
@@ -210,7 +243,7 @@ class NewsManager {
 
         // Добавляем обработчик клика для перехода к полной статье
         cardDiv.addEventListener('click', () => {
-            this.openNewsDetail(newsItem.id);
+            this.openNewsDetail(newsItem.slug);
         });
 
         return cardDiv;
@@ -261,9 +294,9 @@ class NewsManager {
         this.renderNews();
     }
 
-    openNewsDetail(newsId) {
-        // Переходим на детальную страницу новости с параметром ID
-        window.location.href = `news-detail.html?id=${newsId}`;
+    openNewsDetail(slug) {
+        // Переходим на детальную страницу новости с параметром slug
+        window.location.href = `news-detail.html?slug=${slug}`;
     }
 }
 

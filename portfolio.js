@@ -1,4 +1,76 @@
 // Portfolio Page JavaScript
+
+// Маппер для перевода услуг на русский
+function mapServiceToRussian(serviceKey) {
+    const serviceMap = {
+        'antichrome': 'Антихром',
+        'soundproofing': 'Шумоизоляция',
+        'ceramic': 'Керамика',
+        'polish': 'Полировка',
+        'carbon': 'Карбон',
+        'antigravity-film': 'Антигравийная пленка',
+        'disk-painting': 'Колесные диски',
+        'detailing-wash': 'Химчистка',
+        // Для обратной совместимости с русскими названиями из данных
+        'Антихром': 'Антихром',
+        'Шумоизоляция': 'Шумоизоляция',
+        'Керамика': 'Керамика',
+        'Карбон': 'Карбон'
+    };
+    return serviceMap[serviceKey] || serviceKey;
+}
+function mapRussianToServiceKey(nameRu) {
+    const map = {
+        'Антихром': 'antichrome',
+        'Шумоизоляция': 'soundproofing',
+        'Керамика': 'ceramic',
+        'Полировка': 'polish',
+        'Карбон': 'carbon',
+        'Антигравийная пленка': 'antigravity-film',
+        'Колесные диски': 'disk-painting',
+        'Химчистка': 'detailing-wash'
+    };
+    return map[nameRu] || nameRu;
+}
+
+function getAllServices() {
+    return [
+        'carbon',
+        'antichrome',
+        'soundproofing',
+        'antigravity-film',
+        'disk-painting',
+        'detailing-wash',   // или какой у тебя ключ в БД
+        'ceramic',
+        'polish',
+    ];
+}
+
+
+// Форматирование даты для портфолио
+function formatPortfolioDate(dateString) {
+    if (!dateString) return 'Дата не указана';
+
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) return 'Дата не указана';
+
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    // Месяцы в родительном падеже для правильного формата дат
+    const monthsGenitive = [
+        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    ];
+
+    const month = monthsGenitive[date.getMonth()];
+    return `${day} ${month} ${year} г.`;
+}
+
+
+
+
 class PortfolioManager {
     constructor() {
         this.portfolioData = [];
@@ -20,10 +92,31 @@ class PortfolioManager {
         this.renderPortfolio();
     }
 
-    loadPortfolioData() {
-        // Загружаем данные из созданного файла
-        this.portfolioData = PORTFOLIO_DATA;
-        this.filteredPortfolio = [...this.portfolioData];
+    async loadPortfolioData() {
+        try {
+            const response = await fetch('http://localhost:3000/api/portfolio');
+            if (!response.ok) throw new Error('Failed to fetch portfolio');
+
+            const data = await response.json();
+
+            this.portfolioData = data.map(item => ({
+                id: item.id,
+                title: item.title,
+                carBrand: item.carBrand,
+                carModel: item.carModel,
+                mainImage: item.mainImage ? `http://localhost:3000${item.mainImage}` : null,
+                gallery: item.gallery ? item.gallery.map(img => `http://localhost:3000${img}`) : [],
+                services: item.services || [], // Assuming backend returns services array
+                date: new Date(item.date).toLocaleDateString('ru-RU'),
+                description: item.description,
+                views: item.views || 0
+            }));
+
+            this.filteredPortfolio = [...this.portfolioData];
+            this.renderPortfolio();
+        } catch (error) {
+            console.error('Error loading portfolio:', error);
+        }
     }
 
     setupFilterOptions() {
@@ -43,15 +136,16 @@ class PortfolioManager {
         // Добавляем опции услуг
         const serviceMenu = document.getElementById('serviceMenu');
         if (serviceMenu) {
-            const services = getAllServices();
-            services.forEach(service => {
+            const services = getAllServices(); // ['carbon','antichrome',...]
+            services.forEach(serviceKey => {
                 const option = document.createElement('div');
                 option.className = 'filter-dropdown__option';
-                option.textContent = service;
-                option.setAttribute('data-value', service);
+                option.textContent = mapServiceToRussian(serviceKey); // "Карбон", "Антихром", ...
+                option.setAttribute('data-value', serviceKey);        // "carbon", "antichrome", ...
                 serviceMenu.appendChild(option);
             });
         }
+
     }
 
     setupEventListeners() {
@@ -89,34 +183,19 @@ class PortfolioManager {
             });
 
             serviceMenu.addEventListener('click', (e) => {
-                if (e.target.classList.contains('filter-dropdown__option')) {
-                    this.currentService = e.target.dataset.value;
-                    this.updateServiceText(e.target.textContent);
-                    this.updateActiveFilters();
-                    serviceMenu.classList.remove('active');
-                    this.applyFilters();
-                }
-            });
-        }
+                const option = e.target.closest('.filter-dropdown__option');
+                if (!option) return;
 
-        // Фильтры сортировки
-        const sortToggle = document.getElementById('sortToggle');
-        const sortMenu = document.getElementById('sortMenu');
+                const value = option.dataset.value;    // 'antichrome'
+                const label = option.textContent;      // 'Антихром'
 
-        if (sortToggle && sortMenu) {
-            sortToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.closeAllDropdowns();
-                sortMenu.classList.toggle('active');
-            });
+                console.log('SERVICE CLICK:', { value, label });
 
-            sortMenu.addEventListener('click', (e) => {
-                if (e.target.classList.contains('filter-dropdown__option')) {
-                    this.currentSort = e.target.dataset.value;
-                    this.updateSortText(e.target.textContent);
-                    sortMenu.classList.remove('active');
-                    this.applyFilters();
-                }
+                this.currentService = value;           // всегда КЛЮЧ
+                this.updateServiceText(label);         // красивый текст на кнопке
+                this.updateActiveFilters();
+                serviceMenu.classList.remove('active');
+                this.applyFilters();
             });
         }
 
@@ -180,8 +259,13 @@ class PortfolioManager {
             this.addActiveFilter('brand', this.currentBrand, this.getBrandDisplayName(this.currentBrand));
         }
 
+
         if (this.currentService !== 'all') {
-            this.addActiveFilter('service', this.currentService, this.currentService);
+            this.addActiveFilter(
+                'service',
+                this.currentService,
+                mapServiceToRussian(this.currentService)
+            );
         }
 
         // Показываем контейнер только если есть активные фильтры
@@ -246,23 +330,23 @@ class PortfolioManager {
     applyFilters() {
         this.currentPage = 1;
 
-        // Фильтрация по марке
         let filtered = this.portfolioData;
         if (this.currentBrand !== 'all') {
             filtered = filtered.filter(item => item.carBrand === this.currentBrand);
         }
 
-        // Фильтрация по услугам
         if (this.currentService !== 'all') {
-            filtered = filtered.filter(item => item.services.includes(this.currentService));
+            console.log('FILTER BY SERVICE IN applyFilters:', this.currentService);
+            filtered = filtered.filter(item =>
+                Array.isArray(item.services) && item.services.includes(this.currentService)
+            );
         }
 
-        // Сортировка
         this.sortPortfolio(filtered);
-
         this.updateActiveFilters();
         this.renderPortfolio();
     }
+
 
     sortPortfolio(portfolioArray) {
         const sorted = [...portfolioArray];
@@ -322,7 +406,7 @@ class PortfolioManager {
                 <div class="portfolio-card__brand">${portfolioItem.carBrand}</div>
                 <div class="portfolio-card__model">${portfolioItem.carModel}</div>
                 <div class="portfolio-card__services">
-                    ${portfolioItem.services.map(service => `<span class="portfolio-card__service">${service}</span>`).join('')}
+                    ${portfolioItem.services.map(service => `<span class="portfolio-card__service">${mapServiceToRussian(service)}</span>`).join('')}
                 </div>
                 <div class="portfolio-card__date">${formatPortfolioDate(portfolioItem.date)}</div>
             </div>
@@ -377,7 +461,7 @@ class PortfolioManager {
     }
 
     openPortfolioModal(portfolioId) {
-        const portfolioItem = getPortfolioById(portfolioId);
+        const portfolioItem = this.portfolioData.find(item => item.id === portfolioId);
         if (!portfolioItem) return;
 
         const modal = document.getElementById('portfolioModal');
@@ -397,7 +481,7 @@ class PortfolioManager {
         portfolioItem.services.forEach(service => {
             const serviceTag = document.createElement('span');
             serviceTag.className = 'portfolio-modal__service-tag';
-            serviceTag.textContent = service;
+            serviceTag.textContent = mapServiceToRussian(service);
             servicesContainer.appendChild(serviceTag);
         });
 
@@ -445,6 +529,8 @@ class PortfolioManager {
         }
     }
 }
+
+
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {

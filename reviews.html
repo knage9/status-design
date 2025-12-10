@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
     <script src="discount-popup.js" defer></script>
     <script src="reviews.js" defer></script>
 </head>
+
 <body>
     <!-- Burger Menu Overlay -->
     <div class="burger-menu-overlay" id="burgerOverlay"></div>
@@ -39,22 +41,24 @@
                     <!-- Burger Menu -->
                     <div class="burger-menu">
                         <button class="burger-menu__toggle" id="burgerToggle">
-                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                             </svg>
-                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close"
+                                width="24" height="24">
                             <span class="burger-menu__text">Меню</span>
                         </button>
                         <div class="burger-menu__dropdown" id="burgerDropdown">
-                        <div class="burger-menu__content">
-                            <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
-                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
-                            <a href="news.html" class="burger-menu__link">Новости</a>
-                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
-                            <button class="burger-menu__btn">Оставить заявку</button>
-                        </div>
+                            <div class="burger-menu__content">
+                                <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
+                                <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                                <a href="news.html" class="burger-menu__link">Новости</a>
+                                <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                                <button class="burger-menu__btn">Оставить заявку</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -81,7 +85,7 @@
             <h1 class="reviews-page__title">Ваши эмоции — лучший результат нашей работы</h1>
             <!-- Leave Review Button -->
             <button class="reviews-page__leave-btn">Оставить отзыв</button>
-            
+
             <!-- Controls Section -->
             <div class="reviews-page__controls">
 
@@ -94,7 +98,8 @@
                             <img src="img/down.svg" alt="Down" class="filter-dropdown__icon">
                         </button>
                         <div class="filter-dropdown__menu" id="sortMenu">
-                            <div class="filter-dropdown__option filter-dropdown__option--active" data-value="default">По умолчанию</div>
+                            <div class="filter-dropdown__option filter-dropdown__option--active" data-value="default">По
+                                умолчанию</div>
                             <div class="filter-dropdown__option" data-value="date">По дате</div>
                             <div class="filter-dropdown__option" data-value="positive">Положительные</div>
                             <div class="filter-dropdown__option" data-value="negative">Отрицательные</div>
@@ -104,15 +109,20 @@
                     <!-- Services Filter -->
                     <div class="filter-dropdown filter-dropdown--small">
                         <button class="filter-dropdown__toggle filter-dropdown__toggle--small" id="servicesToggle">
-                            <img src="img/filter.svg" alt="Filter" class="filter-dropdown__icon filter-dropdown__icon--small">
+                            <img src="img/filter.svg" alt="Filter"
+                                class="filter-dropdown__icon filter-dropdown__icon--small">
                         </button>
                         <div class="filter-dropdown__menu filter-dropdown__menu--small" id="servicesMenu">
                             <div class="filter-dropdown__option" data-value="all">Все услуги</div>
                             <div class="filter-dropdown__option" data-value="antichrome">Антихром</div>
                             <div class="filter-dropdown__option" data-value="carbon">Карбон</div>
                             <div class="filter-dropdown__option" data-value="soundproofing">Шумоизоляция</div>
-                            <div class="filter-dropdown__option" data-value="wheels">Колесные диски</div>
+                            <div class="filter-dropdown__option" data-value="antigravity-film">Антигравийная пленка
+                            </div>
+                            <div class="filter-dropdown__option" data-value="disk-painting">Колесные диски</div>
                             <div class="filter-dropdown__option" data-value="cleaning">Химчистка</div>
+                            <div class="filter-dropdown__option" data-value="ceramic">Керамика</div>
+                            <div class="filter-dropdown__option" data-value="polish">Полировка</div>
                         </div>
                     </div>
                 </div>
@@ -138,7 +148,8 @@
                 </div>
                 <div class="footer__cta-block">
                     <h2 class="footer__title">Пора выделиться на дороге</h2>
-                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали
+                        профессионалам и почувствуйте разницу.</p>
                     <button class="footer__button">Оставить заявку</button>
                 </div>
             </div>
@@ -152,97 +163,23 @@
         <div class="footer__back-to-top">
             <button class="footer__back-btn" id="backToTopBtn" title="Вернуться наверх">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
                 <span>Наверх</span>
             </button>
         </div>
     </footer>
 
-    <!-- Review Popup Modal (Multi-step) -->
-    <div class="popup-overlay" id="reviewPopupOverlay">
-        <div class="popup">
-            <div class="popup__header">
-                <div class="popup__title-bg">
-                    <h2 class="popup__title" id="reviewPopupTitle">Оставь отзыв — сделаем сервис лучше вместе</h2>
-                </div>
-                <button class="popup__close" id="reviewPopupClose">
-                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
-                </button>
-            </div>
-
-            <div class="popup__content">
-                <!-- Step 1: Contact Information and Review -->
-                <div class="popup__step popup__step--active" data-step="1">
-                    <div class="popup__form-group">
-                        <input type="text" class="popup__input" id="reviewCarModel" placeholder="Марка и модель авто" required>
-                        <div class="popup__error" id="reviewCarError"></div>
-                    </div>
-                    <div class="popup__form-group">
-                        <textarea class="popup__input popup__textarea" id="reviewText" placeholder="Ваш комментарий" rows="4" required></textarea>
-                        <div class="popup__error" id="reviewTextError"></div>
-                    </div>
-                    <div class="popup__form-group">
-                        <div class="photo-upload">
-                            <input type="file" class="photo-upload__input" id="reviewPhotoInput" accept="image/*" multiple>
-                            <label for="reviewPhotoInput" class="photo-upload__label">
-                                <img src="img/upload.svg" alt="Upload" class="photo-upload__icon">
-                                <span class="photo-upload__text">Добавить фото результата</span>
-                            </label>
-                            <div class="photo-upload__preview" id="reviewPhotoPreview"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 2: Services Selection -->
-                <div class="popup__step" data-step="2">
-                    <div class="popup__additional-container">
-                        <div class="popup__additional-services">
-                            <button class="popup__additional-btn" data-service="carbon" type="button">
-                                <span class="popup__additional-text">Карбон</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="antichrome" type="button">
-                                <span class="popup__additional-text">Антихром с покраской</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="soundproofing" type="button">
-                                <span class="popup__additional-text">Шумоизоляция</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
-                                <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
-                                <span class="popup__additional-text">Окрас колесных дисков</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="cleaning" type="button">
-                                <span class="popup__additional-text">Химчистка</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="ceramic" type="button">
-                                <span class="popup__additional-text">Керамика</span>
-                            </button>
-                            <button class="popup__additional-btn" data-service="polish" type="button">
-                                <span class="popup__additional-text">Полировка</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="popup__footer">
-                <button class="popup__btn popup__btn--continue" id="reviewContinueBtn">Продолжить</button>
-                <button class="popup__btn popup__btn--submit" id="reviewSubmitBtn" style="display: none;">Отправить отзыв</button>
-                <button class="popup__btn popup__btn--success" id="reviewSuccessBtn" style="display: none;">Отлично!</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Multi-step Popup Modal for Requests -->
-    <div class="popup-overlay" id="requestPopupOverlay">
+    <div class="popup-overlay" id="popupOverlay">
         <div class="popup">
             <div class="popup__header">
                 <div class="popup__title-bg">
-                    <h2 class="popup__title" id="requestPopupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут</h2>
+                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут
+                    </h2>
                 </div>
-                <button class="popup__close" id="requestPopupClose">
+                <button class="popup__close" id="popupClose">
                     <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
                 </button>
             </div>
@@ -251,16 +188,17 @@
                 <!-- Step 1: Contact Information -->
                 <div class="popup__step popup__step--active" data-step="1">
                     <div class="popup__form-group">
-                        <input type="text" class="popup__input" id="requestUserName" placeholder="Ваше имя" required>
-                        <div class="popup__error" id="requestNameError"></div>
+                        <input type="text" class="popup__input" id="userName" placeholder="Ваше имя" required>
+                        <div class="popup__error" id="nameError"></div>
                     </div>
                     <div class="popup__form-group">
-                        <input type="tel" class="popup__input" id="requestUserPhone" placeholder="Телефон" required>
-                        <div class="popup__error" id="requestPhoneError"></div>
+                        <input type="tel" class="popup__input" id="userPhone" placeholder="Телефон" required>
+                        <div class="popup__error" id="phoneError"></div>
                     </div>
                     <div class="popup__form-group">
-                        <input type="text" class="popup__input" id="requestCarModel" placeholder="Марка и модель авто" required>
-                        <div class="popup__error" id="requestCarError"></div>
+                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто"
+                            required>
+                        <div class="popup__error" id="carError"></div>
                     </div>
                 </div>
 
@@ -274,14 +212,14 @@
                             <span class="popup__service-text">Антихром с покраской</span>
                         </button>
                     </div>
-                    <div class="popup__error" id="requestMainServiceError"></div>
+                    <div class="popup__error" id="mainServiceError"></div>
                 </div>
 
                 <!-- Step 3: Additional Services -->
-                <div class="popup__discount" id="requestDiscountSection" style="display: none;">
+                <div class="popup__discount" id="discountSection" style="display: none;">
                     <div class="popup__discount-wrapper">
                         <div class="popup__discount-badge">
-                            <span class="popup__discount-percent" id="requestDiscountPercent">-10%</span>
+                            <span class="popup__discount-percent" id="discountPercent">-10%</span>
                         </div>
                         <div class="popup__discount-text">
                             <span class="popup__discount-label">Ваша персональная скидка</span>
@@ -316,9 +254,11 @@
             </div>
 
             <div class="popup__footer">
-                <button class="popup__btn popup__btn--continue" id="requestContinueBtn">Продолжить</button>
-                <button class="popup__btn popup__btn--submit" id="requestSubmitBtn" style="display: none;">Отправить заявку</button>
-                <button class="popup__btn popup__btn--success" id="requestSuccessBtn" style="display: none;">Буду ожидать</button>
+                <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
+                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить
+                    заявку</button>
+                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду
+                    ожидать</button>
             </div>
         </div>
     </div>
@@ -329,7 +269,8 @@
             <div class="popup__header">
                 <div class="popup__title-bg">
                     <h2 class="popup__title" id="successTitle">Ваш запрос в работе. Перезвоним в течение 15 минут.</h2>
-                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.</p>
+                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.
+                    </p>
                 </div>
                 <button class="popup__close" id="successPopupClose">
                     <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
@@ -340,409 +281,110 @@
             </div>
 
             <div class="popup__footer" style="padding: 20px;">
-                <button class="popup__btn popup__btn--success" id="reviewsSuccessBtn">Буду ожидать</button>
+                <button class="popup__btn popup__btn--success" id="portfolioSuccessBtn">Буду ожидать</button>
             </div>
         </div>
     </div>
 
-    <!-- Initialize Request Popup -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Request popup elements
-            const requestPopupOverlay = document.getElementById('requestPopupOverlay');
-            const requestPopupClose = document.getElementById('requestPopupClose');
-            const requestContinueBtn = document.getElementById('requestContinueBtn');
-            const requestSubmitBtn = document.getElementById('requestSubmitBtn');
-            const requestSuccessBtn = document.getElementById('requestSuccessBtn');
 
-            // Request form elements
-            const requestUserName = document.getElementById('requestUserName');
-            const requestUserPhone = document.getElementById('requestUserPhone');
-            const requestCarModel = document.getElementById('requestCarModel');
+    <!-- Review Popup Modal (Multi-step) -->
+    <div class="popup-overlay" id="reviewPopupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="reviewPopupTitle">Оставь отзыв — сделаем сервис лучше вместе</h2>
+                </div>
+                <button class="popup__close" id="reviewPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
 
-            // Request step elements
-            const requestPopupSteps = requestPopupOverlay.querySelectorAll('.popup__step');
-            const requestPopupTitle = document.getElementById('requestPopupTitle');
+            <div class="popup__content">
+                <!-- Step 1: Contact Information and Review -->
+                <div class="popup__step-review popup__step-review--active" data-step="1">
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="reviewCarModel" placeholder="Марка и модель авто"
+                            required>
+                        <div class="popup__error" id="reviewCarError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <textarea class="popup__input popup__textarea" id="reviewText" placeholder="Ваш комментарий"
+                            rows="4" required></textarea>
+                        <div class="popup__error" id="reviewTextError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <div class="photo-upload">
+                            <input type="file" class="photo-upload__input" id="reviewPhotoInput" accept="image/*"
+                                multiple>
+                            <label for="reviewPhotoInput" class="photo-upload__label">
+                                <img src="img/upload.svg" alt="Upload" class="photo-upload__icon">
+                                <span class="photo-upload__text">Добавить фото результата</span>
+                            </label>
+                            <div class="photo-upload__preview" id="reviewPhotoPreview"></div>
+                        </div>
+                    </div>
+                </div>
 
-            // Request service selection elements
-            const requestServiceBtns = requestPopupOverlay.querySelectorAll('.popup__service-btn');
-            const requestAdditionalBtns = requestPopupOverlay.querySelectorAll('.popup__additional-btn');
+                <!-- Step 2: Rating (New) -->
+                <div class="popup__step-review" data-step="2">
+                    <div class="popup__form-group">
+                        <div class="popup__rating">
+                            <span class="popup__rating-text">Оцените результат</span>
+                            <div class="popup__rating-stars" id="reviewRatingStars">
+                                <img src="img/star-zero.svg" data-value="1" alt="1 star">
+                                <img src="img/star-zero.svg" data-value="2" alt="2 stars">
+                                <img src="img/star-zero.svg" data-value="3" alt="3 stars">
+                                <img src="img/star-zero.svg" data-value="4" alt="4 stars">
+                                <img src="img/star-zero.svg" data-value="5" alt="5 stars">
+                            </div>
+                            <input type="hidden" id="reviewRating" value="0">
+                        </div>
+                        <div class="popup__error" id="reviewRatingError"></div>
+                    </div>
+                </div>
 
-            // Request error elements
-            const requestNameError = document.getElementById('requestNameError');
-            const requestPhoneError = document.getElementById('requestPhoneError');
-            const requestCarError = document.getElementById('requestCarError');
-            const requestMainServiceError = document.getElementById('requestMainServiceError');
+                <!-- Step 3: Services Selection (Renumbered) -->
+                <div class="popup__step-review" data-step="3">
+                    <div class="popup__additional-container">
+                        <div class="popup__additional-services">
+                            <button class="popup__additional-btn" data-service="carbon" type="button">
+                                <span class="popup__additional-text">Карбон</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="antichrome" type="button">
+                                <span class="popup__additional-text">Антихром с покраской</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="soundproofing" type="button">
+                                <span class="popup__additional-text">Шумоизоляция</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
+                                <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
+                                <span class="popup__additional-text">Окрас колесных дисков</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="cleaning" type="button">
+                                <span class="popup__additional-text">Химчистка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="ceramic" type="button">
+                                <span class="popup__additional-text">Керамика</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="polish" type="button">
+                                <span class="popup__additional-text">Полировка</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            // Request discount elements
-            const requestDiscountSection = document.getElementById('requestDiscountSection');
-            const requestDiscountPercent = document.getElementById('requestDiscountPercent');
-
-            // Check if request popup elements exist before adding event listeners
-            if (!requestPopupOverlay || !requestPopupClose || !requestContinueBtn || !requestSubmitBtn || !requestSuccessBtn) {
-                return; // Request popup elements not found on this page, exit silently
-            }
-
-            // Request state variables
-            let requestCurrentStep = 1;
-            let requestSelectedMainService = '';
-            let requestSelectedAdditionalServices = [];
-            let requestFormData = {
-                name: '',
-                phone: '',
-                carModel: '',
-                mainService: '',
-                additionalServices: [],
-                discount: 0,
-                timestamp: ''
-            };
-
-            // Phone number validation regex (Russia format)
-            const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
-
-            // Service costs for discount calculation
-            const serviceCosts = {
-                'antigravity-film': 50000,  // Оклейка антигравийной пленкой
-                'disk-painting': 30000,     // Окрас колесных дисков
-                'cleaning': 15000,          // Химчистка
-                'ceramic': 25000,           // Керамика
-                'polish': 10000             // Полировка
-            };
-
-            // Enhanced discount calculation based on selected services
-            function calculateRequestDiscount() {
-                if (requestSelectedAdditionalServices.length === 0) {
-                    return 0;
-                }
-
-                // Base discount based on quantity
-                const baseDiscounts = [0, 2, 4, 8, 12, 16, 20];
-                const baseDiscount = Math.min(baseDiscounts[requestSelectedAdditionalServices.length] || 20, 20);
-
-                // Additional discount based on total cost
-                let totalCost = 0;
-                requestSelectedAdditionalServices.forEach(service => {
-                    totalCost += serviceCosts[service] || 0;
-                });
-
-                // 0.5% for every 10,000 rubles
-                const costBonus = Math.floor(totalCost / 10000) * 0.5;
-
-                // Total discount (max 20%)
-                const totalDiscount = Math.min(baseDiscount + costBonus, 20);
-
-                return Math.round(totalDiscount);
-            }
-
-            // Update request discount display
-            function updateRequestDiscountDisplay() {
-                const discount = calculateRequestDiscount();
-                if (discount > 0) {
-                    requestDiscountPercent.textContent = `-${discount}%`;
-                    requestDiscountSection.style.display = 'flex';
-                } else {
-                    requestDiscountSection.style.display = 'none';
-                }
-                requestFormData.discount = discount;
-            }
-
-            // Request validation functions
-            function validateRequestName() {
-                const name = requestUserName.value.trim();
-                if (name.length < 2) {
-                    requestNameError.textContent = 'Имя должно содержать минимум 2 символа';
-                    requestNameError.classList.add('active');
-                    return false;
-                }
-                requestNameError.classList.remove('active');
-                return true;
-            }
-
-            function validateRequestPhone() {
-                const phone = requestUserPhone.value.trim();
-                if (!phoneRegex.test(phone)) {
-                    requestPhoneError.textContent = 'Введите корректный номер телефона';
-                    requestPhoneError.classList.add('active');
-                    return false;
-                }
-                requestPhoneError.classList.remove('active');
-                return true;
-            }
-
-            function validateRequestCarModel() {
-                const car = requestCarModel.value.trim();
-                if (car.length < 3) {
-                    requestCarError.textContent = 'Укажите марку и модель автомобиля';
-                    requestCarError.classList.add('active');
-                    return false;
-                }
-                requestCarError.classList.remove('active');
-                return true;
-            }
-
-            function validateRequestMainService() {
-                if (!requestSelectedMainService) {
-                    requestMainServiceError.textContent = 'Выберите основную услугу';
-                    requestMainServiceError.classList.add('active');
-                    return false;
-                }
-                requestMainServiceError.classList.remove('active');
-                return true;
-            }
-
-            // Request step navigation
-            function goToRequestStep(step) {
-                // Hide all steps
-                requestPopupSteps.forEach(stepEl => {
-                    stepEl.classList.remove('popup__step--active');
-                });
-
-                // Show target step
-                const targetStep = requestPopupOverlay.querySelector(`[data-step="${step}"]`);
-                if (targetStep) {
-                    targetStep.classList.add('popup__step--active');
-                }
-
-                requestCurrentStep = step;
-
-                // Update popup title and size based on step
-                updateRequestPopupTitle(step);
-                updateRequestPopupSize(step);
-
-                // Update button visibility and text
-                updateRequestStepButtons();
-            }
-
-            // Update request popup title based on current step
-            function updateRequestPopupTitle(step) {
-                const titles = {
-                    1: 'Мы перезвоним и ответим на все вопросы в течение 15 минут',
-                    2: 'Выберите основную услугу',
-                    3: 'Выберите дополнительные услуги',
-                    4: 'Ваш запрос в работе. Перезвоним в течение 15 минут.'
-                };
-
-                if (titles[step]) {
-                    requestPopupTitle.textContent = titles[step];
-                }
-            }
-
-            // Update request popup size based on current step
-            function updateRequestPopupSize(step) {
-                const popup = requestPopupOverlay.querySelector('.popup');
-
-                if (step === 4) {
-                    // Compact size for success step
-                    popup.classList.add('popup--compact');
-                } else {
-                    // Normal size for other steps
-                    popup.classList.remove('popup--compact');
-                }
-            }
-
-            function updateRequestStepButtons() {
-                requestContinueBtn.style.display = requestCurrentStep < 3 ? 'flex' : 'none';
-                requestSubmitBtn.style.display = requestCurrentStep === 3 ? 'flex' : 'none';
-                requestSuccessBtn.style.display = requestCurrentStep === 4 ? 'flex' : 'none';
-
-                // Update button text
-                if (requestCurrentStep === 1) {
-                    requestContinueBtn.textContent = 'Продолжить';
-                } else if (requestCurrentStep === 2) {
-                    requestContinueBtn.textContent = 'Продолжить';
-                }
-            }
-
-            // Open request popup
-            function openRequestPopup() {
-                requestPopupOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                requestCurrentStep = 1;
-                goToRequestStep(1);
-
-                // Reset form
-                resetRequestForm();
-
-                // Focus on first input
-                setTimeout(() => {
-                    requestUserName.focus();
-                }, 300);
-            }
-
-            // Close request popup
-            function closeRequestPopup() {
-                requestPopupOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-                requestCurrentStep = 1;
-            }
-
-            // Reset request form data
-            function resetRequestForm() {
-                requestUserName.value = '';
-                requestUserPhone.value = '';
-                requestCarModel.value = '';
-                requestSelectedMainService = '';
-                requestSelectedAdditionalServices = [];
-
-                // Reset service buttons
-                requestServiceBtns.forEach(btn => btn.classList.remove('popup__service-btn--active'));
-                requestAdditionalBtns.forEach(btn => btn.classList.remove('popup__additional-btn--selected'));
-
-                // Hide discount
-                requestDiscountSection.style.display = 'none';
-
-                // Clear errors
-                requestPopupOverlay.querySelectorAll('.popup__error').forEach(error => {
-                    error.classList.remove('active');
-                });
-
-                requestFormData = {
-                    name: '',
-                    phone: '',
-                    carModel: '',
-                    mainService: '',
-                    additionalServices: [],
-                    discount: 0,
-                    timestamp: ''
-                };
-            }
-
-            // Step 1: Continue button
-            requestContinueBtn.addEventListener('click', function() {
-                if (requestCurrentStep === 1) {
-                    // Validate step 1
-                    const isNameValid = validateRequestName();
-                    const isPhoneValid = validateRequestPhone();
-                    const isCarValid = validateRequestCarModel();
-
-                    if (isNameValid && isPhoneValid && isCarValid) {
-                        // Save form data
-                        requestFormData.name = requestUserName.value.trim();
-                        requestFormData.phone = requestUserPhone.value.trim();
-                        requestFormData.carModel = requestCarModel.value.trim();
-                        requestFormData.timestamp = new Date().toISOString();
-
-                        goToRequestStep(2);
-                    }
-                } else if (requestCurrentStep === 2) {
-                    // Validate step 2
-                    if (validateRequestMainService()) {
-                        requestFormData.mainService = requestSelectedMainService;
-                        goToRequestStep(3);
-                        updateRequestDiscountDisplay();
-                    }
-                }
-            });
-
-            // Main service selection
-            requestServiceBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    requestServiceBtns.forEach(b => b.classList.remove('popup__service-btn--active'));
-
-                    // Add active class to clicked button
-                    this.classList.add('popup__service-btn--active');
-                    requestSelectedMainService = this.dataset.service;
-
-                    // Clear error
-                    requestMainServiceError.classList.remove('active');
-                });
-            });
-
-            // Additional services selection
-            requestAdditionalBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const service = this.dataset.service;
-
-                    if (requestSelectedAdditionalServices.includes(service)) {
-                        // Remove service
-                        requestSelectedAdditionalServices = requestSelectedAdditionalServices.filter(s => s !== service);
-                        this.classList.remove('popup__additional-btn--selected');
-                    } else {
-                        // Add service
-                        requestSelectedAdditionalServices.push(service);
-                        this.classList.add('popup__additional-btn--selected');
-                    }
-
-                    // Update discount
-                    updateRequestDiscountDisplay();
-                });
-            });
-
-            // Submit form
-            requestSubmitBtn.addEventListener('click', function() {
-                // Save additional services and discount
-                requestFormData.additionalServices = [...requestSelectedAdditionalServices];
-                requestFormData.discount = calculateRequestDiscount();
-
-                // Here you would typically send data to CRM
-                console.log('Request form data to send to CRM:', requestFormData);
-
-                // Show success step
-                goToRequestStep(4);
-
-                // You can uncomment this to actually send data to CRM
-                // sendToCRM(requestFormData);
-            });
-
-            // Success button
-            requestSuccessBtn.addEventListener('click', function() {
-                closeRequestPopup();
-            });
-
-            // Close popup events
-            requestPopupClose.addEventListener('click', closeRequestPopup);
-            requestPopupOverlay.addEventListener('click', function(e) {
-                if (e.target === requestPopupOverlay) {
-                    closeRequestPopup();
-                }
-            });
-
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && requestPopupOverlay.classList.contains('active')) {
-                    closeRequestPopup();
-                }
-            });
-
-            // Real-time validation
-            requestUserName.addEventListener('input', validateRequestName);
-            requestUserPhone.addEventListener('input', validateRequestPhone);
-            requestCarModel.addEventListener('input', validateRequestCarModel);
-
-            // Phone number formatting
-            requestUserPhone.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-
-                if (value.length > 11) {
-                    value = value.slice(0, 11);
-                }
-
-                // Format phone number
-                if (value.length >= 6) {
-                    value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/, '+$1 ($2) $3-$4-$5');
-                } else if (value.length >= 3) {
-                    value = value.replace(/(\d{1})(\d{3})/, '+$1 ($2');
-                } else if (value.length >= 1) {
-                    value = '+' + value;
-                }
-
-                e.target.value = value;
-                validateRequestPhone();
-            });
-
-            // Make openRequestPopup function globally available for other buttons on the site
-            window.openRequestPopup = openRequestPopup;
-
-            // Add event listeners to existing buttons on the site for requests
-            const requestButtons = document.querySelectorAll('.btn-primary, .footer__button, .burger-menu__btn');
-            requestButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    openRequestPopup();
-                });
-            });
-        });
-    </script>
+            <div class="popup__footer">
+                <button type="button" class="popup__btn popup__btn--continue" id="reviewContinueBtn">Продолжить</button>
+                <button type="button" class="popup__btn popup__btn--submit" id="reviewSubmitBtn"
+                    style="display: none;">Отправить отзыв</button>
+                <button type="button" class="popup__btn popup__btn--success" id="reviewSuccessBtn"
+                    style="display: none;">Отлично!</button>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

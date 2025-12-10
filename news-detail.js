@@ -1,7 +1,11 @@
 // News Detail Page JavaScript
+
+
+
+
 class NewsDetailManager {
     constructor() {
-        this.newsId = this.getNewsIdFromUrl();
+        this.slug = this.getSlugFromUrl();
         this.newsData = null;
         this.relatedNews = [];
 
@@ -9,29 +13,65 @@ class NewsDetailManager {
     }
 
     init() {
-        if (this.newsId) {
+        if (this.slug) {
             this.loadNewsData();
         } else {
             this.showError('Новость не найдена');
         }
     }
 
-    getNewsIdFromUrl() {
+    getSlugFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('id');
+        return urlParams.get('slug');
     }
 
-    loadNewsData() {
-        // Загружаем данные из общего источника
-        this.newsData = NEWS_DATA.find(item => item.id == this.newsId);
+    async loadNewsData() {
+        try {
+            const response = await fetch(`http://localhost:3000/api/posts/${this.slug}`);
+            if (!response.ok) throw new Error('Post not found');
 
-        if (this.newsData) {
+            const item = await response.json();
+
+            this.newsData = {
+                id: item.id,
+                title: item.title,
+                rawDate: item.datePublished || item.dateCreated,
+                date: new Date(item.datePublished || item.dateCreated).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }),
+                type: item.type === 'NEWS' ? 'news' : 'article',
+                category: item.category === 'NEWS' ? 'news' : 'articles',
+                content: item.content,
+                image: item.image ? `http://localhost:3000${item.image}` : null,
+                views: item.views,
+                tags: item.tags || [],
+                slug: item.slug
+            };
+
             this.renderNewsDetail();
             this.updateMetaTags();
-            this.loadRelatedNews();
             this.updateStructuredData();
-        } else {
+
+            // Загружаем похожие новости
+            this.loadRelatedNews();
+
+            // Увеличиваем счетчик просмотров
+            this.incrementViews();
+        } catch (error) {
+            console.error('Error loading news detail:', error);
             this.showError('Новость не найдена');
+        }
+    }
+
+    async incrementViews() {
+        try {
+            await fetch(`http://localhost:3000/api/posts/${this.slug}/increment-views`, {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.error('Error incrementing views:', error);
         }
     }
 
@@ -42,9 +82,18 @@ class NewsDetailManager {
         const newsHtml = this.createNewsDetailHtml();
         detailContainer.innerHTML = newsHtml;
 
-        // Обновляем breadcrumb
+        // навешиваем обработчик на кнопку "Обсудить проект"
+        const discussBtn = detailContainer.querySelector('.news-detail__cta .btn-primary');
+        if (discussBtn && typeof openPopup === 'function') {
+            discussBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openPopup();
+            });
+        }
+
         this.updateBreadcrumb();
     }
+
 
     createNewsDetailHtml() {
         const { newsData } = this;
@@ -59,7 +108,7 @@ class NewsDetailManager {
                 </div>
                 <div class="news-detail__content">
                     <div class="news-detail__meta">
-                        <div class="news-detail__date">${formatDate(newsData.date)}</div>
+                        <div class="news-detail__date">${newsData.date}</div>
                         <div class="news-detail__type">${this.getTypeLabel(newsData.type)}</div>
                         <div class="news-detail__views">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -77,7 +126,7 @@ class NewsDetailManager {
                         ${newsData.tags.map(tag => `<span class="news-tag news-tag--detail">${tag}</span>`).join('')}
                     </div>
                     <div class="news-detail__cta">
-                        <button class="btn-primary" onclick="window.openPopup()">
+                        <button class="btn-primary" id="newsDiscussBtn">
                             Обсудить проект
                         </button>
                     </div>
@@ -88,7 +137,7 @@ class NewsDetailManager {
             return `
                 <div class="news-detail__content news-detail__content--text">
                     <div class="news-detail__meta">
-                        <div class="news-detail__date">${formatDate(newsData.date)}</div>
+                        <div class="news-detail__date">${newsData.date}</div>
                         <div class="news-detail__type">${this.getTypeLabel(newsData.type)}</div>
                         <div class="news-detail__views">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -106,7 +155,7 @@ class NewsDetailManager {
                         ${newsData.tags.map(tag => `<span class="news-tag news-tag--detail">${tag}</span>`).join('')}
                     </div>
                     <div class="news-detail__cta">
-                        <button class="btn-primary" onclick="window.openPopup()">
+                        <button class="btn-primary">
                             ${newsData.category === 'actions' ? 'Воспользоваться предложением' : 'Обсудить проект'}
                         </button>
                     </div>
@@ -255,16 +304,20 @@ class NewsDetailManager {
 
         // Published time
         const publishedTime = document.getElementById('news-published-time');
-        if (publishedTime) {
-            const pubDate = new Date(newsData.date).toISOString();
-            publishedTime.setAttribute('content', pubDate);
+        if (publishedTime && newsData.rawDate) {
+            const pubDate = new Date(newsData.rawDate);
+            if (!isNaN(pubDate.getTime())) {
+                publishedTime.setAttribute('content', pubDate.toISOString());
+            }
         }
 
         // Modified time (устанавливаем как published для простоты)
         const modifiedTime = document.getElementById('news-modified-time');
-        if (modifiedTime) {
-            const modDate = new Date(newsData.date).toISOString();
-            modifiedTime.setAttribute('content', modDate);
+        if (modifiedTime && newsData.rawDate) {
+            const modDate = new Date(newsData.rawDate);
+            if (!isNaN(modDate.getTime())) {
+                modifiedTime.setAttribute('content', modDate.toISOString());
+            }
         }
     }
 
@@ -275,24 +328,138 @@ class NewsDetailManager {
         }
     }
 
-    loadRelatedNews() {
+    /**
+     * Загружает похожие новости с API
+     * Использует умный алгоритм подбора на основе:
+     * 1. Совпадающих тегов (main priority)
+     * 2. Типа/категории контента
+     * 3. Свежести по дате
+     * 4. Популярности по просмотрам
+     */
+    async loadRelatedNews() {
         if (!this.newsData) return;
 
-        // Находим похожие новости по типу и тегам
-        this.relatedNews = NEWS_DATA
-            .filter(item => item.id != this.newsData.id)
-            .filter(item => {
-                // Похожий тип контента
-                if (this.newsData.type === 'news' && item.type === 'news') return true;
-                if (this.newsData.type === 'article' && item.type === 'article') {
-                    // Похожая категория для статей
-                    return item.category === this.newsData.category;
-                }
-                return false;
-            })
-            .slice(0, 4); // Берем 4 похожие новости
+        try {
+            // Запрашиваем все посты с API
+            const response = await fetch('http://localhost:3000/api/posts');
+            if (!response.ok) throw new Error('Failed to fetch posts');
 
-        this.renderRelatedNews();
+            const allPosts = await response.json();
+
+            // 1. Исключаем текущую новость
+            const candidates = allPosts.filter(post => post.id !== this.newsData.id);
+
+            // 2. Считаем оценку похожести для каждого кандидата
+            const scoredCandidates = candidates.map(post => {
+                const transformedPost = this.transformPostData(post);
+                const similarityScore = this.calculateSimilarityScore(this.newsData, transformedPost);
+                return {
+                    ...transformedPost,
+                    similarityScore
+                };
+            });
+
+            // 3. Сортируем по комбинации факторов:
+            //    - Оценка похожести (desc)
+            //    - Дата публикации (desc - свежее лучше)
+            //    - Просмотры (desc - популярнее лучше)
+            scoredCandidates.sort((a, b) => {
+                // Сначала по оценке похожести
+                if (b.similarityScore !== a.similarityScore) {
+                    return b.similarityScore - a.similarityScore;
+                }
+
+                // Затем по дате (свежее лучше)
+                const dateA = new Date(a.rawDate);
+                const dateB = new Date(b.rawDate);
+                if (dateB.getTime() !== dateA.getTime()) {
+                    return dateB.getTime() - dateA.getTime();
+                }
+
+                // Наконец по просмотрам (популярнее лучше)
+                return (b.views || 0) - (a.views || 0);
+            });
+
+            // 4. Берем топ-4 самых релевантных
+            this.relatedNews = scoredCandidates.slice(0, 4);
+
+            // 5. Рендерим карточки
+            this.renderRelatedNews();
+
+        } catch (error) {
+            console.error('Error loading related news:', error);
+            // В случае ошибки просто не показываем блок похожих новостей
+        }
+    }
+
+    /**
+     * Вычисляет оценку похожести между текущей новостью и кандидатом.
+     * 
+     * Правила оценки (можно настроить здесь):
+     * - За каждый совпадающий тег: +10 баллов
+     * - За совпадение типа (news/article): +5 баллов
+     * - За совпадение категории: +3 балла
+     * 
+     * Чем больше баллов, тем более похожа новость.
+     * 
+     * @param {Object} current - Текущая новость
+     * @param {Object} candidate - Кандидат для сравнения
+     * @returns {number} - Оценка похожести
+     */
+    calculateSimilarityScore(current, candidate) {
+        let score = 0;
+
+        // 1. Проверяем совпадение тегов (наивысший приоритет)
+        const currentTags = current.tags || [];
+        const candidateTags = candidate.tags || [];
+
+        // Находим общие теги
+        const commonTags = currentTags.filter(tag =>
+            candidateTags.includes(tag)
+        );
+
+        // За каждый общий тег добавляем 10 баллов
+        // Можно изменить множитель для большего/меньшего влияния тегов
+        score += commonTags.length * 10;
+
+        // 2. Проверяем совпадение типа контента (средний приоритет)
+        if (current.type === candidate.type) {
+            // Можно изменить на другое значение для регулировки веса
+            score += 5;
+        }
+
+        // 3. Проверяем совпадение категории (низкий приоритет)
+        if (current.category === candidate.category) {
+            // Можно изменить на другое значение для регулировки веса
+            score += 3;
+        }
+
+        return score;
+    }
+
+    /**
+     * Преобразует данные поста с API в формат для фронтенда
+     * @param {Object} item - Объект поста с API
+     * @returns {Object} - Преобразованный объект
+     */
+    transformPostData(item) {
+        return {
+            id: item.id,
+            title: item.title,
+            rawDate: item.datePublished || item.dateCreated,
+            date: new Date(item.datePublished || item.dateCreated).toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }),
+            type: item.type === 'NEWS' ? 'news' : 'article',
+            category: item.category === 'NEWS' ? 'news' : 'articles',
+            content: item.content,
+            image: item.image ? `http://localhost:3000${item.image}` : null,
+            views: item.views,
+            tags: item.tags || [],
+            slug: item.slug
+        };
     }
 
     renderRelatedNews() {
@@ -321,7 +488,7 @@ class NewsDetailManager {
                     <img src="${newsItem.image}" alt="${newsItem.title}">
                 </div>
                 <div class="news-card__content">
-                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
+                    <div class="news-card__date">${newsItem.date}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <div class="news-card__tags">
                         ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
@@ -334,7 +501,7 @@ class NewsDetailManager {
 
             cardContent = `
                 <div class="news-card__content">
-                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
+                    <div class="news-card__date">${newsItem.date}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <p class="news-card__description">${truncatedContent}</p>
                     <div class="news-card__tags">
@@ -348,7 +515,7 @@ class NewsDetailManager {
 
         // Добавляем обработчик клика для перехода к полной статье
         cardDiv.addEventListener('click', () => {
-            window.location.href = `news-detail.html?id=${newsItem.id}`;
+            window.location.href = `news-detail.html?slug=${newsItem.slug}`;
         });
 
         return cardDiv;
@@ -404,16 +571,23 @@ class NewsDetailManager {
         if (!structuredDataElement || !this.newsData) return;
 
         const { newsData } = this;
-        const currentUrl = `https://statusdesign.ru/news-detail.html?id=${newsData.id}`;
+        const currentUrl = `https://statusdesign.ru/news-detail.html?slug=${newsData.slug}`;
+
+        // Валидация даты
+        let publishedDate = new Date(newsData.rawDate);
+        let publishedISO = null;
+        if (!isNaN(publishedDate.getTime())) {
+            publishedISO = publishedDate.toISOString();
+        }
 
         const structuredData = {
             "@context": "https://schema.org",
             "@type": "NewsArticle",
             "headline": newsData.title,
             "description": newsData.content.substring(0, 200) + '...',
-            "image": newsData.image ? `https://statusdesign.ru/${newsData.image}` : "https://statusdesign.ru/img/news_img_1.png",
-            "datePublished": new Date(newsData.date).toISOString(),
-            "dateModified": new Date(newsData.date).toISOString(),
+            "image": newsData.image ? newsData.image : "https://statusdesign.ru/img/news_img_1.png",
+            "datePublished": publishedISO,
+            "dateModified": publishedISO,
             "author": {
                 "@type": "Organization",
                 "name": "Status Design",

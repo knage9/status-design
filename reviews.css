@@ -6,6 +6,7 @@
     background-color: #ffffff;
 }
 
+
 /* Page Title */
 .reviews-page__title {
     font-family: 'Inter', sans-serif;
@@ -62,9 +63,9 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent);
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
     transition: left 0.5s ease;
 }
 
@@ -120,9 +121,9 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent);
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
     transition: left 0.5s ease;
 }
 
@@ -212,7 +213,8 @@
 .reviews-page__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 50px 20px; /* 70px vertical gap for rows, 20px horizontal gap for columns */
+    gap: 50px 20px;
+    /* 70px vertical gap for rows, 20px horizontal gap for columns */
     padding: 0px 0px;
     margin-bottom: 50px;
 }
@@ -227,7 +229,8 @@
 /* Review Card for Reviews Page */
 .review-card-reviews {
     width: 440px;
-    background-color: rgba(0, 0, 0, 0.05);;
+    background-color: rgba(0, 0, 0, 0.05);
+    ;
     border: 1px solid rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(1px);
     border-radius: 10px;
@@ -304,7 +307,8 @@
 
 /* Tags */
 .review-card-reviews__tags {
-    display: none; /* Hide tags inside cards */
+    display: none;
+    /* Hide tags inside cards */
 }
 
 .review-card-reviews__tag {
@@ -365,9 +369,9 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent);
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
     transition: left 0.5s ease;
 }
 
@@ -540,7 +544,7 @@
 }
 
 .rating-star:hover,
-.rating-input input[type="radio"]:checked ~ .rating-star {
+.rating-input input[type="radio"]:checked~.rating-star {
     color: #ffd700;
 }
 
@@ -577,9 +581,9 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent);
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
     transition: left 0.5s ease;
 }
 
@@ -592,7 +596,8 @@
 /* Large Desktop */
 @media (max-width: 1599px) {
     .reviews-page__grid {
-        gap: 50px 15px; /* Maintain row spacing on large desktop */
+        gap: 50px 15px;
+        /* Maintain row spacing on large desktop */
     }
 
     .review-card-reviews {
@@ -608,7 +613,8 @@
 @media (max-width: 1280px) {
     .reviews-page__grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 50px 20px; /* Maintain row spacing on desktop */
+        gap: 50px 20px;
+        /* Maintain row spacing on desktop */
     }
 
     .review-card-reviews {
@@ -622,7 +628,7 @@
 }
 
 @media (max-width: 880px) {
-    .reviews-page__leave-btn{
+    .reviews-page__leave-btn {
         max-width: 100%;
     }
 }
@@ -673,7 +679,8 @@
 
     .reviews-page__grid {
         grid-template-columns: 1fr;
-        gap: 50px; /* Maintain row spacing on tablet */
+        gap: 50px;
+        /* Maintain row spacing on tablet */
         margin-bottom: 40px;
     }
 
@@ -769,7 +776,8 @@
     }
 
     .reviews-page__grid {
-        gap: 40px; /* Maintain row spacing on mobile */
+        gap: 40px;
+        /* Maintain row spacing on mobile */
         margin-bottom: 30px;
     }
 
@@ -852,7 +860,7 @@
         font-size: 26px;
     }
 
-    
+
 
     .review-modal__submit {
         height: 56px;
@@ -995,7 +1003,7 @@
     overflow: hidden;
 }
 
-.popup__step {
+.popup__step-review {
     display: none;
     flex-direction: column;
     gap: 20px;
@@ -1005,7 +1013,7 @@
     margin-top: 50px;
 }
 
-.popup__step--active {
+.popup__step-review--active {
     display: flex;
 }
 
@@ -1072,6 +1080,7 @@
     max-width: 100%;
     margin: 0 auto;
 }
+
 
 .popup__additional-services {
     display: flex;
@@ -1318,6 +1327,28 @@
     object-fit: contain;
 }
 
+.popup__rating-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.02em;
+    color: #000000;
+}
+
+.popup__rating-stars img {
+    width: 40px;
+    height: auto;
+}
+
+.popup__rating-stars {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #E5E7EB;
+}
+
 /* Review Popup Mobile Responsive */
 @media (max-width: 768px) {
     .popup-overlay {
@@ -1368,7 +1399,7 @@
         overflow: hidden;
     }
 
-    .popup__step {
+    .popup__step-review {
         margin-top: 20px;
         gap: 15px;
         height: calc(100% - 20px);
@@ -1571,7 +1602,7 @@
         padding-bottom: 10px;
     }
 
-    .popup__step {
+    .popup__step-review {
         margin-top: 15px;
         gap: 12px;
     }
@@ -1653,16 +1684,54 @@
 
 
 .popup__additional-btn {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .popup__additional-text {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Updated styles for delete photo button */
+.popup .photo-upload__preview-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background-color: #ff4444;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.popup .photo-upload__preview-remove:hover {
+    background-color: #cc0000;
+    transform: scale(1.1);
+}
+
+.popup .photo-upload__preview-remove img {
+    width: 12px;
+    height: 12px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+
+/* Fix popup height override */
+.popup {
+    height: 600px;
 }

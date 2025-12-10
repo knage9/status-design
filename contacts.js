@@ -375,6 +375,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitBtn.textContent = 'Отправить заявку';
                 submitBtn.disabled = false;
             });
+
+        // Send to backend API (non-blocking)
+        fetch('http://localhost:3000/api/requests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: data.name,
+                phone: data.phone,
+                carModel: data.carModel,
+                mainService: data.mainService,
+                additionalServices: data.additionalServices,
+                discount: data.discount,
+                source: 'CONTACTS_PAGE'
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Backend save successful');
+                } else {
+                    console.error('Backend save failed', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Backend save error:', error);
+            });
     }
 
     // Initialize form state

@@ -1,0 +1,27 @@
+/* App specific styles if needed */
+.ant-layout-sider {
+  box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.ant-layout-header {
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.site-layout-background {
+  background: #141414;
+}
+
+@media (max-width: 992px) {
+  .desktop-sider {
+    display: none !important;
+  }
+
+  .site-layout {
+    margin-left: 0 !important;
+  }
+
+  .mobile-menu-btn {
+    display: inline-block !important;
+  }
+}

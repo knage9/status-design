@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="news-title">Новость - Тюнинг премиум класса в Москве</title>
-    <meta name="description" id="news-description" content="Подробная информация о новости от Status Design - ведущей компании по тюнингу автомобилей премиум класса в Москве.">
+    <meta name="description" id="news-description"
+        content="Подробная информация о новости от Status Design - ведущей компании по тюнингу автомобилей премиум класса в Москве.">
     <meta name="keywords" id="news-keywords" content="тюнинг, премиум класс, Москва, автомобиль, новость">
     <link rel="canonical" id="news-canonical" href="https://statusdesign.ru/news-detail.html">
 
@@ -23,7 +25,8 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" id="news-twitter-url" content="https://statusdesign.ru/news-detail.html">
     <meta property="twitter:title" id="news-twitter-title" content="Новость - Тюнинг премиум класса в Москве">
-    <meta property="twitter:description" id="news-twitter-description" content="Подробная информация о новости от Status Design">
+    <meta property="twitter:description" id="news-twitter-description"
+        content="Подробная информация о новости от Status Design">
     <meta property="twitter:image" id="news-twitter-image" content="https://statusdesign.ru/img/news_img_1.png">
 
     <!-- Дополнительные мета-теги для SEO -->
@@ -48,7 +51,11 @@
     <script src="data/news-data.js" defer></script>
     <script src="news-detail.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="popup.js" defer></script>
+    <script src="discount-popup.js" defer></script>
+
 </head>
+
 <body>
     <!-- Burger Menu Overlay -->
     <div class="burger-menu-overlay" id="burgerOverlay"></div>
@@ -59,10 +66,12 @@
             <div class="header__content">
                 <div class="header__left">
                     <div class="logo">
-                        <img src="img/logo.svg" alt="SD Logo">
+                        <a href="index.html">
+                            <img src="img/logo.svg" alt="SD Logo">
+                        </a>
                     </div>
                     <nav class="nav">
-                        <a href="index.html" class="nav__link">О компании</a>
+                        <a href="portfolio.html" class="nav__link">Портфолио</a>
                         <a href="reviews.html" class="nav__link">Отзывы</a>
                         <a href="news.html" class="nav__link nav__link--active">Новости</a>
                         <a href="contacts.html" class="nav__link">Контакты</a>
@@ -70,21 +79,23 @@
                     <!-- Burger Menu -->
                     <div class="burger-menu">
                         <button class="burger-menu__toggle" id="burgerToggle">
-                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                             </svg>
-                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close"
+                                width="24" height="24">
                             <span class="burger-menu__text">Меню</span>
                         </button>
                         <div class="burger-menu__dropdown" id="burgerDropdown">
-                        <div class="burger-menu__content">
-                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
-                            <a href="news.html" class="burger-menu__link burger-menu__link--active">Новости</a>
-                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
-                            <button class="burger-menu__btn">Оставить заявку</button>
-                        </div>
+                            <div class="burger-menu__content">
+                                <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                                <a href="news.html" class="burger-menu__link burger-menu__link--active">Новости</a>
+                                <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                                <button class="burger-menu__btn">Оставить заявку</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -142,7 +153,8 @@
                                 <img src="img/иконка_1.svg" alt="Premium Cars">
                             </div>
                             <h3 class="feature-card__title">Опыт работы с премиальными авто</h3>
-                            <p class="feature-card__description">За 7 лет мы работали с 37 марками автомобилей, включая премиум-класс.</p>
+                            <p class="feature-card__description">За 7 лет мы работали с 37 марками автомобилей, включая
+                                премиум-класс.</p>
                         </div>
 
                         <div class="feature-card">
@@ -150,7 +162,8 @@
                                 <img src="img/иконка_2.svg" alt="Quality Guarantee">
                             </div>
                             <h3 class="feature-card__title">Гарантия качества и ответственности</h3>
-                            <p class="feature-card__description">Все работы выполняются с гарантией и материальной ответственностью за результат.</p>
+                            <p class="feature-card__description">Все работы выполняются с гарантией и материальной
+                                ответственностью за результат.</p>
                         </div>
 
                         <div class="feature-card">
@@ -158,7 +171,8 @@
                                 <img src="img/иконка_3.svg" alt="Professional Team">
                             </div>
                             <h3 class="feature-card__title">Профессиональная команда</h3>
-                            <p class="feature-card__description">В нашей команде более 20 специалистов с опытом работы в тюнинге свыше 15 лет.</p>
+                            <p class="feature-card__description">В нашей команде более 20 специалистов с опытом работы в
+                                тюнинге свыше 15 лет.</p>
                         </div>
 
                         <div class="feature-card">
@@ -166,7 +180,8 @@
                                 <img src="img/иконка_4.svg" alt="Premium Materials">
                             </div>
                             <h3 class="feature-card__title">Только проверенные материалы</h3>
-                            <p class="feature-card__description">Мы используем только современные технологии и премиальные материалы.</p>
+                            <p class="feature-card__description">Мы используем только современные технологии и
+                                премиальные материалы.</p>
                         </div>
                     </div>
                 </div>
@@ -185,7 +200,8 @@
                 </div>
                 <div class="footer__cta-block">
                     <h2 class="footer__title">Пора выделиться на дороге</h2>
-                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали
+                        профессионалам и почувствуйте разницу.</p>
                     <button class="footer__button">Оставить заявку</button>
                 </div>
             </div>
@@ -199,12 +215,128 @@
         <div class="footer__back-to-top">
             <button class="footer__back-btn" id="backToTopBtn" title="Вернуться наверх">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
                 <span>Наверх</span>
             </button>
         </div>
     </footer>
+
+    <!-- Multi-step Popup Modal for Requests -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут
+                    </h2>
+                </div>
+                <button class="popup__close" id="popupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+                <!-- Step 1: Contact Information -->
+                <div class="popup__step popup__step--active" data-step="1">
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="userName" placeholder="Ваше имя" required>
+                        <div class="popup__error" id="nameError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="tel" class="popup__input" id="userPhone" placeholder="Телефон" required>
+                        <div class="popup__error" id="phoneError"></div>
+                    </div>
+                    <div class="popup__form-group">
+                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто"
+                            required>
+                        <div class="popup__error" id="carError"></div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Main Service Selection -->
+                <div class="popup__step" data-step="2">
+                    <div class="popup__main-services">
+                        <button class="popup__service-btn" data-service="carbon" type="button">
+                            <span class="popup__service-text">Карбон</span>
+                        </button>
+                        <button class="popup__service-btn" data-service="antichrome" type="button">
+                            <span class="popup__service-text">Антихром с покраской</span>
+                        </button>
+                    </div>
+                    <div class="popup__error" id="mainServiceError"></div>
+                </div>
+
+                <!-- Step 3: Additional Services -->
+                <div class="popup__discount" id="discountSection" style="display: none;">
+                    <div class="popup__discount-wrapper">
+                        <div class="popup__discount-badge">
+                            <span class="popup__discount-percent" id="discountPercent">-10%</span>
+                        </div>
+                        <div class="popup__discount-text">
+                            <span class="popup__discount-label">Ваша персональная скидка</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup__step" data-step="3">
+                    <div class="popup__additional-container">
+                        <div class="popup__additional-services">
+                            <button class="popup__additional-btn" data-service="antigravity-film" type="button">
+                                <span class="popup__additional-text">Оклейка антигравийной пленкой</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="disk-painting" type="button">
+                                <span class="popup__additional-text">Окрас колесных дисков</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="cleaning" type="button">
+                                <span class="popup__additional-text">Химчистка</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="ceramic" type="button">
+                                <span class="popup__additional-text">Керамика</span>
+                            </button>
+                            <button class="popup__additional-btn" data-service="polish" type="button">
+                                <span class="popup__additional-text">Полировка</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Success Message -->
+                <div class="popup__step" data-step="4">
+                </div>
+            </div>
+
+            <div class="popup__footer">
+                <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
+                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить
+                    заявку</button>
+                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду
+                    ожидать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Popup Modal -->
+    <div class="popup-overlay popup-overlay--success" id="successPopupOverlay">
+        <div class="popup popup--success">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="successTitle">Ваш запрос в работе. Перезвоним в течение 15 минут.</h2>
+                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.
+                    </p>
+                </div>
+                <button class="popup__close" id="successPopupClose">
+                    <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+            </div>
+
+            <div class="popup__footer" style="padding: 20px;">
+                <button class="popup__btn popup__btn--success" id="newsSuccessBtn">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Structured Data for SEO -->
     <script type="application/ld+json" id="newsStructuredData">
@@ -259,4 +391,5 @@
     }
     </script>
 </body>
+
 </html>

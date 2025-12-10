@@ -9,7 +9,7 @@ class ReviewsManager {
         this.currentServiceFilter = 'all';
 
         // Review Popup State
-        this.currentStep = 1;
+        this.currentStep_review = 1;
         this.selectedServices = [];
         this.reviewData = {
             carModel: '',
@@ -21,16 +21,8 @@ class ReviewsManager {
     }
 
     init() {
-        this.generateReviews();
+        this.loadReviews();
         this.bindEvents();
-        this.applyFilters(); // Применяем фильтры при инициализации
-        this.updateActiveFilterButtons(); // Обновляем активные кнопки фильтров
-        this.renderReviews();
-
-        // Добавляем обработчик изменения размера окна для мобильной адаптации
-        window.addEventListener('resize', () => {
-            this.handleWindowResize();
-        });
     }
 
     // Обновление активных кнопок фильтров
@@ -60,361 +52,169 @@ class ReviewsManager {
         });
     }
 
-    // Генерация разнообразных отзывов
-    generateReviews() {
-        const reviewsData = [
-            {
-                id: 1,
-                rating: 5,
-                service: 'antichrome',
-                carModel: 'BMW X5',
-                text: 'Отличная работа по антихрому! Машина выглядит намного солиднее и современнее. Ребята профессионалы своего дела, все сделали быстро и качественно.',
-                date: '15.10.2024',
-                hasImage: true,
-                image: 'img/review-1.png',
-                tags: ['BMW X5', 'Антихром']
-            },
-            {
-                id: 2,
-                rating: 5,
-                service: 'carbon',
-                carModel: 'Mercedes GLS',
-                text: 'Заказывал карбоновые детали для GLS Майбах. Результат превзошел все ожидания! Качество материалов на высшем уровне, установка идеальная.',
-                date: '12.10.2024',
-                hasImage: true,
-                image: 'img/review-2.png',
-                tags: ['GLS Майбах', 'Карбон']
-            },
-            {
-                id: 3,
-                rating: 4,
-                service: 'soundproofing',
-                carModel: 'Audi Q7',
-                text: 'Шумоизоляция сделана на совесть. В салоне стало значительно тише, особенно на трассе. Рекомендую всем, кто ценит комфорт.',
-                date: '10.10.2024',
-                hasImage: false,
-                tags: ['Audi Q7', 'Шумоизоляция']
-            },
-            {
-                id: 4,
-                rating: 5,
-                service: 'wheels',
-                carModel: 'Porsche Cayenne',
-                text: 'Покраска колесных дисков в черный матовый цвет преобразила весь внешний вид автомобиля. Теперь машина выглядит агрессивно и стильно.',
-                date: '08.10.2024',
-                hasImage: true,
-                image: 'img/review-3.png',
-                tags: ['Porsche Cayenne', 'Колесные диски']
-            },
-            {
-                id: 5,
-                rating: 5,
-                service: 'cleaning',
-                carModel: 'Range Rover',
-                text: 'Химчистка салона выполнена на высшем уровне. Кожа выглядит как новая, все пятна удалены, запах свежести. Мастера - настоящие профессионалы!',
-                date: '05.10.2024',
-                hasImage: false,
-                tags: ['Range Rover', 'Химчистка']
-            },
-            {
-                id: 6,
-                rating: 4,
-                service: 'antichrome',
-                carModel: 'Toyota Land Cruiser',
-                text: 'Антихром отлично освежил внешний вид моего Крузака. Хромированные элементы были слишком вычурными, теперь машина выглядит более мужественно.',
-                date: '03.10.2024',
-                hasImage: true,
-                image: 'img/Gallery-1.png',
-                tags: ['Land Cruiser', 'Антихром']
-            },
-            {
-                id: 7,
-                rating: 5,
-                service: 'carbon',
-                carModel: 'BMW M3',
-                text: 'Карбоновый обвес на M3 выглядит просто космос! Легкость, прочность и внешний вид - все на высоте. Монтаж выполнен идеально.',
-                date: '01.10.2024',
-                hasImage: true,
-                image: 'img/Gallery-2.png',
-                tags: ['BMW M3', 'Карбон']
-            },
-            {
-                id: 8,
-                rating: 5,
-                service: 'soundproofing',
-                carModel: 'Mercedes S-Class',
-                text: 'После шумоизоляции в S-Class стало тише, чем в библиотеке. Можно разговаривать шепотом на любой скорости. Потрясающий результат!',
-                date: '28.09.2024',
-                hasImage: false,
-                tags: ['Mercedes S-Class', 'Шумоизоляция']
-            },
-            {
-                id: 9,
-                rating: 4,
-                service: 'wheels',
-                carModel: 'Audi RS6',
-                text: 'Покраска дисков в бронзовый цвет сделала RS6 еще более эксклюзивной. Цвет подобран идеально под оттенок кузова.',
-                date: '25.09.2024',
-                hasImage: true,
-                image: 'img/Gallery-3.png',
-                tags: ['Audi RS6', 'Колесные диски']
-            },
-            {
-                id: 10,
-                rating: 5,
-                service: 'cleaning',
-                carModel: 'Bentley Continental',
-                text: 'Химчистка салона Bentley выполнена ювелирно. Все материалы выглядят как новые, особое внимание уделили светлой коже.',
-                date: '22.09.2024',
-                hasImage: false,
-                tags: ['Bentley Continental', 'Химчистка']
-            },
-            {
-                id: 11,
-                rating: 5,
-                service: 'antichrome',
-                carModel: 'Lexus LX',
-                text: 'Антихром на LX570 - это то, что доктор прописал! Машина сразу стала выглядеть дороже и современнее. Спасибо мастерам!',
-                date: '20.09.2024',
-                hasImage: true,
-                image: 'img/Gallery-4.png',
-                tags: ['Lexus LX', 'Антихром']
-            },
-            {
-                id: 12,
-                rating: 4,
-                service: 'carbon',
-                carModel: 'Porsche 911',
-                text: 'Карбоновые элементы на 911 добавили спортивности и шарма. Качество исполнения на высшем уровне, все зазоры идеальные.',
-                date: '18.09.2024',
-                hasImage: true,
-                image: 'img/Gallery-5.png',
-                tags: ['Porsche 911', 'Карбон']
-            },
-            {
-                id: 13,
-                rating: 5,
-                service: 'soundproofing',
-                carModel: 'BMW 7 Series',
-                text: 'Шумоизоляция в семерке BMW - это комфорт высшего класса. Теперь можно наслаждаться тишиной и музыкой даже на высокой скорости.',
-                date: '15.09.2024',
-                hasImage: false,
-                tags: ['BMW 7 Series', 'Шумоизоляция']
-            },
-            {
-                id: 14,
-                rating: 5,
-                service: 'wheels',
-                carModel: 'Mercedes G-Class',
-                text: 'Покраска дисков G-Class в черный глянец сделала Гелик еще более брутальным. Отличная работа, рекомендую!',
-                date: '12.09.2024',
-                hasImage: true,
-                image: 'img/news_img_1.png',
-                tags: ['Mercedes G-Class', 'Колесные диски']
-            },
-            {
-                id: 15,
-                rating: 4,
-                service: 'cleaning',
-                carModel: 'Rolls-Royce Ghost',
-                text: 'Химчистка салона Rolls-Royce требует особого подхода. Мастера справились на отлично, все поверхности выглядят идеально.',
-                date: '10.09.2024',
-                hasImage: false,
-                tags: ['Rolls-Royce Ghost', 'Химчистка']
-            }
-        ];
-
-        this.reviews = reviewsData;
-        this.filteredReviews = [...this.reviews];
-    }
-
     // Привязка событий
     bindEvents() {
-        // Фильтры
+        // Привязываем события для попапа отзывов
+        this.bindReviewPopupEvents();
+
+        // Фильтры сортировки
         const sortToggle = document.getElementById('sortToggle');
         const sortMenu = document.getElementById('sortMenu');
-        const servicesToggle = document.getElementById('servicesToggle');
-        const servicesMenu = document.getElementById('servicesMenu');
 
-        // Сортировка
-        sortToggle?.addEventListener('click', () => {
-            this.toggleDropdown(sortMenu, sortToggle);
-        });
+        if (sortToggle && sortMenu) {
+            sortToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortMenu.classList.toggle('active');
+            });
 
-        sortMenu?.addEventListener('click', (e) => {
-            if (e.target.classList.contains('filter-dropdown__option')) {
-                this.handleSortChange(e.target.dataset.value, e.target);
-                this.closeDropdown(sortMenu, sortToggle);
-            }
-        });
+            sortMenu.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-dropdown__option')) {
+                    this.currentSort = e.target.dataset.value;
+                    const sortText = sortToggle.querySelector('.filter-dropdown__text');
+                    if (sortText) sortText.textContent = e.target.textContent;
+                    sortMenu.classList.remove('active');
+                    this.applyFilters();
+                }
+            });
+        }
 
-        // Фильтр по услугам
-        servicesToggle?.addEventListener('click', () => {
-            this.toggleDropdown(servicesMenu, servicesToggle);
-        });
+        // Фильтры услуг
+        const serviceToggle = document.getElementById('servicesToggle');
+        const serviceMenu = document.getElementById('servicesMenu');
 
-        servicesMenu?.addEventListener('click', (e) => {
-            if (e.target.classList.contains('filter-dropdown__option')) {
-                this.handleServiceFilterChange(e.target.dataset.value, e.target);
-                this.closeDropdown(servicesMenu, servicesToggle);
-            }
-        });
+        if (serviceToggle && serviceMenu) {
+            serviceToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                serviceMenu.classList.toggle('active');
+            });
+
+            serviceMenu.addEventListener('click', (e) => {
+                const option = e.target.closest('.filter-dropdown__option');
+                if (!option) return;
+
+                this.currentServiceFilter = option.dataset.value;
+                // если хочешь текст на кнопке – можно сделать отдельный span
+                serviceMenu.classList.remove('active');
+                this.applyFilters();
+            });
+        }
+
 
         // Кнопка "Показать еще"
         const showMoreBtn = document.getElementById('showMoreBtn');
-        showMoreBtn?.addEventListener('click', () => {
-            this.showMoreReviews();
-        });
+        if (showMoreBtn) {
+            showMoreBtn.addEventListener('click', () => {
+                this.displayedCount += 6;
+                this.renderReviews();
+            });
+        }
 
-        // Модальное окно отзыва
-        const leaveBtn = document.querySelector('.reviews-page__leave-btn');
-        const modal = document.getElementById('reviewModalOverlay');
-        const closeBtn = document.getElementById('reviewModalClose');
-
-        leaveBtn?.addEventListener('click', () => {
-            this.openReviewModal();
-        });
-
-        closeBtn?.addEventListener('click', () => {
-            this.closeReviewModal();
-        });
-
-        modal?.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closeReviewModal();
-            }
-        });
-
-        // Форма отзыва
-        const reviewForm = document.getElementById('reviewForm');
-        reviewForm?.addEventListener('submit', (e) => {
-            this.handleReviewSubmit(e);
-        });
-
-        // Загрузка фото
-        const photoInput = document.getElementById('photoInput');
-        photoInput?.addEventListener('change', (e) => {
-            this.handlePhotoUpload(e);
-        });
-
-        // Закрытие dropdown при клике вне
+        // Закрытие дропдаунов при клике вне их
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.filter-dropdown')) {
-                this.closeAllDropdowns();
+                document.querySelectorAll('.filter-dropdown__menu.active').forEach(menu => {
+                    menu.classList.remove('active');
+                });
             }
         });
-
-        // Review Popup Events
-        this.bindReviewPopupEvents();
     }
 
-    // Управление dropdown
-    toggleDropdown(menu, toggle) {
-        const isActive = menu.classList.contains('active');
-
-        this.closeAllDropdowns();
-
-        if (!isActive) {
-            menu.classList.add('active');
-            toggle.classList.add('active');
-        }
-    }
-
-    closeDropdown(menu, toggle) {
-        menu.classList.remove('active');
-        toggle.classList.remove('active');
-    }
-
-    closeAllDropdowns() {
-        const dropdowns = document.querySelectorAll('.filter-dropdown__menu');
-        const toggles = document.querySelectorAll('.filter-dropdown__toggle');
-
-        dropdowns.forEach(menu => menu.classList.remove('active'));
-        toggles.forEach(toggle => toggle.classList.remove('active'));
-    }
-
-    // Обработка изменения сортировки
-    handleSortChange(value, element) {
-        this.currentSort = value;
-
-        // Обновляем активный элемент
-        document.querySelectorAll('#sortMenu .filter-dropdown__option').forEach(opt => {
-            opt.classList.remove('filter-dropdown__option--active');
-        });
-        element.classList.add('filter-dropdown__option--active');
-
-        // Обновляем текст кнопки
-        const text = element.textContent;
-        document.querySelector('.filter-dropdown__text').textContent = text;
-
-        this.applyFilters();
-    }
-
-    // Обработка изменения фильтра услуг
-    handleServiceFilterChange(value, element) {
-        this.currentServiceFilter = value;
-
-        // Обновляем активный элемент
-        document.querySelectorAll('#servicesMenu .filter-dropdown__option').forEach(opt => {
-            opt.classList.remove('filter-dropdown__option--active');
-        });
-        element.classList.add('filter-dropdown__option--active');
-
-        this.applyFilters();
-    }
 
     // Применение фильтров
     applyFilters() {
         let filtered = [...this.reviews];
 
-        // Фильтр по услугам
+        // Фильтрация по услугам
         if (this.currentServiceFilter !== 'all') {
-            filtered = filtered.filter(review => review.service === this.currentServiceFilter);
+            filtered = filtered.filter(review =>
+                Array.isArray(review.servicesSelected) &&
+                review.servicesSelected.includes(this.currentServiceFilter)
+            );
+        }
+
+
+        // Положительные / отрицательные
+        if (this.currentSort === 'positive') {
+            filtered = filtered.filter(r => r.rating >= 4); // можно 4–5
+        } else if (this.currentSort === 'negative') {
+            filtered = filtered.filter(r => r.rating <= 2); // можно 1–2
         }
 
         // Сортировка
         switch (this.currentSort) {
             case 'date':
-                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-                break;
-            case 'positive':
-                filtered = filtered.filter(review => review.rating >= 4);
-                filtered.sort((a, b) => b.rating - a.rating); // От 5 к 4 звездам
-                break;
-            case 'negative':
-                filtered = filtered.filter(review => review.rating <= 3);
-                filtered.sort((a, b) => a.rating - b.rating); // От 1 к 3 звездам
-                break;
-            default:
-                // По умолчанию: сначала с фото, потом без фото
+                // по дате (если хочешь явную сортировку по дате)
                 filtered.sort((a, b) => {
-                    // Если один с фото, другой без - фото идет первым
-                    if (a.hasImage && !b.hasImage) return -1;
-                    if (!a.hasImage && b.hasImage) return 1;
-                    // Если оба с фото или оба без - оставляем исходный порядок
-                    return 0;
+                    // если date у тебя сейчас строка ru-RU, лучше хранить исходную дату в объекте
+                    return new Date(b.rawDate) - new Date(a.rawDate);
                 });
+                break;
+            case 'default':
+            case 'positive':
+            case 'negative':
+            default:
+                // дефолтный порядок (как пришли с API, если API уже по дате)
                 break;
         }
 
         this.filteredReviews = filtered;
         this.displayedCount = 6;
         this.renderReviews();
+        this.updateActiveFilterButtons();
     }
 
-    // Рендер отзывов
+
+    // Отрисовка отзывов
     renderReviews() {
         const grid = document.getElementById('reviewsGrid');
         if (!grid) return;
 
         const reviewsToShow = this.filteredReviews.slice(0, this.displayedCount);
+        grid.innerHTML = '';
 
-        grid.innerHTML = reviewsToShow.map(review => this.createReviewCard(review)).join('');
+        if (reviewsToShow.length === 0) {
+            grid.innerHTML = '<div class="no-reviews">Отзывы не найдены</div>';
+            return;
+        }
+
+        reviewsToShow.forEach(review => {
+            const cardElement = document.createElement('div');
+            cardElement.innerHTML = this.createReviewCard(review);
+            grid.appendChild(cardElement.firstElementChild);
+        });
 
         // Показываем/скрываем кнопку "Показать еще"
         const showMoreBtn = document.getElementById('showMoreBtn');
         if (showMoreBtn) {
             showMoreBtn.style.display = this.displayedCount < this.filteredReviews.length ? 'flex' : 'none';
+        }
+    }
+
+    // Загрузка отзывов с API
+    async loadReviews() {
+        try {
+            const response = await fetch('http://localhost:3000/api/reviews');
+            if (!response.ok) throw new Error('Failed to fetch reviews');
+
+            const data = await response.json();
+
+            this.reviews = data.map(review => ({
+                id: review.id,
+                rating: review.rating,
+                // service: review.service, // можно убрать, если такого поля нет
+                servicesSelected: review.servicesSelected || [], // <-- массив услуг из админки
+                carModel: `${review.carBrand} ${review.carModel}`,
+                text: review.text,
+                date: new Date(review.datePublished || review.dateCreated).toLocaleDateString('ru-RU'),
+                hasImage: review.images && review.images.length > 0,
+                image: review.images && review.images.length > 0 ? `http://localhost:3000${review.images[0]}` : null,
+                tags: review.tags || []
+            }));
+
+            this.filteredReviews = [...this.reviews];
+            this.applyFilters();
+        } catch (error) {
+            console.error('Error loading reviews:', error);
         }
     }
 
@@ -452,87 +252,126 @@ class ReviewsManager {
         `;
     }
 
-    // Показать больше отзывов
-    showMoreReviews() {
-        this.displayedCount += 6;
-        this.renderReviews();
-    }
+    // ...
 
-    // Модальное окно отзыва
-    openReviewModal() {
-        const modal = document.getElementById('reviewModalOverlay');
-        if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+
+
+    async submitReview() {
+        if (!this.validateStep(3)) return;
+
+        const carModelInput = document.getElementById('reviewCarModel');
+        const textInput = document.getElementById('reviewText');
+        const ratingInput = document.getElementById('reviewRating');
+
+        // Split car model into brand and model (simple heuristic)
+        const carInputValue = carModelInput.value.trim();
+        const firstSpaceIndex = carInputValue.indexOf(' ');
+        let carBrand = carInputValue;
+        let carModel = '';
+
+        if (firstSpaceIndex > 0) {
+            carBrand = carInputValue.substring(0, firstSpaceIndex);
+            carModel = carInputValue.substring(firstSpaceIndex + 1);
         }
-    }
 
-    closeReviewModal() {
-        const modal = document.getElementById('reviewModalOverlay');
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            this.resetReviewForm();
-        }
-    }
-
-    // Сброс формы отзыва
-    resetReviewForm() {
-        const form = document.getElementById('reviewForm');
-        if (form) {
-            form.reset();
-            this.clearPhotoPreview();
-        }
-    }
-
-    // Обработка отправки отзыва
-    handleReviewSubmit(e) {
-        e.preventDefault();
-
-        const formData = new FormData(e.target);
         const reviewData = {
-            rating: parseInt(formData.get('rating')),
-            service: formData.get('service'),
-            carModel: formData.get('carModel'),
-            reviewText: formData.get('reviewText'),
-            photos: this.uploadedPhotos || []
+            rating: parseInt(ratingInput.value) || 5,
+            carBrand: carBrand,
+            carModel: carModel || 'Unknown',
+            text: textInput.value,
+            servicesSelected: this.selectedServices,
+            status: 'PENDING',
+            tags: []
         };
 
-        // Валидация
-        if (!this.validateReview(reviewData)) {
-            return;
-        }
+        try {
+            // 1. Upload images if any
+            if (this.uploadedFiles && this.uploadedFiles.length > 0) {
+                const uploadPromises = this.uploadedFiles.map(file => {
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    return fetch('http://localhost:3000/api/uploads/images', {
+                        method: 'POST',
+                        body: fd
+                    }).then(res => res.json());
+                });
 
-        // Добавляем отзыв в начало массива
-        const newReview = {
-            id: Date.now(),
-            ...reviewData,
-            date: new Date().toLocaleDateString('ru-RU'),
-            hasImage: reviewData.photos.length > 0,
-            image: reviewData.photos[0] || null,
-            tags: [reviewData.carModel, this.getServiceName(reviewData.service)]
+                const uploadResults = await Promise.all(uploadPromises);
+                reviewData.images = uploadResults.map(res => res.url);
+            } else {
+                reviewData.images = [];
+            }
+
+            // 2. Submit Review
+            const response = await fetch('http://localhost:3000/api/reviews/admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (!response.ok) throw new Error('Failed to submit review');
+
+            // Show success message and move to final step
+            this.showNotification('Отзыв успешно отправлен на модерацию!');
+            // Show success message and move to final step
+            this.showNotification('Отзыв успешно отправлен на модерацию!');
+            this.currentStep_review = 4;
+            this.updatePopupStep();
+
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            alert('Ошибка при отправке отзыва');
+        }
+    }
+
+    handleReviewPhotoUpload(e) {
+        const files = Array.from(e.target.files);
+        if (!this.uploadedFiles) this.uploadedFiles = [];
+
+        files.forEach(file => {
+            if (file.type.startsWith('image/')) {
+                this.uploadedFiles.push(file);
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.addReviewPhotoPreview(e.target.result, file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    addReviewPhotoPreview(src, fileName) {
+        const previewContainer = document.getElementById('reviewPhotoPreview');
+        if (!previewContainer) return;
+
+        const previewItem = document.createElement('div');
+        previewItem.className = 'photo-upload__preview-item';
+
+        previewItem.innerHTML = `
+            <img src="${src}" alt="${fileName}">
+            <button type="button" class="photo-upload__preview-remove">
+                <img src="img/close.svg" alt="Remove">
+            </button>
+        `;
+
+        const removeBtn = previewItem.querySelector('.photo-upload__preview-remove');
+        removeBtn.onclick = (e) => {
+            e.stopPropagation(); // Prevent bubbling
+            const index = Array.from(previewContainer.children).indexOf(previewItem);
+            if (this.uploadedFiles && index >= 0) {
+                this.uploadedFiles.splice(index, 1);
+            }
+            previewItem.remove();
         };
 
-        this.reviews.unshift(newReview);
-        this.applyFilters();
-
-        // Закрываем модалку
-        this.closeReviewModal();
-
-        // Показываем уведомление
-        this.showNotification('Отзыв успешно отправлен на модерацию!');
+        previewContainer.appendChild(previewItem);
     }
 
-    // Валидация отзыва
-    validateReview(data) {
-        if (!data.rating || !data.service || !data.carModel || !data.reviewText) {
-            this.showNotification('Пожалуйста, заполните все поля', 'error');
-            return false;
-        }
-        return true;
-    }
+    // ...
 
-    // Получение названия услуги
     getServiceName(service) {
         const services = {
             antichrome: 'Антихром',
@@ -540,6 +379,10 @@ class ReviewsManager {
             soundproofing: 'Шумоизоляция',
             wheels: 'Колесные диски',
             cleaning: 'Химчистка',
+            'antigravity-film': 'Антигравийная пленка',
+            'disk-painting': 'Покраска дисков',
+            'ceramic': 'Керамика',
+            'polish': 'Полировка',
             other: 'Другое'
         };
         return services[service] || service;
@@ -695,12 +538,49 @@ class ReviewsManager {
         photoInput?.addEventListener('change', (e) => {
             this.handleReviewPhotoUpload(e);
         });
+
+        // Interactive Stars Logic
+        const starsContainer = document.getElementById('reviewRatingStars');
+        if (starsContainer) {
+            const stars = starsContainer.querySelectorAll('img');
+            const ratingInput = document.getElementById('reviewRating');
+
+            stars.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    const rating = index + 1;
+                    ratingInput.value = rating;
+                    this.updateStars(rating);
+                    // Скрываем ошибку при выборе рейтинга
+                    this.hidePopupError('reviewRatingError');
+                });
+
+                star.addEventListener('mouseenter', () => {
+                    this.updateStars(index + 1, true);
+                });
+            });
+
+            starsContainer.addEventListener('mouseleave', () => {
+                const currentRating = parseInt(ratingInput.value) || 0;
+                this.updateStars(currentRating);
+            });
+        }
+    }
+
+    updateStars(rating, isHover = false) {
+        const stars = document.querySelectorAll('#reviewRatingStars img');
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.src = 'img/black-star.svg';
+            } else {
+                star.src = 'img/star-zero.svg';
+            }
+        });
     }
 
     openReviewPopup() {
         const popup = document.getElementById('reviewPopupOverlay');
         if (popup) {
-            this.currentStep = 1;
+            this.currentStep_review = 1;
             this.selectedServices = [];
             this.resetReviewPopup();
             popup.classList.add('active');
@@ -718,30 +598,33 @@ class ReviewsManager {
     }
 
     nextStep() {
-        if (this.validateStep(this.currentStep)) {
-            this.currentStep++;
+        if (this.validateStep(this.currentStep_review)) {
+            this.currentStep_review++;
             this.updatePopupStep();
         }
     }
 
     updatePopupStep() {
         // Обновляем активный шаг
-        document.querySelectorAll('.popup__step').forEach((step, index) => {
-            step.classList.toggle('popup__step--active', index + 1 === this.currentStep);
+        document.querySelectorAll('.popup__step-review').forEach((step_review, index) => {
+            step_review.classList.toggle('popup__step-review--active', index + 1 === this.currentStep_review);
         });
 
         // Обновляем заголовок попапа
         const titleElement = document.getElementById('reviewPopupTitle');
         if (titleElement) {
-            switch (this.currentStep) {
+            switch (this.currentStep_review) {
                 case 1:
                     titleElement.textContent = 'Оставь отзыв — сделаем сервис лучше вместе';
                     break;
                 case 2:
-                    titleElement.textContent = 'Укажите, какие работы мы выполнили для вас';
+                    titleElement.textContent = 'Оцените результат нашей работы';
                     break;
                 case 3:
-                    titleElement.textContent = 'Готово! Отзыв скоро появится для всех.';
+                    titleElement.textContent = 'Укажите, какие работы мы выполнили для вас';
+                    break;
+                case 4:
+                    titleElement.textContent = 'Готово! Отзыв скоро появится после модерации.';
                     break;
             }
         }
@@ -751,44 +634,45 @@ class ReviewsManager {
         const submitBtn = document.getElementById('reviewSubmitBtn');
         const successBtn = document.getElementById('reviewSuccessBtn');
 
-        if (continueBtn) continueBtn.style.display = this.currentStep < 2 ? 'flex' : 'none';
-        if (submitBtn) submitBtn.style.display = this.currentStep === 2 ? 'flex' : 'none';
-        if (successBtn) successBtn.style.display = this.currentStep === 3 ? 'flex' : 'none';
+        if (continueBtn) continueBtn.style.display = this.currentStep_review < 3 ? 'flex' : 'none';
+        if (submitBtn) submitBtn.style.display = this.currentStep_review === 3 ? 'flex' : 'none';
+        if (successBtn) successBtn.style.display = this.currentStep_review === 4 ? 'flex' : 'none';
 
         // Динамическое управление высотой попапа
         this.updatePopupHeight();
     }
 
     updatePopupHeight() {
-        const popup = document.querySelector('.popup');
+        const popupOverlay = document.getElementById('reviewPopupOverlay'); // именно review-попап
+        if (!popupOverlay) return;
+
+        const popup = popupOverlay.querySelector('.popup');
         if (!popup) return;
 
-        // Разные высоты для разных этапов
         let targetHeight;
-
-        // Проверяем, мобильное ли устройство
         const isMobile = window.innerWidth <= 768;
 
-        switch (this.currentStep) {
+        switch (this.currentStep_review) {
             case 1:
-                targetHeight = isMobile ? '500px' : '600px'; // Первый этап - стандартная высота
+                targetHeight = isMobile ? '500px' : '600px';
                 break;
             case 2:
-                targetHeight = isMobile ? '500px' : '700px'; // Второй этап - единая высота для всех устройств
+                targetHeight = isMobile ? '300px' : '400px';
                 break;
             case 3:
-                targetHeight = isMobile ? '300px' : '300px'; // Третий этап - стандартная высота
+                targetHeight = isMobile ? '500px' : '700px';
+                break;
+            case 4:
+                targetHeight = isMobile ? '300px' : '300px';
                 break;
             default:
                 targetHeight = isMobile ? '500px' : '700px';
         }
 
-        // Плавно изменяем высоту
         popup.style.height = targetHeight;
-
-        // Обновляем позиционирование для центрирования
-        this.centerPopup();
+        this.centerPopup(popup); // лучше явно передать элемент
     }
+
 
     centerPopup() {
         const popup = document.querySelector('.popup');
@@ -801,8 +685,8 @@ class ReviewsManager {
         popup.style.position = 'fixed';
     }
 
-    validateStep(step) {
-        switch (step) {
+    validateStep(step_review) {
+        switch (step_review) {
             case 1:
                 const carModel = document.getElementById('reviewCarModel').value.trim();
                 const reviewText = document.getElementById('reviewText').value.trim();
@@ -824,6 +708,14 @@ class ReviewsManager {
                 return true;
 
             case 2:
+                const rating = parseInt(document.getElementById('reviewRating').value);
+                if (rating === 0) {
+                    this.showPopupError('reviewRatingError', 'Пожалуйста, выберите рейтинг');
+                    return false;
+                }
+                return true;
+
+            case 3:
                 if (this.selectedServices.length === 0) {
                     this.showPopupError('reviewServiceError', 'Выберите хотя бы одну услугу');
                     return false;
@@ -849,83 +741,9 @@ class ReviewsManager {
         this.hidePopupError('reviewServiceError');
     }
 
-    submitReview() {
-        if (this.validateStep(2)) {
-            // Создаем отзыв из данных попапа
-            const reviewData = {
-                carModel: this.reviewData.carModel,
-                reviewText: this.reviewData.reviewText,
-                photos: this.reviewData.photos,
-                services: this.selectedServices
-            };
 
-            // Создаем объект отзыва для добавления в массив
-            const newReview = {
-                id: Date.now(),
-                rating: 5, // По умолчанию 5 звезд для нового отзыва
-                service: this.selectedServices[0] || 'other', // Берем первую выбранную услугу
-                carModel: reviewData.carModel,
-                text: reviewData.reviewText,
-                date: new Date().toLocaleDateString('ru-RU'),
-                hasImage: reviewData.photos.length > 0,
-                image: reviewData.photos[0] || null,
-                tags: [reviewData.carModel, ...this.selectedServices.map(s => this.getServiceName(s))]
-            };
 
-            // Добавляем отзыв в массив
-            this.reviews.unshift(newReview);
-            this.applyFilters();
 
-            // Показываем уведомление
-            this.showNotification('Отзыв успешно отправлен на модерацию!');
-
-            // Переходим к финальному шагу
-            this.currentStep = 3;
-            this.updatePopupStep();
-        }
-    }
-
-    handleReviewPhotoUpload(e) {
-        const files = Array.from(e.target.files);
-        const preview = document.getElementById('reviewPhotoPreview');
-
-        if (!preview) return;
-
-        files.forEach(file => {
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'photo-upload__preview-item';
-                    previewItem.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview">
-                        <div class="photo-upload__preview-remove">
-                            <img src="img/close.svg" alt="Remove">
-                        </div>
-                    `;
-
-                    // Обработка удаления фото
-                    const removeBtn = previewItem.querySelector('.photo-upload__preview-remove');
-                    removeBtn.addEventListener('click', () => {
-                        previewItem.remove();
-                        this.removeReviewPhoto(e.target.result);
-                    });
-
-                    preview.appendChild(previewItem);
-                    this.addReviewPhoto(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    addReviewPhoto(photo) {
-        this.reviewData.photos.push(photo);
-    }
-
-    removeReviewPhoto(photo) {
-        this.reviewData.photos = this.reviewData.photos.filter(p => p !== photo);
-    }
 
     showPopupError(errorId, message) {
         const errorElement = document.getElementById(errorId);
@@ -944,8 +762,9 @@ class ReviewsManager {
 
     resetReviewPopup() {
         // Сбрасываем состояние попапа
-        this.currentStep = 1;
+        this.currentStep_review = 1;
         this.selectedServices = [];
+        this.uploadedFiles = []; // Clear uploaded files
         this.reviewData = {
             carModel: '',
             reviewText: '',
@@ -955,11 +774,16 @@ class ReviewsManager {
         // Сбрасываем формы
         const carModelInput = document.getElementById('reviewCarModel');
         const reviewTextInput = document.getElementById('reviewText');
+        const ratingInput = document.getElementById('reviewRating');
         const photoPreview = document.getElementById('reviewPhotoPreview');
 
         if (carModelInput) carModelInput.value = '';
         if (reviewTextInput) reviewTextInput.value = '';
+        if (ratingInput) ratingInput.value = '0';
         if (photoPreview) photoPreview.innerHTML = '';
+
+        // Reset star rating display
+        this.updateStars(0);
 
         // Снимаем выбор со всех услуг
         document.querySelectorAll('.popup__additional-btn').forEach(btn => {

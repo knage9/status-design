@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Review {
+  id              Int          @id @default(autoincrement())
+  rating          Int
+  service         String
+  carBrand        String
+  carModel        String
+  text            String
+  dateCreated     DateTime     @default(now())
+  datePublished   DateTime?
+  status          ReviewStatus @default(PENDING)
+  images          String[]
+  servicesSelected String[]
+  tags            String[]
+}
+
+model Post {
+  id            Int         @id @default(autoincrement())
+  type          PostType
+  slug          String      @unique
+  title         String
+  image         String?
+  category      PostCategory
+  dateCreated   DateTime    @default(now())
+  datePublished DateTime?
+  views         Int         @default(0)
+  excerpt       String
+  content       String
+  tags          String[]
+  priority      Int         @default(0)
+  status        PostStatus  @default(DRAFT)
+}
+
+model PortfolioItem {
+  id          Int             @id @default(autoincrement())
+  slug        String          @unique
+  title       String
+  carBrand    String
+  carModel    String
+  services    String[]
+  mainImage   String
+  gallery     String[]
+  description String
+  date        DateTime
+  featured    Boolean         @default(false)
+  views       Int             @default(0)
+  status      PortfolioStatus @default(DRAFT)
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+enum PostType {
+  NEWS
+  ARTICLE
+}
+
+enum PostCategory {
+  NEWS
+  ARTICLES
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PortfolioStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Request {
+  id                 Int           @id @default(autoincrement())
+  requestNumber      String        @unique
+  name               String
+  phone              String
+  carModel           String
+  mainService        String?
+  additionalServices String[]
+  discount           Int           @default(0)
+  source             RequestSource
+  status             RequestStatus @default(NEW)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  
+  managerId          Int?
+  manager            User?         @relation("Manager", fields: [managerId], references: [id])
+  startedAt          DateTime?
+  completedAt        DateTime?
+  
+  workOrders         WorkOrder[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  role      UserRole
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  managedRequests      Request[]   @relation("Manager")
+  workOrdersAsManager  WorkOrder[] @relation("WorkOrderManager")
+  workOrdersAsMaster   WorkOrder[] @relation("Master")
+  workOrdersAsExecutor WorkOrder[] @relation("Executor")
+}
+
+model WorkOrder {
+  id          Int      @id @default(autoincrement())
+  orderNumber String   @unique
+  
+  // Relations
+  requestId   Int?
+  request     Request?  @relation(fields: [requestId], references: [id])
+  
+  managerId       Int
+  manager         User     @relation("WorkOrderManager", fields: [managerId], references: [id])
+  masterId        Int?
+  master          User?    @relation("Master", fields: [masterId], references: [id])
+  executorId      Int?
+  executor        User?    @relation("Executor", fields: [executorId], references: [id])
+  
+  // Блок З/Н
+  totalAmount     Float
+  paymentMethod   PaymentMethod
+  
+  // Заказчик и авто
+  customerName    String
+  customerPhone   String
+  carBrand        String
+  carModel        String
+  vin             String?
+  carCondition    CarCondition
+  
+  // Количество деталей
+  blackCount              Int @default(0)
+  carbonCount             Int @default(0)
+  standardStructureCount  Int @default(0)
+  
+  // Арматурка (4 пары: флаг + цена)
+  dismantling       Boolean @default(false)
+  dismantlingPrice  Float   @default(0)
+  disassembly       Boolean @default(false)
+  disassemblyPrice  Float   @default(0)
+  assembly          Boolean @default(false)
+  assemblyPrice     Float   @default(0)
+  mounting          Boolean @default(false)
+  mountingPrice     Float   @default(0)
+  
+  // Передняя часть (5 деталей)
+  radiatorGrille  Boolean @default(false)
+  fogLights       Boolean @default(false)
+  frontBumper     Boolean @default(false)
+  lip             Boolean @default(false)
+  hood            Boolean @default(false)
+  
+  // Боковая часть (6 деталей)
+  windowMoldings  Boolean @default(false)
+  doorMoldings    Boolean @default(false)
+  vents           Boolean @default(false)
+  fenders         Boolean @default(false)
+  doorHandles     Boolean @default(false)
+  mirrors         Boolean @default(false)
+  
+  // Задняя часть (6 деталей)
+  trunkLid        Boolean @default(false)
+  spoiler         Boolean @default(false)
+  rearBumper      Boolean @default(false)
+  diffuser        Boolean @default(false)
+  rearLights      Boolean @default(false)
+  fakeExhausts    Boolean @default(false)
+  
+  // Другое (7 деталей)
+  badges          Boolean @default(false)
+  inscriptions    Boolean @default(false)
+  hubCaps         Boolean @default(false)
+  railings        Boolean @default(false)
+  sills           Boolean @default(false)
+  wheels          Boolean @default(false)
+  nozzles         Boolean @default(false)
+  
+  // Photos & Status
+  photosBeforeWork  String[]
+  photosAfterWork   String[]
+  status            WorkOrderStatus @default(NEW)
+  
+  // Timestamps
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum RequestSource {
+  POPUP
+  CONTACTS_PAGE
+  DISCOUNT_POPUP
+}
+
+enum RequestStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+enum CarCondition {
+  NEW
+  USED
+}
+
+enum PaymentMethod {
+  CASH
+  NON_CASH
+  WITHOUT_VAT
+}
+
+enum WorkOrderStatus {
+  NEW
+  ASSIGNED_TO_MASTER
+  ASSIGNED_TO_EXECUTOR
+  IN_PROGRESS
+  UNDER_REVIEW
+  APPROVED
+  RETURNED_FOR_REVISION
+  COMPLETED
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  MASTER
+  EXECUTOR
+}
