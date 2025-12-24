@@ -105,7 +105,7 @@ const WorkOrderCreatePage: React.FC = () => {
 
     useEffect(() => {
         if (isExecutor) {
-            notification.error({ message: 'Доступ запрещен' });
+            notification.error({ title: 'Доступ запрещен' });
             navigate('/work-orders');
         }
     }, [isExecutor, navigate, notification]);
@@ -155,12 +155,7 @@ const WorkOrderCreatePage: React.FC = () => {
     const showBodyParts = hasAntichrome || hasPolishing; // Детали кузова для Антихром и Полировка
 
     // NEW: Автоматический расчёт ЗП для арматурки при изменении totalAmount
-    const armaturaAmounts = {
-        dismantling: totalAmount * 0.07,
-        disassembly: totalAmount * 0.03,
-        assembly: totalAmount * 0.03,
-        mounting: totalAmount * 0.07,
-    };
+
 
     const handleSubmit = async (values: any) => {
         try {
@@ -445,7 +440,7 @@ const WorkOrderCreatePage: React.FC = () => {
                                             min={0}
                                             placeholder="0"
                                             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-                                            parser={value => parseFloat(value!.replace(/\s?|₽/g, '')) || 0}
+                                            parser={value => (parseFloat(value!.replace(/\s?|₽/g, '')) || 0) as 0}
 
                                         />
                                         <Button size="large" disabled>₽</Button>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Statistic, Badge, Button, Progress, Typography, Spin, Skeleton, App, Flex, Avatar } from 'antd';
+import { Row, Col, Card, Statistic, Badge, Button, Progress, Typography, Skeleton, App, Flex } from 'antd';
 import {
     MessageOutlined,
     FileTextOutlined,
@@ -30,6 +30,7 @@ interface DashboardStats {
     reviews: { total: number; pending: number; avgRating: number; thisWeek: number };
     posts: { total: number; draft: number; thisWeek: number };
     portfolio: { total: number; draft: number; thisWeek: number };
+    requests: { total: number; new: number; thisWeek: number };
 }
 
 interface Review {
@@ -63,7 +64,7 @@ const Dashboard: React.FC = () => {
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
             notification.error({
-                message: 'Ошибка загрузки данных',
+                title: 'Ошибка загрузки данных',
                 description: 'Не удалось получить данные дашборда.'
             });
             // Fallback data

@@ -45,7 +45,7 @@ const UsersPage: React.FC = () => {
 
     const handleEdit = (user: User) => {
         setEditingUser(user);
-        form.setFieldsValues(user);
+        form.setFieldsValue(user);
         setModalOpen(true);
     };
 

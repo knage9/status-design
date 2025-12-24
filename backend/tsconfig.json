@@ -22,7 +22,13 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
+  "include": [
+    "src/**/*",
+    "prisma/**/*"
+  ],
   "exclude": [
+    "node_modules",
+    "dist",
     "admin-client"
   ]
 }

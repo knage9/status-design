@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Descriptions, Button, Tag, Space, App, Spin, Table, Divider } from 'antd';
-import { ArrowLeftOutlined, ClockCircleOutlined, CheckOutlined, CloseOutlined, PlusOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ClockCircleOutlined, CheckOutlined, CloseOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import dayjs from 'dayjs';
@@ -150,18 +150,7 @@ const RequestDetailPage: React.FC = () => {
         return names[service] || service;
     };
 
-    const getElapsedTime = () => {
-        if (!request?.startedAt) return null;
 
-        const start = new Date(request.startedAt);
-        const end = request.completedAt ? new Date(request.completedAt) : new Date();
-        const diff = end.getTime() - start.getTime();
-
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-        return `${hours}ч ${minutes}м`;
-    };
 
     if (loading) {
         return (

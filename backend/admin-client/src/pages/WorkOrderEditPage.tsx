@@ -13,7 +13,6 @@ import {
     App,
     Spin,
     Typography,
-    Tooltip,
 } from 'antd';
 import {
     ArrowLeftOutlined,
@@ -23,7 +22,6 @@ import {
     UserOutlined,
     CarOutlined,
     ToolOutlined,
-    QuestionCircleOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
@@ -53,7 +51,7 @@ const WorkOrderEditPage: React.FC = () => {
 
     useEffect(() => {
         if (isExecutor) {
-            notification.error({ message: 'Доступ запрещен' });
+            notification.error({ title: 'Доступ запрещен' });
             navigate('/work-orders');
         }
     }, [isExecutor, navigate, notification]);
@@ -87,7 +85,7 @@ const WorkOrderEditPage: React.FC = () => {
 
             } catch (error) {
                 console.error('Failed to load data:', error);
-                notification.error({ message: 'Ошибка загрузки данных' });
+                notification.error({ title: 'Ошибка загрузки данных' });
                 setInitialLoading(false);
             }
         };
@@ -398,7 +396,7 @@ const WorkOrderEditPage: React.FC = () => {
                                     <Space.Compact style={{ width: '100%' }}>
                                         <InputNumber style={{ width: '100%' }} size="large" min={0}
                                             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-                                            parser={value => parseFloat(value!.replace(/\s?|₽/g, '')) || 0}
+                                            parser={value => (parseFloat(value!.replace(/\s?|₽/g, '')) || 0) as 0}
                                         />
                                         <Button size="large" disabled>₽</Button>
                                     </Space.Compact>
@@ -481,7 +479,7 @@ const WorkOrderEditPage: React.FC = () => {
                         totalAmount={totalAmount}
                         executors={executors}
                         hasAntichrome={hasAntichrome}
-                        isEditMode={true}
+
                     />
 
                     <BodyPartsBlock
