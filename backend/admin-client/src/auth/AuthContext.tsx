@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loadProfile = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/auth/profile');
+            const response = await axios.get('/api/auth/profile');
             setUser(response.data);
         } catch (error) {
             console.error('Failed to load profile:', error);
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const login = async (email: string, password: string) => {
-        const response = await axios.post('http://localhost:3000/api/auth/login', {
+        const response = await axios.post('/api/auth/login', {
             email,
             password,
         });
