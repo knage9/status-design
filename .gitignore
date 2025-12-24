@@ -5,5 +5,4 @@ dist
 .env
 backend/node_modules
 backend/dist
-uploads
 error.log
