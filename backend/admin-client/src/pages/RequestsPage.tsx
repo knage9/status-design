@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space } from 'antd';
+import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space, DatePicker } from 'antd';
 import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useAuth } from '../auth/AuthContext';
 
 interface Request {
     id: number;
@@ -17,6 +18,7 @@ interface Request {
     source: string;
     status: string;
     createdAt: string;
+    arrivalAt?: string; // NEW field
     startedAt?: string;
     completedAt?: string;
     manager?: {
@@ -25,6 +27,8 @@ interface Request {
 }
 
 const RequestsPage: React.FC = () => {
+    const { user } = useAuth();
+    const isMaster = user?.role === 'MASTER';
     const [requests, setRequests] = useState<Request[]>([]);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -32,11 +36,14 @@ const RequestsPage: React.FC = () => {
     const { notification, modal } = App.useApp();
     const [form] = Form.useForm();
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchRequests = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:3000/api/requests/admin');
+            const response = await axios.get('http://localhost:3000/api/requests/admin', {
+                params: { searchQuery: searchQuery || undefined }
+            });
             setRequests(response.data);
         } catch (error) {
             console.error('Failed to fetch requests:', error);
@@ -47,8 +54,11 @@ const RequestsPage: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchRequests();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchRequests();
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     const handleCreate = () => {
         setEditingRequest(null);
@@ -65,6 +75,7 @@ const RequestsPage: React.FC = () => {
             mainService: request.mainService,
             additionalServices: request.additionalServices,
             discount: request.discount,
+            arrivalAt: request.arrivalAt ? dayjs(request.arrivalAt) : null, // NEW
         });
         setModalOpen(true);
     };
@@ -78,6 +89,7 @@ const RequestsPage: React.FC = () => {
                 mainService: values.mainService || null,
                 additionalServices: values.additionalServices || [],
                 discount: parseInt(values.discount) || 0,
+                arrivalAt: values.arrivalAt ? values.arrivalAt.toISOString() : null, // NEW
             };
 
             if (editingRequest) {
@@ -134,6 +146,7 @@ const RequestsPage: React.FC = () => {
             IN_PROGRESS: 'В работе',
             COMPLETED: 'Завершена',
             CLOSED: 'Закрыта',
+            SDELKA: 'Сделка', // NEW
         };
         return texts[status] || status;
     };
@@ -236,6 +249,7 @@ const RequestsPage: React.FC = () => {
                 { text: 'В работе', value: 'IN_PROGRESS' },
                 { text: 'Завершена', value: 'COMPLETED' },
                 { text: 'Закрыта', value: 'CLOSED' },
+                { text: 'Сделка', value: 'SDELKA' },
             ],
             onFilter: (value: any, record: Request) => record.status === value,
             render: (status: string) => (
@@ -263,6 +277,13 @@ const RequestsPage: React.FC = () => {
             },
         },
         {
+            title: 'Дата приезда', // NEW column
+            dataIndex: 'arrivalAt',
+            key: 'arrivalAt',
+            width: 150,
+            render: (date: string) => date ? dayjs(date).format('DD.MM.YYYY HH:mm') : '—',
+        },
+        {
             title: 'Дата создания',
             dataIndex: 'createdAt',
             key: 'createdAt',
@@ -278,28 +299,34 @@ const RequestsPage: React.FC = () => {
             width: 200,
             render: (_: any, record: Request) => (
                 <Space>
-                    <Button
-                        type="primary"
-                        size="small"
-                        icon={<EyeOutlined />}
-                        onClick={() => navigate(`/requests/${record.id}`)}
-                    >
-                        Открыть
-                    </Button>
-                    <Button
-                        size="small"
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(record)}
-                    >
-                        Изменить
-                    </Button>
-                    <Button
-                        type="text"
-                        danger
-                        size="small"
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(record.id)}
-                    />
+                    <Space>
+                        <Button
+                            type="primary"
+                            size="small"
+                            icon={<EyeOutlined />}
+                            onClick={() => navigate(`/requests/${record.id}`)}
+                        >
+                            Открыть
+                        </Button>
+                        {!isMaster && (
+                            <>
+                                <Button
+                                    size="small"
+                                    icon={<EditOutlined />}
+                                    onClick={() => handleEdit(record)}
+                                >
+                                    Изменить
+                                </Button>
+                                <Button
+                                    type="text"
+                                    danger
+                                    size="small"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => handleDelete(record.id)}
+                                />
+                            </>
+                        )}
+                    </Space>
                 </Space>
             ),
         },
@@ -308,11 +335,24 @@ const RequestsPage: React.FC = () => {
     return (
         <div>
             <Card
-                title="Заявки"
+                title={
+                    <Space size="large">
+                        <span>Заявки</span>
+                        <Input.Search
+                            placeholder="Поиск по имени или телефону..."
+                            allowClear
+                            onSearch={setSearchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ width: 300 }}
+                        />
+                    </Space>
+                }
                 extra={
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-                        Создать заявку
-                    </Button>
+                    !isMaster && (
+                        <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+                            Создать заявку
+                        </Button>
+                    )
                 }
             >
                 <Table
@@ -367,6 +407,14 @@ const RequestsPage: React.FC = () => {
                         rules={[{ required: true, message: 'Введите телефон' }]}
                     >
                         <Input placeholder="+7 (999) 123-45-67" />
+                    </Form.Item>
+
+                    {/* NEW: Arrival Date Picker */}
+                    <Form.Item
+                        name="arrivalAt"
+                        label="Дата и время приезда"
+                    >
+                        <DatePicker showTime format="DD.MM.YYYY HH:mm" style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item

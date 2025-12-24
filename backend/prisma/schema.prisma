@@ -8,35 +8,35 @@ datasource db {
 }
 
 model Review {
-  id              Int          @id @default(autoincrement())
-  rating          Int
-  service         String
-  carBrand        String
-  carModel        String
-  text            String
-  dateCreated     DateTime     @default(now())
-  datePublished   DateTime?
-  status          ReviewStatus @default(PENDING)
-  images          String[]
+  id               Int          @id @default(autoincrement())
+  rating           Int
+  service          String
+  carBrand         String
+  carModel         String
+  text             String
+  dateCreated      DateTime     @default(now())
+  datePublished    DateTime?
+  status           ReviewStatus @default(PENDING)
+  images           String[]
   servicesSelected String[]
-  tags            String[]
+  tags             String[]
 }
 
 model Post {
-  id            Int         @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   type          PostType
-  slug          String      @unique
+  slug          String       @unique
   title         String
   image         String?
   category      PostCategory
-  dateCreated   DateTime    @default(now())
   datePublished DateTime?
-  views         Int         @default(0)
+  views         Int          @default(0)
   excerpt       String
   content       String
   tags          String[]
-  priority      Int         @default(0)
-  status        PostStatus  @default(DRAFT)
+  priority      Int          @default(0)
+  status        PostStatus   @default(DRAFT)
+  dateCreated   DateTime     @default(now())
 }
 
 model PortfolioItem {
@@ -53,6 +53,197 @@ model PortfolioItem {
   featured    Boolean         @default(false)
   views       Int             @default(0)
   status      PortfolioStatus @default(DRAFT)
+}
+
+model Request {
+  id                 Int           @id @default(autoincrement())
+  name               String
+  phone              String
+  carModel           String
+  mainService        String?
+  additionalServices String[]
+  discount           Int           @default(0)
+  source             RequestSource
+  status             RequestStatus @default(NEW)
+  createdAt          DateTime      @default(now())
+  arrivalAt          DateTime?     // NEW: Дата и время приезда клиента
+  updatedAt          DateTime      @updatedAt
+  completedAt        DateTime?
+  managerId          Int?
+  startedAt          DateTime?
+  requestNumber      String        @unique
+  comment            String        @default("")
+  services           String[]      @default([])  // NEW: список услуг для динамических блоков
+  manager            User?         @relation("Manager", fields: [managerId], references: [id])
+  workOrders         WorkOrder[]
+}
+
+model User {
+  id                                                    Int         @id @default(autoincrement())
+  email                                                 String      @unique
+  password                                              String
+  name                                                  String
+  phone                                                 String?
+  role                                                  UserRole
+  isActive                                              Boolean     @default(true)
+  createdAt                                             DateTime    @default(now())
+  updatedAt                                             DateTime    @updatedAt
+  managedRequests                                       Request[]   @relation("Manager")
+  WorkOrder_WorkOrder_assemblyExecutorIdToUser          WorkOrder[] @relation("WorkOrder_assemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonAssemblyExecutorIdToUser    WorkOrder[] @relation("WorkOrder_carbonAssemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonDisassemblyExecutorIdToUser WorkOrder[] @relation("WorkOrder_carbonDisassemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonDismantlingExecutorIdToUser WorkOrder[] @relation("WorkOrder_carbonDismantlingExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonMountingExecutorIdToUser    WorkOrder[] @relation("WorkOrder_carbonMountingExecutorIdToUser")
+  WorkOrder_WorkOrder_cleaningExecutorIdToUser          WorkOrder[] @relation("WorkOrder_cleaningExecutorIdToUser")
+  WorkOrder_WorkOrder_disassemblyExecutorIdToUser       WorkOrder[] @relation("WorkOrder_disassemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_diskPaintingExecutorIdToUser      WorkOrder[] @relation("WorkOrder_diskPaintingExecutorIdToUser")
+  WorkOrder_WorkOrder_dismantlingExecutorIdToUser       WorkOrder[] @relation("WorkOrder_dismantlingExecutorIdToUser")
+  workOrdersAsExecutor                                  WorkOrder[] @relation("Executor")
+  workOrdersAsManager                                   WorkOrder[] @relation("WorkOrderManager")
+  workOrdersAsMaster                                    WorkOrder[] @relation("Master")
+  WorkOrder_WorkOrder_mountingExecutorIdToUser          WorkOrder[] @relation("WorkOrder_mountingExecutorIdToUser")
+  WorkOrder_WorkOrder_painterIdToUser                   WorkOrder[] @relation("WorkOrder_painterIdToUser")
+  WorkOrder_WorkOrder_polishCeramicExecutorIdToUser     WorkOrder[] @relation("WorkOrder_polishCeramicExecutorIdToUser")
+  assignedWorks                                         WorkOrderExecutor[] @relation("AssignedExecutor")  // NEW
+}
+
+model WorkOrder {
+  id                                               Int             @id @default(autoincrement())
+  orderNumber                                      String          @unique
+  requestId                                        Int?
+  managerId                                        Int
+  masterId                                         Int?
+  executorId                                       Int?
+  createdAt                                        DateTime        @default(now())
+  updatedAt                                        DateTime        @updatedAt
+  assembly                                         Boolean         @default(false)
+  assemblyPrice                                    Float           @default(0)
+  badges                                           Boolean         @default(false)
+  blackCount                                       Int             @default(0)
+  carBrand                                         String
+  carCondition                                     CarCondition
+  carModel                                         String
+  carbonCount                                      Int             @default(0)
+  completedAt                                      DateTime?
+  customerName                                     String
+  customerPhone                                    String
+  diffuser                                         Boolean         @default(false)
+  disassembly                                      Boolean         @default(false)
+  disassemblyPrice                                 Float           @default(0)
+  dismantling                                      Boolean         @default(false)
+  dismantlingPrice                                 Float           @default(0)
+  doorHandles                                      Boolean         @default(false)
+  doorMoldings                                     Boolean         @default(false)
+  fakeExhausts                                     Boolean         @default(false)
+  fenders                                          Boolean         @default(false)
+  fogLights                                        Boolean         @default(false)
+  frontBumper                                      Boolean         @default(false)
+  hood                                             Boolean         @default(false)
+  hubCaps                                          Boolean         @default(false)
+  inscriptions                                     Boolean         @default(false)
+  lip                                              Boolean         @default(false)
+  mirrors                                          Boolean         @default(false)
+  mounting                                         Boolean         @default(false)
+  mountingPrice                                    Float           @default(0)
+  nozzles                                          Boolean         @default(false)
+  paymentMethod                                    PaymentMethod
+  photosAfterWork                                  String[]
+  photosBeforeWork                                 String[]
+  radiatorGrille                                   Boolean         @default(false)
+  railings                                         Boolean         @default(false)
+  rearBumper                                       Boolean         @default(false)
+  rearLights                                       Boolean         @default(false)
+  sills                                            Boolean         @default(false)
+  spoiler                                          Boolean         @default(false)
+  standardStructureCount                           Int             @default(0)
+  startedAt                                        DateTime?
+  status                                           WorkOrderStatus @default(NEW)
+  totalAmount                                      Float
+  trunkLid                                         Boolean         @default(false)
+  vents                                            Boolean         @default(false)
+  vin                                              String?
+  wheels                                           Boolean         @default(false)
+  windowMoldings                                   Boolean         @default(false)
+  antichromArmatureAmount                          Float           @default(0)
+  assemblyExecutorId                               Int?
+  badgesActualQty                                  Int             @default(0)
+  badgesQty                                        Int             @default(0)
+  badgesStatus                                     String          @default("PENDING")
+  carbonAssemblyExecutorId                         Int?
+  carbonComment                                    String?
+  carbonDisassemblyExecutorId                      Int?
+  carbonDismantlingExecutorId                      Int?
+  carbonMountingExecutorId                         Int?
+  carbonPrice                                      Float           @default(0)
+  carbonQty                                        Int             @default(0)
+  carbonType                                       String?
+  cleaningExecutorAmount                           Float           @default(0)
+  cleaningExecutorId                               Int?
+  cleaningPrice                                    Float           @default(0)
+  disassemblyExecutorId                            Int?
+  dismantlingExecutorId                            Int?
+  doorHandlesActualQty                             Int             @default(0)
+  doorHandlesQty                                   Int             @default(0)
+  doorHandlesStatus                                String          @default("PENDING")
+  extraPainterAmount                               Float           @default(0)
+  fendersActualQty                                 Int             @default(0)
+  fendersQty                                       Int             @default(0)
+  fendersStatus                                    String          @default("PENDING")
+  filmExecutorAmount                               Float           @default(0)
+  filmTeam                                         String?
+  fogLightsActualQty                               Int             @default(0)
+  fogLightsQty                                     Int             @default(0)
+  fogLightsStatus                                  String          @default("PENDING")
+  hubCapsActualQty                                 Int             @default(0)
+  hubCapsQty                                       Int             @default(0)
+  hubCapsStatus                                    String          @default("PENDING")
+  inscriptionsActualQty                            Int             @default(0)
+  inscriptionsLetterCount                          Int             @default(0)
+  inscriptionsQty                                  Int             @default(0)
+  inscriptionsStatus                               String          @default("PENDING")
+  isCarbon                                         Boolean         @default(false)
+  isCleaning                                       Boolean         @default(false)
+  isFilm                                           Boolean         @default(false)
+  isPolishCeramic                                  Boolean         @default(false)
+  mountingExecutorId                               Int?
+  painterId                                        Int?
+  polishCeramicExecutorAmount                      Float           @default(0)
+  polishCeramicExecutorId                          Int?
+  polishCeramicPrice                               Float           @default(0)
+  radiatorGrilleActualQty                          Int             @default(0)
+  radiatorGrilleQty                                Int             @default(0)
+  radiatorGrilleStatus                             String          @default("PENDING")
+  railingsActualQty                                Int             @default(0)
+  railingsQty                                      Int             @default(0)
+  railingsStatus                                   String          @default("PENDING")
+  antichromMode                                    String          @default("PERCENT_20")
+  diskPaintingExecutorAmount                       Float           @default(0)
+  diskPaintingExecutorId                           Int?
+  diskPaintingPrice                                Float           @default(0)
+  isDiskPainting                                   Boolean         @default(false)
+  User_WorkOrder_assemblyExecutorIdToUser          User?           @relation("WorkOrder_assemblyExecutorIdToUser", fields: [assemblyExecutorId], references: [id])
+  User_WorkOrder_carbonAssemblyExecutorIdToUser    User?           @relation("WorkOrder_carbonAssemblyExecutorIdToUser", fields: [carbonAssemblyExecutorId], references: [id])
+  User_WorkOrder_carbonDisassemblyExecutorIdToUser User?           @relation("WorkOrder_carbonDisassemblyExecutorIdToUser", fields: [carbonDisassemblyExecutorId], references: [id])
+  User_WorkOrder_carbonDismantlingExecutorIdToUser User?           @relation("WorkOrder_carbonDismantlingExecutorIdToUser", fields: [carbonDismantlingExecutorId], references: [id])
+  User_WorkOrder_carbonMountingExecutorIdToUser    User?           @relation("WorkOrder_carbonMountingExecutorIdToUser", fields: [carbonMountingExecutorId], references: [id])
+  User_WorkOrder_cleaningExecutorIdToUser          User?           @relation("WorkOrder_cleaningExecutorIdToUser", fields: [cleaningExecutorId], references: [id])
+  User_WorkOrder_disassemblyExecutorIdToUser       User?           @relation("WorkOrder_disassemblyExecutorIdToUser", fields: [disassemblyExecutorId], references: [id])
+  User_WorkOrder_diskPaintingExecutorIdToUser      User?           @relation("WorkOrder_diskPaintingExecutorIdToUser", fields: [diskPaintingExecutorId], references: [id])
+  User_WorkOrder_dismantlingExecutorIdToUser       User?           @relation("WorkOrder_dismantlingExecutorIdToUser", fields: [dismantlingExecutorId], references: [id])
+  executor                                         User?           @relation("Executor", fields: [executorId], references: [id])
+  manager                                          User            @relation("WorkOrderManager", fields: [managerId], references: [id])
+  master                                           User?           @relation("Master", fields: [masterId], references: [id])
+  User_WorkOrder_mountingExecutorIdToUser          User?           @relation("WorkOrder_mountingExecutorIdToUser", fields: [mountingExecutorId], references: [id])
+  User_WorkOrder_painterIdToUser                   User?           @relation("WorkOrder_painterIdToUser", fields: [painterId], references: [id])
+  User_WorkOrder_polishCeramicExecutorIdToUser     User?           @relation("WorkOrder_polishCeramicExecutorIdToUser", fields: [polishCeramicExecutorId], references: [id])
+  request                                          Request?        @relation(fields: [requestId], references: [id])
+  
+  // NEW: JSON поля для гибкого хранения данных по услугам
+  // Структура servicesData: { film?: {executorId, amount}, dryCleaning?: {executorId, serviceAmount, executorAmount}, ...}
+  servicesData       Json?  @default("{}")
+  // Структура bodyPartsData: { radiatorGrille?: {quantity, actualQuantity, status, executorId}, fogLights?: {...}, ...}
+  bodyPartsData      Json?  @default("{}")
+  executorAssignments WorkOrderExecutor[]  // NEW: связь с назначениями
 }
 
 enum ReviewStatus {
@@ -81,129 +272,33 @@ enum PortfolioStatus {
   PUBLISHED
 }
 
-model Request {
-  id                 Int           @id @default(autoincrement())
-  requestNumber      String        @unique
-  name               String
-  phone              String
-  carModel           String
-  mainService        String?
-  additionalServices String[]
-  discount           Int           @default(0)
-  source             RequestSource
-  status             RequestStatus @default(NEW)
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-  
-  managerId          Int?
-  manager            User?         @relation("Manager", fields: [managerId], references: [id])
-  startedAt          DateTime?
-  completedAt        DateTime?
-  
-  workOrders         WorkOrder[]
+// NEW: Типы услуг для динамических блоков
+enum ServiceType {
+  ANTICHROME
+  CARBON
+  FILM
+  WHEEL_PAINTING
+  DRY_CLEANING
+  POLISHING
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  phone     String?
-  role      UserRole
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  managedRequests      Request[]   @relation("Manager")
-  workOrdersAsManager  WorkOrder[] @relation("WorkOrderManager")
-  workOrdersAsMaster   WorkOrder[] @relation("Master")
-  workOrdersAsExecutor WorkOrder[] @relation("Executor")
-}
-
-model WorkOrder {
-  id          Int      @id @default(autoincrement())
-  orderNumber String   @unique
-  
-  // Relations
-  requestId   Int?
-  request     Request?  @relation(fields: [requestId], references: [id])
-  
-  managerId       Int
-  manager         User     @relation("WorkOrderManager", fields: [managerId], references: [id])
-  masterId        Int?
-  master          User?    @relation("Master", fields: [masterId], references: [id])
-  executorId      Int?
-  executor        User?    @relation("Executor", fields: [executorId], references: [id])
-  
-  // Блок З/Н
-  totalAmount     Float
-  paymentMethod   PaymentMethod
-  
-  // Заказчик и авто
-  customerName    String
-  customerPhone   String
-  carBrand        String
-  carModel        String
-  vin             String?
-  carCondition    CarCondition
-  
-  // Количество деталей
-  blackCount              Int @default(0)
-  carbonCount             Int @default(0)
-  standardStructureCount  Int @default(0)
-  
-  // Арматурка (4 пары: флаг + цена)
-  dismantling       Boolean @default(false)
-  dismantlingPrice  Float   @default(0)
-  disassembly       Boolean @default(false)
-  disassemblyPrice  Float   @default(0)
-  assembly          Boolean @default(false)
-  assemblyPrice     Float   @default(0)
-  mounting          Boolean @default(false)
-  mountingPrice     Float   @default(0)
-  
-  // Передняя часть (5 деталей)
-  radiatorGrille  Boolean @default(false)
-  fogLights       Boolean @default(false)
-  frontBumper     Boolean @default(false)
-  lip             Boolean @default(false)
-  hood            Boolean @default(false)
-  
-  // Боковая часть (6 деталей)
-  windowMoldings  Boolean @default(false)
-  doorMoldings    Boolean @default(false)
-  vents           Boolean @default(false)
-  fenders         Boolean @default(false)
-  doorHandles     Boolean @default(false)
-  mirrors         Boolean @default(false)
-  
-  // Задняя часть (6 деталей)
-  trunkLid        Boolean @default(false)
-  spoiler         Boolean @default(false)
-  rearBumper      Boolean @default(false)
-  diffuser        Boolean @default(false)
-  rearLights      Boolean @default(false)
-  fakeExhausts    Boolean @default(false)
-  
-  // Другое (7 деталей)
-  badges          Boolean @default(false)
-  inscriptions    Boolean @default(false)
-  hubCaps         Boolean @default(false)
-  railings        Boolean @default(false)
-  sills           Boolean @default(false)
-  wheels          Boolean @default(false)
-  nozzles         Boolean @default(false)
-  
-  // Photos & Status
-  photosBeforeWork  String[]
-  photosAfterWork   String[]
-  status            WorkOrderStatus @default(NEW)
-  
-  // Timestamps
-  startedAt   DateTime?
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+// NEW: Типы работ для привязки исполнителей
+enum WorkType {
+  ARMATURA_DISMANTLING
+  ARMATURA_DISASSEMBLY
+  ARMATURA_ASSEMBLY
+  ARMATURA_MOUNTING
+  ARMATURA_ADDITIONAL
+  FIXED_BRAKE_CALIPERS_REMOVE
+  FIXED_BRAKE_CALIPERS_INSTALL
+  FIXED_WHEELS_REMOVE
+  FIXED_WHEELS_INSTALL
+  BODY_PART
+  SERVICE_FILM
+  SERVICE_DRY_CLEANING
+  SERVICE_POLISHING
+  SERVICE_WHEEL_PAINTING
+  SERVICE_CARBON
 }
 
 enum RequestSource {
@@ -217,6 +312,7 @@ enum RequestStatus {
   IN_PROGRESS
   COMPLETED
   CLOSED
+  SDELKA
 }
 
 enum CarCondition {
@@ -235,9 +331,17 @@ enum WorkOrderStatus {
   ASSIGNED_TO_MASTER
   ASSIGNED_TO_EXECUTOR
   IN_PROGRESS
+  PAINTING           // NEW: покраска
+  POLISHING          // NEW: полировка
+  ASSEMBLY_STAGE     // NEW: сборка
   UNDER_REVIEW
-  APPROVED
+  APPROVED  
   RETURNED_FOR_REVISION
+  SENT               // NEW: отправлен
+  SHIPPED            // существующий
+  ASSEMBLED          // существующий
+  ISSUED             // существующий
+  READY              // существующий
   COMPLETED
 }
 
@@ -246,4 +350,32 @@ enum UserRole {
   MANAGER
   MASTER
   EXECUTOR
+  PAINTER
+}
+
+// NEW: Таблица для привязки исполнителей к работам и расчёта ЗП
+model WorkOrderExecutor {
+  id            Int       @id @default(autoincrement())
+  workOrderId   Int
+  workOrder     WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  
+  executorId    Int
+  executor      User      @relation("AssignedExecutor", fields: [executorId], references: [id])
+  
+  workType      WorkType   // тип работы
+  serviceType   ServiceType?  // тип услуги (опционально)
+  
+  description   String?    // описание работы
+  amount        Float      @default(0)  // сумма ЗП
+  isPaid        Boolean    @default(false)  // выплачено
+  paidAmount    Float      @default(0)  // сколько выплачено
+  
+  // Гибкие доп. данные: для деталей { quantity, actualQuantity, status, letterCount }
+  metadata      Json?      @default("{}")
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  @@index([workOrderId])
+  @@index([executorId])
 }

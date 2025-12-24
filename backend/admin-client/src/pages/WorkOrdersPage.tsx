@@ -4,6 +4,7 @@ import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useAuth } from '../auth/AuthContext';
 
 interface WorkOrder {
     id: number;
@@ -27,6 +28,18 @@ const WorkOrdersPage: React.FC = () => {
     const [viewMode, setViewMode] = useState('my');
     const { notification } = App.useApp();
     const navigate = useNavigate();
+    const { user } = useAuth(); // NEW: Get user
+    const isExecutor = user?.role === 'EXECUTOR' || user?.role === 'PAINTER';
+    const isMaster = user?.role === 'MASTER';
+    const isManager = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+
+    // NEW: Enforce "my" view for executors
+    // NEW: Enforce "my" view for executors and masters
+    useEffect(() => {
+        if (isExecutor || isMaster) {
+            setViewMode('my');
+        }
+    }, [isExecutor, isMaster]);
 
     const fetchWorkOrders = async () => {
         try {
@@ -103,20 +116,6 @@ const WorkOrdersPage: React.FC = () => {
             render: (_: any, record: WorkOrder) => `${record.carBrand} ${record.carModel}`,
         },
         {
-            title: 'Сумма',
-            dataIndex: 'totalAmount',
-            key: 'totalAmount',
-            width: 120,
-            render: (amount: number) => `${amount.toLocaleString('ru-RU')} ₽`,
-        },
-        {
-            title: 'Оплата',
-            dataIndex: 'paymentMethod',
-            key: 'paymentMethod',
-            width: 120,
-            render: (method: string) => getPaymentMethodText(method),
-        },
-        {
             title: 'Статус',
             dataIndex: 'status',
             key: 'status',
@@ -174,6 +173,25 @@ const WorkOrdersPage: React.FC = () => {
         },
     ];
 
+    if (isManager) {
+        columns.splice(3, 0,
+            {
+                title: 'Сумма',
+                dataIndex: 'totalAmount',
+                key: 'totalAmount',
+                width: 120,
+                render: (amount: number) => `${amount.toLocaleString('ru-RU')} ₽`,
+            } as any,
+            {
+                title: 'Оплата',
+                dataIndex: 'paymentMethod',
+                key: 'paymentMethod',
+                width: 120,
+                render: (method: string) => getPaymentMethodText(method),
+            } as any
+        );
+    }
+
     return (
         <div>
             <Card
@@ -182,15 +200,17 @@ const WorkOrdersPage: React.FC = () => {
                     <Space>
                         <Radio.Group value={viewMode} onChange={e => setViewMode(e.target.value)} buttonStyle="solid">
                             <Radio.Button value="my">Мои</Radio.Button>
-                            <Radio.Button value="all">Все</Radio.Button>
+                            {!isExecutor && !isMaster && <Radio.Button value="all">Все</Radio.Button>}
                         </Radio.Group>
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() => navigate('/work-orders/new')}
-                        >
-                            Создать заказ-наряд
-                        </Button>
+                        {!isExecutor && (
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => navigate('/work-orders/new')}
+                            >
+                                Создать заказ-наряд
+                            </Button>
+                        )}
                     </Space>
                 }
             >

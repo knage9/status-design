@@ -17,6 +17,8 @@ export class RequestsService {
             data: {
                 ...data,
                 requestNumber,
+                // @ts-ignore
+                arrivalAt: (data as any).arrivalAt,
             },
             include: {
                 manager: {
@@ -30,15 +32,41 @@ export class RequestsService {
         });
     }
 
-    async findAllAdmin(userId?: number, role?: string) {
-        // Managers see only their requests, others see all
+    async findAllAdmin(userId?: number, role?: string, searchQuery?: string) {
         const where: any = {};
 
-        if (role === 'MANAGER' && userId) {
+        // Поиск по имени или телефону клиента
+        if (searchQuery) {
             where.OR = [
-                { managerId: userId },
-                { managerId: null }, // New requests without manager
+                { name: { contains: searchQuery, mode: 'insensitive' } },
+                { phone: { contains: searchQuery } }
             ];
+        }
+
+        // Role-based filtering
+        if (role === 'MANAGER' && userId) {
+            const roleFilter = {
+                OR: [
+                    { managerId: userId },
+                    { managerId: null }, // New requests without manager
+                ]
+            };
+
+            // Если есть и поиск, и фильтр по роли, объединяем через AND
+            if (searchQuery) {
+                where.AND = [
+                    { OR: where.OR }, // Поиск
+                    roleFilter,        // Фильтр по роли
+                ];
+                delete where.OR;
+            } else {
+                where.OR = roleFilter.OR;
+            }
+        }
+
+        // Role-based filtering for MASTER (only SDELKA)
+        if (role === 'MASTER') {
+            where.status = 'SDELKA';
         }
 
         return this.prisma.request.findMany({

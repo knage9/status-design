@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Menu, ConfigProvider, theme, Drawer, Button, App as AntApp, Dropdown, Switch } from 'antd';
-import { FileTextOutlined, ReadOutlined, PictureOutlined, MenuOutlined, DashboardOutlined, FileDoneOutlined, LogoutOutlined, UserOutlined, TeamOutlined, BulbOutlined } from '@ant-design/icons';
+import { FileTextOutlined, ReadOutlined, PictureOutlined, MenuOutlined, DashboardOutlined, FileDoneOutlined, LogoutOutlined, UserOutlined, TeamOutlined, BulbOutlined, DollarOutlined } from '@ant-design/icons';
 import ReviewsPage from './pages/ReviewsPage';
 import PostsPage from './pages/PostsPage';
 import PortfolioPage from './pages/PortfolioPage';
@@ -11,7 +11,10 @@ import RequestDetailPage from './pages/RequestDetailPage';
 import WorkOrdersPage from './pages/WorkOrdersPage';
 import WorkOrderDetailPage from './pages/WorkOrderDetailPage';
 import WorkOrderCreatePage from './pages/WorkOrderCreatePage';
+import WorkOrderEditPage from './pages/WorkOrderEditPage';
 import UsersPage from './pages/UsersPage';
+import ExecutorStatsPage from './pages/ExecutorStatsPage';
+import LoadChartPage from './pages/LoadChartPage';
 import LoginPage from './auth/LoginPage';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
@@ -69,6 +72,16 @@ function AppContent() {
       key: 'work-orders',
       icon: <FileTextOutlined />,
       label: <Link to="/work-orders">Заказ-наряды</Link>,
+    },
+    {
+      key: 'load-chart',
+      icon: <DashboardOutlined />,
+      label: <Link to="/load-chart">График загрузки</Link>,
+    },
+    {
+      key: 'executor-stats',
+      icon: <DollarOutlined />,
+      label: <Link to="/executor-stats">Статистика выплат</Link>,
     },
   ];
 
@@ -207,6 +220,9 @@ function AppContent() {
                 <Route path="/work-orders" element={<ProtectedRoute><WorkOrdersPage /></ProtectedRoute>} />
                 <Route path="/work-orders/new" element={<ProtectedRoute><WorkOrderCreatePage /></ProtectedRoute>} />
                 <Route path="/work-orders/:id" element={<ProtectedRoute><WorkOrderDetailPage /></ProtectedRoute>} />
+                <Route path="/work-orders/:id/edit" element={<ProtectedRoute><WorkOrderEditPage /></ProtectedRoute>} />
+                <Route path="/executor-stats" element={<ProtectedRoute><ExecutorStatsPage /></ProtectedRoute>} />
+                <Route path="/load-chart" element={<ProtectedRoute><LoadChartPage /></ProtectedRoute>} />
                 <Route path="/users" element={<ProtectedRoute requiredRole="ADMIN"><UsersPage /></ProtectedRoute>} />
               </Routes>
             </div>

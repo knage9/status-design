@@ -26,6 +26,7 @@ interface Request {
         email: string;
         phone?: string;
     };
+    arrivalAt?: string; // NEW
 }
 
 interface WorkOrder {
@@ -96,6 +97,16 @@ const RequestDetailPage: React.FC = () => {
         }
     };
 
+    const handleDeal = async () => {
+        try {
+            await axios.patch(`http://localhost:3000/api/requests/admin/${id}`, { status: 'SDELKA' });
+            notification.success({ title: 'Статус изменен на "Сделка"' });
+            fetchRequest();
+        } catch (error) {
+            notification.error({ title: 'Ошибка изменения статуса' });
+        }
+    };
+
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
             NEW: 'blue',
@@ -112,6 +123,7 @@ const RequestDetailPage: React.FC = () => {
             IN_PROGRESS: 'В работе',
             COMPLETED: 'Завершена',
             CLOSED: 'Закрыта',
+            SDELKA: 'Сделка', // NEW
         };
         return texts[status] || status;
     };
@@ -166,6 +178,8 @@ const RequestDetailPage: React.FC = () => {
     const canTakeToWork = request.status === 'NEW' && user?.role === 'MANAGER';
     const canComplete = request.status === 'IN_PROGRESS' && request.manager?.id === user?.id;
     const canClose = request.status === 'COMPLETED' && request.manager?.id === user?.id;
+    const canDeal = (request.status === 'NEW' || request.status === 'IN_PROGRESS') && (user?.role === 'MANAGER' || user?.role === 'ADMIN');
+    const isMaster = user?.role === 'MASTER';
 
     return (
         <div>
@@ -184,6 +198,15 @@ const RequestDetailPage: React.FC = () => {
                         <Tag color={getStatusColor(request.status)}>
                             {getStatusText(request.status)}
                         </Tag>
+                        {canDeal && (
+                            <Button
+                                type="primary"
+                                style={{ backgroundColor: '#722ed1' }}
+                                onClick={handleDeal}
+                            >
+                                Сделка
+                            </Button>
+                        )}
                         {canTakeToWork && (
                             <Button
                                 type="primary"
@@ -262,6 +285,14 @@ const RequestDetailPage: React.FC = () => {
                         {new Date(request.createdAt).toLocaleString('ru-RU')}
                     </Descriptions.Item>
 
+                    {request.arrivalAt && (
+                        <Descriptions.Item label="Дата приезда" span={2}>
+                            <Tag color="cyan" icon={<ClockCircleOutlined />}>
+                                {dayjs(request.arrivalAt).format('DD.MM.YYYY HH:mm')}
+                            </Tag>
+                        </Descriptions.Item>
+                    )}
+
                     {request.manager && (
                         <Descriptions.Item label="Ответственный" span={2}>
                             {request.manager.name} ({request.manager.email})
@@ -283,7 +314,7 @@ const RequestDetailPage: React.FC = () => {
                 </Descriptions>
                 <Divider titlePlacement="left">Заказ-наряды</Divider>
                 <>
-                    {(user?.role === 'ADMIN' || user?.role === 'MANAGER') && (
+                    {(user?.role === 'ADMIN' || user?.role === 'MANAGER' || isMaster) && (
                         <Button
                             type="dashed"
                             icon={<PlusOutlined />}

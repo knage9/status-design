@@ -142,4 +142,142 @@ export class DashboardService {
             activityChart,
         };
     }
+    async getExecutorStats(startDate?: string, endDate?: string, serviceType?: string, executorId?: number) {
+        const where: any = {};
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt.gte = new Date(startDate);
+            if (endDate) where.createdAt.lte = new Date(endDate);
+        }
+        if (serviceType) {
+            where.serviceType = serviceType;
+        }
+
+        const userWhere: any = { role: { in: ['EXECUTOR', 'PAINTER'] } };
+        if (executorId) {
+            userWhere.id = executorId;
+        }
+
+        const executors = await this.prisma.user.findMany({
+            where: userWhere,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+
+                // @ts-ignore
+                assignedWorks: {
+                    where,
+                    include: {
+                        workOrder: {
+                            select: {
+                                orderNumber: true,
+                                carBrand: true,
+                                carModel: true,
+                                customerName: true,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+
+        return executors.map((executor: any) => {
+            const totalEarned = executor.assignedWorks.reduce((sum, a) => sum + a.amount, 0);
+            const totalPaid = executor.assignedWorks.reduce((sum, a) => sum + a.paidAmount, 0);
+            const remaining = totalEarned - totalPaid;
+
+            // Группировка по типам услуг для этого исполнителя
+            const serviceBreakdown: Record<string, { count: number; amount: number }> = {};
+            executor.assignedWorks.forEach(a => {
+                const type = a.serviceType || 'OTHER';
+                if (!serviceBreakdown[type]) {
+                    serviceBreakdown[type] = { count: 0, amount: 0 };
+                }
+                serviceBreakdown[type].count++;
+                serviceBreakdown[type].amount += a.amount;
+            });
+
+            return {
+                executor: {
+                    id: executor.id,
+                    name: executor.name,
+                    email: executor.email,
+                },
+                totalEarned,
+                paidAmount: totalPaid,
+                remaining,
+                workOrdersCount: new Set(executor.assignedWorks.map(a => a.workOrderId)).size,
+                serviceBreakdown,
+                works: executor.assignedWorks.map(a => ({
+                    id: a.id,
+                    workOrderId: a.workOrderId,
+                    workOrderNumber: a.workOrder.orderNumber,
+                    carModel: `${a.workOrder.carBrand} ${a.workOrder.carModel}`,
+                    customerName: a.workOrder.customerName,
+                    workType: a.workType,
+                    serviceType: a.serviceType,
+                    description: a.description,
+                    amount: a.amount,
+                    paidAmount: a.paidAmount,
+                    isPaid: a.isPaid,
+                    createdAt: a.createdAt,
+                }))
+            };
+        });
+    }
+
+    async updateExecutorPayment(assignmentId: number, paidAmount: number, isPaid: boolean) {
+        // @ts-ignore
+        return this.prisma.workOrderExecutor.update({
+            where: { id: assignmentId },
+            data: {
+                paidAmount,
+                isPaid,
+            }
+        });
+    }
+
+    async getLoadChart() {
+        const statuses = [
+            'NEW', 'ASSIGNED_TO_MASTER', 'ASSIGNED_TO_EXECUTOR', 'IN_PROGRESS',
+            'PAINTING', 'POLISHING', 'ASSEMBLY_STAGE', 'UNDER_REVIEW', 'READY'
+        ];
+
+        const workOrders = await this.prisma.workOrder.findMany({
+            where: {
+                status: { in: statuses as any }
+            },
+            include: {
+                executor: { select: { name: true } },
+                master: { select: { name: true } },
+                manager: { select: { name: true } },
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        const stages: Record<string, any[]> = {};
+        statuses.forEach(status => {
+            stages[status] = workOrders
+                .filter(wo => wo.status === status)
+                .map(wo => ({
+                    id: wo.id,
+                    orderNumber: wo.orderNumber,
+                    carBrand: wo.carBrand,
+                    carModel: wo.carModel,
+                    customerName: wo.customerName,
+                    executorName: wo.executor?.name,
+                    masterName: wo.master?.name,
+                    managerName: wo.manager?.name,
+                    totalAmount: wo.totalAmount,
+                    createdAt: wo.createdAt,
+                    status: wo.status,
+                }));
+        });
+
+        return { stages };
+    }
 }

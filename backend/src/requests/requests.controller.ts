@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -14,8 +14,8 @@ export class RequestsController {
 
     @Get('admin')
     @UseGuards(JwtAuthGuard)
-    findAllAdmin(@Request() req) {
-        return this.requestsService.findAllAdmin(req.user.userId, req.user.role);
+    findAllAdmin(@Request() req, @Query('searchQuery') searchQuery?: string) {
+        return this.requestsService.findAllAdmin(req.user.userId, req.user.role, searchQuery);
     }
 
     @Get(':id')

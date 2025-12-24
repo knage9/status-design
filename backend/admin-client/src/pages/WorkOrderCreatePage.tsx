@@ -8,7 +8,6 @@ import {
     Select,
     Button,
     Space,
-    Divider,
     Row,
     Col,
     App,
@@ -28,14 +27,12 @@ import {
 } from '@ant-design/icons';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
+import ArmaturaBlock from '../components/ArmaturaBlock';
+import BodyPartsBlock from '../components/BodyPartsBlock';
+import OtherServicesBlock from '../components/OtherServicesBlock';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
-
-interface PartField {
-    name: string;
-    label: string;
-}
 
 const WorkOrderCreatePage: React.FC = () => {
     const [form] = Form.useForm();
@@ -80,8 +77,38 @@ const WorkOrderCreatePage: React.FC = () => {
         loadRequestData();
     }, [requestId]);
 
+    // NEW: Загрузка списка исполнителей
+    useEffect(() => {
+        const loadExecutors = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/api/users');
+                const users = response.data;
+                // Фильтруем только EXECUTOR и PAINTER
+                const executorsList = users.filter((u: any) =>
+                    u.role === 'EXECUTOR' || u.role === 'PAINTER'
+                );
+                setExecutors(executorsList);
+            } catch (error) {
+                console.error('Failed to load executors:', error);
+            }
+        };
+        loadExecutors();
+    }, []);
+
     // New state to hold loaded data
     const [requestData, setRequestData] = useState<any>(null);
+    // NEW: State для списка услуг и общей суммы
+    const [selectedServices, setSelectedServices] = useState<string[]>([]);
+    const [totalAmount, setTotalAmount] = useState<number>(0);
+    const [executors, setExecutors] = useState<any[]>([]);
+    const isExecutor = user?.role === 'EXECUTOR' || user?.role === 'PAINTER';
+
+    useEffect(() => {
+        if (isExecutor) {
+            notification.error({ message: 'Доступ запрещен' });
+            navigate('/work-orders');
+        }
+    }, [isExecutor, navigate, notification]);
 
     // Effect to populate form once data is loaded and form is likely mounted
     useEffect(() => {
@@ -91,8 +118,49 @@ const WorkOrderCreatePage: React.FC = () => {
                 customerPhone: requestData.phone,
                 carModel: requestData.carModel,
             });
+
+            // NEW: Извлечь услуги из request
+            let services: string[] = [];
+            if (requestData.services && requestData.services.length > 0) {
+                services = requestData.services;
+            } else {
+                // Fallback на mainService + additionalServices
+                if (requestData.mainService) {
+                    services.push(requestData.mainService);
+                }
+                if (requestData.additionalServices) {
+                    services = [...services, ...requestData.additionalServices];
+                }
+            }
+            setSelectedServices(services);
         }
     }, [initialLoading, requestData, form]);
+
+    // NEW: Определяем какие блоки показывать на основе selectedServices
+    const hasAntichrome = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('антихром') || lower.includes('antichrome');
+    });
+    const hasFilm = selectedServices.some(s => s.toLowerCase().includes('плёнка') || s.toLowerCase().includes('пленка') || s.toLowerCase().includes('film'));
+    const hasDryCleaning = selectedServices.some(s => s.toLowerCase().includes('химчистка') || s.toLowerCase().includes('dry'));
+    const hasPolishing = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('полировка') || lower.includes('керамика') || lower.includes('ceramic') || lower.includes('polishing');
+    });
+    const hasWheelPainting = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('покраска дисков') || lower.includes('покраска колёс') || lower.includes('покраска колес') || lower.includes('wheel');
+    });
+    const hasCarbon = selectedServices.some(s => s.toLowerCase().includes('карбон') || s.toLowerCase().includes('carbon'));
+    const showBodyParts = hasAntichrome || hasPolishing; // Детали кузова для Антихром и Полировка
+
+    // NEW: Автоматический расчёт ЗП для арматурки при изменении totalAmount
+    const armaturaAmounts = {
+        dismantling: totalAmount * 0.07,
+        disassembly: totalAmount * 0.03,
+        assembly: totalAmount * 0.03,
+        mounting: totalAmount * 0.07,
+    };
 
     const handleSubmit = async (values: any) => {
         try {
@@ -107,7 +175,7 @@ const WorkOrderCreatePage: React.FC = () => {
                 ? parseFloat(values.totalAmount.replace(/\s/g, ''))
                 : values.totalAmount;
 
-            // Convert all part quantities to booleans (> 0 = true)
+            // Convert all part quantities to booleans (> 0 = true) - для обратной совместимости
             const partFields = [
                 'radiatorGrille', 'fogLights', 'frontBumper', 'lip', 'hood',
                 'windowMoldings', 'doorMoldings', 'vents', 'fenders', 'doorHandles', 'mirrors',
@@ -121,9 +189,118 @@ const WorkOrderCreatePage: React.FC = () => {
                 convertedParts[field] = value != null && value > 0;
             });
 
+            // NEW: Собираем servicesData
+            const servicesData: any = {};
+            if (values.filmExecutorId) {
+                servicesData.film = {
+                    executorId: values.filmExecutorId,
+                    amount: values.filmAmount || 0,
+                };
+            }
+            if (values.dryCleaningExecutorId) {
+                servicesData.dryCleaning = {
+                    executorId: values.dryCleaningExecutorId,
+                    serviceAmount: values.dryCleaningServiceAmount || 0,
+                    executorAmount: values.dryCleaningExecutorAmount || 0,
+                };
+            }
+            if (values.polishingExecutorId) {
+                servicesData.polishing = {
+                    executorId: values.polishingExecutorId,
+                    serviceAmount: values.polishingServiceAmount || 0,
+                    executorAmount: values.polishingExecutorAmount || 0,
+                };
+            }
+            if (values.wheelPaintingMainExecutorId || values.wheelPaintingMountingExecutorId || values.wheelPaintingCapsExecutorId) {
+                servicesData.wheelPainting = {
+                    mainExecutorId: values.wheelPaintingMainExecutorId,
+                    amount: values.wheelPaintingAmount || 0,
+                    mounting: {
+                        executorId: values.wheelPaintingMountingExecutorId,
+                        amount: values.wheelPaintingMountingAmount || 0,
+                    },
+                    caps: {
+                        executorId: values.wheelPaintingCapsExecutorId,
+                        amount: values.wheelPaintingCapsAmount || 0,
+                    }
+                };
+            }
+            if (values.carbonExecutorId) {
+                servicesData.carbon = {
+                    executorId: values.carbonExecutorId,
+                    stage: values.carbonStage || '',
+                    type: values.carbonType || 'EXTERIOR',
+                    comment: values.carbonComment || '',
+                    partsCount: values.carbonPartsCount || 0,
+                    price: values.carbonPrice || 0,
+                    serviceAmount: values.carbonServiceAmount || 0,
+                };
+            }
+
+            // NEW: Собираем bodyPartsData (БЕЗ колёс, только для Антихром и Полировки)
+            const bodyPartsData: any = {};
+            const bodyPartsList = [
+                'radiatorGrille', 'fogLights', 'fenders', 'doorHandles',
+                'badges', 'inscriptions', 'hubCaps', 'railings'
+            ]; // 8 элементов, без колёс
+
+            bodyPartsList.forEach(partKey => {
+                const quantity = values[`${partKey}Quantity`];
+                const actualQuantity = values[`${partKey}ActualQuantity`];
+                const status = values[`${partKey}Status`];
+                const executorId = values[`${partKey}ExecutorId`];
+                const letterCount = values[`${partKey}LetterCount`]; // для надписей
+
+                if (quantity || actualQuantity || status || executorId) {
+                    bodyPartsData[partKey] = {
+                        quantity: quantity || 0,
+                        actualQuantity: actualQuantity || 0,
+                        status: status || 'pending',
+                        executorId: executorId || undefined,
+                        letterCount: partKey === 'inscriptions' ? letterCount : undefined,
+                    };
+                }
+            });
+
+            // NEW: Собираем armaturaExecutors (только айдишники)
+            const armaturaExecutors: any = {};
+            if (values.dismantlingExecutorId) armaturaExecutors.dismantling = values.dismantlingExecutorId;
+            if (values.disassemblyExecutorId) armaturaExecutors.disassembly = values.disassemblyExecutorId;
+            if (values.assemblyExecutorId) armaturaExecutors.assembly = values.assemblyExecutorId;
+            if (values.mountingExecutorId) armaturaExecutors.mounting = values.mountingExecutorId;
+
+            // NEW: Собираем fixedServices
+            const fixedServices: any = {};
+            if (values.brakeCalipersRemovedBy || values.brakeCalipersInstalledBy) {
+                fixedServices.brakeCalipers = {
+                    removedBy: values.brakeCalipersRemovedBy || undefined,
+                    installedBy: values.brakeCalipersInstalledBy || undefined,
+                };
+            }
+            if (values.wheelsRemovedBy || values.wheelsInstalledBy) {
+                fixedServices.wheels = {
+                    removedBy: values.wheelsRemovedBy || undefined,
+                    installedBy: values.wheelsInstalledBy || undefined,
+                };
+            }
+
+            // NEW: Собираем additionalServices (массив)
+            const additionalServices: any[] = [];
+            if (values.additionalServices && Array.isArray(values.additionalServices)) {
+                values.additionalServices.forEach((service: any) => {
+                    if (service.name && service.executorId && service.amount) {
+                        additionalServices.push({
+                            name: service.name,
+                            executorId: service.executorId,
+                            amount: service.amount,
+                        });
+                    }
+                });
+            }
+
             const data = {
                 requestId: requestId ? parseInt(requestId) : undefined,
-                managerId: user?.id || 1, // Fallback to 1 if user not loaded
+                managerId: user?.id || 1,
                 totalAmount,
                 paymentMethod: values.paymentMethod,
                 customerName: values.customerName,
@@ -135,7 +312,8 @@ const WorkOrderCreatePage: React.FC = () => {
                 blackCount: values.blackCount ? Number(values.blackCount) : 0,
                 carbonCount: values.carbonCount ? Number(values.carbonCount) : 0,
                 standardStructureCount: values.standardStructureCount ? Number(values.standardStructureCount) : 0,
-                // Armouring - backend has boolean + price (no count fields)
+
+                // Старые поля арматурки (для обратной совместимости)
                 dismantling: (Number(values.dismantlingCount) || 0) > 0 || (Number(values.dismantlingPrice) || 0) > 0,
                 dismantlingPrice: values.dismantlingPrice ? Number(values.dismantlingPrice) : 0,
                 disassembly: (Number(values.disassemblyCount) || 0) > 0 || (Number(values.disassemblyPrice) || 0) > 0,
@@ -144,11 +322,17 @@ const WorkOrderCreatePage: React.FC = () => {
                 assemblyPrice: values.assemblyPrice ? Number(values.assemblyPrice) : 0,
                 mounting: (Number(values.mountingCount) || 0) > 0 || (Number(values.mountingPrice) || 0) > 0,
                 mountingPrice: values.mountingPrice ? Number(values.mountingPrice) : 0,
-                // Parts as booleans
-                ...convertedParts,
-            };
 
-            console.log('Submitting data:', data);
+                // Старые поля деталей (для обратной совместимости)
+                ...convertedParts,
+
+                // NEW: Новые структуры данных для backend
+                servicesData: Object.keys(servicesData).length > 0 ? servicesData : undefined,
+                bodyPartsData: Object.keys(bodyPartsData).length > 0 ? bodyPartsData : undefined,
+                armaturaExecutors: Object.keys(armaturaExecutors).length > 0 ? armaturaExecutors : undefined,
+                fixedServices: Object.keys(fixedServices).length > 0 ? fixedServices : undefined,
+                additionalServices: additionalServices.length > 0 ? additionalServices : undefined,
+            };
 
             await axios.post('http://localhost:3000/api/work-orders', data);
             notification.success({
@@ -182,63 +366,7 @@ const WorkOrderCreatePage: React.FC = () => {
         );
     }
 
-    const frontParts: PartField[] = [
-        { name: 'radiatorGrille', label: 'Решетка радиатора' },
-        { name: 'fogLights', label: 'ПТФ (противотуманки)' },
-        { name: 'frontBumper', label: 'Передний бампер' },
-        { name: 'lip', label: 'Губа' },
-        { name: 'hood', label: 'Капот' },
-    ];
 
-    const sideParts: PartField[] = [
-        { name: 'windowMoldings', label: 'Оконные молдинги' },
-        { name: 'doorMoldings', label: 'Дверные молдинги' },
-        { name: 'vents', label: 'Форточки' },
-        { name: 'fenders', label: 'Крылья' },
-        { name: 'doorHandles', label: 'Ручки дверей' },
-        { name: 'mirrors', label: 'Зеркала' },
-    ];
-
-    const rearParts: PartField[] = [
-        { name: 'trunkLid', label: 'Крышка багажника' },
-        { name: 'spoiler', label: 'Спойлер' },
-        { name: 'rearBumper', label: 'Задний бампер' },
-        { name: 'diffuser', label: 'Диффузор' },
-        { name: 'rearLights', label: 'Задние фонари' },
-        { name: 'fakeExhausts', label: 'Фальшь насадки' },
-    ];
-
-    const otherParts: PartField[] = [
-        { name: 'badges', label: 'Значки' },
-        { name: 'inscriptions', label: 'Надписи' },
-        { name: 'hubCaps', label: 'Ступичные колпачки' },
-        { name: 'railings', label: 'Рейлинги' },
-        { name: 'sills', label: 'Пороги' },
-        { name: 'wheels', label: 'Колеса' },
-        { name: 'nozzles', label: 'Насадки' },
-    ];
-
-    const renderPartInputs = (parts: PartField[], gridCols: { xs: number; sm: number; md: number; lg: number }) => {
-        return parts.map(part => (
-            <Col {...gridCols} key={part.name}>
-                <Form.Item
-                    label={part.label}
-                    name={part.name}
-                    style={{ marginBottom: 16 }}
-                >
-                    <Space.Compact style={{ width: '100%' }}>
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            size="large"
-                            min={0}
-                            max={999}
-                            placeholder="0 шт"
-                        />
-                    </Space.Compact>
-                </Form.Item>
-            </Col>
-        ));
-    };
 
     return (
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 16px 24px' }}>
@@ -264,6 +392,15 @@ const WorkOrderCreatePage: React.FC = () => {
                     form={form}
                     layout="vertical"
                     onFinish={handleSubmit}
+                    onValuesChange={(changedValues) => {
+                        if (changedValues.totalAmount !== undefined) {
+                            // Ensure numeric value is set
+                            const amount = typeof changedValues.totalAmount === 'string'
+                                ? parseFloat(changedValues.totalAmount.replace(/\s/g, ''))
+                                : changedValues.totalAmount;
+                            setTotalAmount(amount || 0);
+                        }
+                    }}
                     initialValues={{
                         totalAmount: 0,
                         paymentMethod: 'CASH',
@@ -308,6 +445,8 @@ const WorkOrderCreatePage: React.FC = () => {
                                             min={0}
                                             placeholder="0"
                                             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                                            parser={value => parseFloat(value!.replace(/\s?|₽/g, '')) || 0}
+
                                         />
                                         <Button size="large" disabled>₽</Button>
                                     </Space.Compact>
@@ -449,130 +588,27 @@ const WorkOrderCreatePage: React.FC = () => {
                     </Card>
 
                     {/* Armouring */}
-                    <Card
-                        type="inner"
-                        title={<Text strong>🔧 Работы по арматурке (количество и цена)</Text>}
-                        style={{ marginBottom: 24 }}
-                    >
-                        <Row gutter={[24, 16]}>
-                            <Col xs={24} sm={12} md={6}>
-                                <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>Демонтаж</Text>
-                                <Space orientation="vertical" style={{ width: '100%' }} size={8}>
-                                    <Form.Item name="dismantlingCount" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Кол-во" />
-                                            <Button size="large" disabled>шт</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                    <Form.Item name="dismantlingPrice" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Цена" />
-                                            <Button size="large" disabled>₽</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                </Space>
-                            </Col>
-                            <Col xs={24} sm={12} md={6}>
-                                <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>Разборка</Text>
-                                <Space orientation="vertical" style={{ width: '100%' }} size={8}>
-                                    <Form.Item name="disassemblyCount" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Кол-во" />
-                                            <Button size="large" disabled>шт</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                    <Form.Item name="disassemblyPrice" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Цена" />
-                                            <Button size="large" disabled>₽</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                </Space>
-                            </Col>
-                            <Col xs={24} sm={12} md={6}>
-                                <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>Сборка</Text>
-                                <Space orientation="vertical" style={{ width: '100%' }} size={8}>
-                                    <Form.Item name="assemblyCount" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Кол-во" />
-                                            <Button size="large" disabled>шт</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                    <Form.Item name="assemblyPrice" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Цена" />
-                                            <Button size="large" disabled>₽</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                </Space>
-                            </Col>
-                            <Col xs={24} sm={12} md={6}>
-                                <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>Монтаж</Text>
-                                <Space orientation="vertical" style={{ width: '100%' }} size={8}>
-                                    <Form.Item name="mountingCount" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Кол-во" />
-                                            <Button size="large" disabled>шт</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                    <Form.Item name="mountingPrice" noStyle>
-                                        <Space.Compact style={{ width: '100%' }}>
-                                            <InputNumber size="large" style={{ width: '100%' }} min={0} placeholder="Цена" />
-                                            <Button size="large" disabled>₽</Button>
-                                        </Space.Compact>
-                                    </Form.Item>
-                                </Space>
-                            </Col>
-                        </Row>
-                    </Card>
+                    <ArmaturaBlock
+                        totalAmount={totalAmount}
+                        executors={executors}
+                        hasAntichrome={hasAntichrome}
+                    />
 
-                    <Divider titlePlacement="left" style={{ fontSize: 18, fontWeight: 600, marginTop: 40 }}>
-                        🚗 Детали автомобиля (укажите количество)
-                    </Divider>
+                    <BodyPartsBlock
+                        executors={executors}
+                        showBodyParts={showBodyParts}
+                    />
 
-                    {/* Front Parts */}
-                    <Card
-                        type="inner"
-                        title={<Text strong style={{ fontSize: 16 }}>Передняя часть</Text>}
-                        style={{ marginBottom: 16 }}
-                    >
-                        <Row gutter={[16, 8]}>
-                            {renderPartInputs(frontParts, { xs: 24, sm: 12, md: 8, lg: 6 })}
-                        </Row>
-                    </Card>
+                    <OtherServicesBlock
+                        executors={executors}
+                        hasFilm={hasFilm}
+                        hasDryCleaning={hasDryCleaning}
+                        hasPolishing={hasPolishing}
+                        hasWheelPainting={hasWheelPainting}
+                        hasCarbon={hasCarbon}
+                    />
 
-                    {/* Side Parts */}
-                    <Card
-                        type="inner"
-                        title={<Text strong style={{ fontSize: 16 }}>Боковая часть</Text>}
-                        style={{ marginBottom: 16 }}
-                    >
-                        <Row gutter={[16, 8]}>
-                            {renderPartInputs(sideParts, { xs: 24, sm: 12, md: 8, lg: 6 })}
-                        </Row>
-                    </Card>
-
-                    {/* Rear Parts */}
-                    <Card
-                        type="inner"
-                        title={<Text strong style={{ fontSize: 16 }}>Задняя часть</Text>}
-                        style={{ marginBottom: 16 }}
-                    >
-                        <Row gutter={[16, 8]}>
-                            {renderPartInputs(rearParts, { xs: 24, sm: 12, md: 8, lg: 6 })}
-                        </Row>
-                    </Card>
-
-                    {/* Other Parts */}
-                    <Card
-                        type="inner"
-                        title={<Text strong style={{ fontSize: 16 }}>Другие элементы</Text>}
-                        style={{ marginBottom: 32 }}
-                    >
-                        <Row gutter={[16, 8]}>
-                            {renderPartInputs(otherParts, { xs: 24, sm: 12, md: 8, lg: 6 })}
-                        </Row>
-                    </Card>
+                    {/* Legacy Body Parts removed as per TZ requirements */}
 
                     {/* Submit Button */}
                     <div
