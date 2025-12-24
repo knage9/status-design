@@ -23,12 +23,8 @@ import { join } from 'path';
       serveRoot: '/uploads',
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public_html'),
-      exclude: ['/api/(.*)', '/admin/(.*)'],
-    }),
-    ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'admin-client/dist'),
-      serveRoot: '/admin',
+      exclude: ['/api/(.*)'],
     }),
     PrismaModule, ReviewsModule, PostsModule, PortfolioModule, UploadsModule, DashboardModule, RequestsModule, AuthModule, UsersModule, WorkOrdersModule, ExecutorStatsModule, LoadChartModule],
   controllers: [AppController],

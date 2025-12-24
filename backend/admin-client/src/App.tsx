@@ -236,7 +236,7 @@ function AppContent() {
 function App() {
   return (
     <AntApp>
-      <BrowserRouter basename="/admin">
+      <BrowserRouter>
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
