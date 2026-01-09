@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Statistic, Badge, Button, Progress, Typography, Skeleton, App, Flex } from 'antd';
+import { Row, Col, Card, Statistic, Badge, Button, Progress, Typography, Skeleton, App, Flex, Grid } from 'antd';
 import {
     MessageOutlined,
     FileTextOutlined,
@@ -25,6 +25,7 @@ import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 interface DashboardStats {
     reviews: { total: number; pending: number; avgRating: number; thisWeek: number };
@@ -54,12 +55,14 @@ const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { notification, modal } = App.useApp();
+    const screens = useBreakpoint();
+    const isMobile = !screens.md; // < 768px
 
     const fetchData = async () => {
         try {
             setLoading(true);
             // USER REQUEST: Use full URL to avoid 404
-            const response = await axios.get('http://localhost:3000/api/dashboard');
+            const response = await axios.get('/api/dashboard');
             setData(response.data);
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
@@ -186,7 +189,7 @@ const Dashboard: React.FC = () => {
     );
 
     return (
-        <div style={{ padding: 24 }}>
+        <div style={{ padding: isMobile ? 0 : 24 }}>
             {/* ВЕРХНИЙ РЯД */}
             <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} lg={6}>
@@ -240,18 +243,25 @@ const Dashboard: React.FC = () => {
             </Row>
 
             {/* ВТОРОЙ РЯД */}
-            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+            <Row gutter={[16, 16]} style={{ marginTop: isMobile ? 16 : 24 }}>
                 <Col span={24}>
                     <Card title="Активность за последние 7 дней" loading={loading}>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                             <LineChart data={activityChart}>
-                                <XAxis dataKey="date" />
-                                <YAxis />
+                                <XAxis
+                                    dataKey="date"
+                                    tick={{ fontSize: isMobile ? 11 : 12 }}
+                                />
+                                <YAxis
+                                    tick={{ fontSize: isMobile ? 11 : 12 }}
+                                />
                                 <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey="reviews" stroke="#1458E4" name="Отзывы" />
-                                <Line type="monotone" dataKey="posts" stroke="#52c41a" name="Новости" />
-                                <Line type="monotone" dataKey="portfolio" stroke="#faad14" name="Портфолио" />
+                                <Legend
+                                    wrapperStyle={{ fontSize: isMobile ? 12 : 14 }}
+                                />
+                                <Line type="monotone" dataKey="reviews" stroke="#1458E4" name="Отзывы" strokeWidth={2} />
+                                <Line type="monotone" dataKey="posts" stroke="#52c41a" name="Новости" strokeWidth={2} />
+                                <Line type="monotone" dataKey="portfolio" stroke="#faad14" name="Портфолио" strokeWidth={2} />
                             </LineChart>
                         </ResponsiveContainer>
                     </Card>
@@ -259,7 +269,7 @@ const Dashboard: React.FC = () => {
             </Row>
 
             {/* ТРЕТИЙ РЯД */}
-            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+            <Row gutter={[16, 16]} style={{ marginTop: isMobile ? 16 : 24 }}>
                 <Col xs={24} lg={14}>
                     <Card
                         title={<>Требует модерации <Badge count={pendingReviews?.length || 0} style={{ backgroundColor: '#faad14', marginLeft: 8 }} /></>}
@@ -269,20 +279,55 @@ const Dashboard: React.FC = () => {
                         <Flex vertical gap="middle">
                             {pendingReviews.map((review) => (
                                 <div key={review.id} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
-                                    <Flex justify="space-between" align="start">
-                                        <Flex gap="small">
+                                    <Flex
+                                        justify="space-between"
+                                        align="start"
+                                        vertical={isMobile}
+                                        gap={isMobile ? 12 : 0}
+                                    >
+                                        <Flex gap="small" style={{ flex: 1 }}>
                                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 40 }}>
                                                 <StarFilled style={{ color: '#faad14', fontSize: 20 }} />
                                                 <span style={{ marginTop: 4 }}>{review.rating}</span>
                                             </div>
-                                            <div>
+                                            <div style={{ flex: 1, minWidth: 0 }}>
                                                 <Text strong>{`${review.carBrand} ${review.carModel}`}</Text>
-                                                <div><Text ellipsis style={{ maxWidth: 300 }}>{review.text}</Text></div>
+                                                <div>
+                                                    <Text
+                                                        ellipsis
+                                                        style={{
+                                                            display: 'block',
+                                                            maxWidth: isMobile ? '100%' : 300
+                                                        }}
+                                                    >
+                                                        {review.text}
+                                                    </Text>
+                                                </div>
                                             </div>
                                         </Flex>
-                                        <Flex gap="small">
-                                            <Button type="primary" icon={<CheckOutlined />} onClick={() => handleApproveReview(review.id)}>Одобрить</Button>
-                                            <Button danger icon={<CloseOutlined />} onClick={() => handleRejectReview(review.id)}>Отклонить</Button>
+                                        <Flex
+                                            gap="small"
+                                            vertical={isMobile}
+                                            style={{ width: isMobile ? '100%' : 'auto' }}
+                                        >
+                                            <Button
+                                                type="primary"
+                                                icon={<CheckOutlined />}
+                                                onClick={() => handleApproveReview(review.id)}
+                                                block={isMobile}
+                                                size={isMobile ? 'large' : 'middle'}
+                                            >
+                                                Одобрить
+                                            </Button>
+                                            <Button
+                                                danger
+                                                icon={<CloseOutlined />}
+                                                onClick={() => handleRejectReview(review.id)}
+                                                block={isMobile}
+                                                size={isMobile ? 'large' : 'middle'}
+                                            >
+                                                Отклонить
+                                            </Button>
                                         </Flex>
                                     </Flex>
                                 </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Layout, Menu, ConfigProvider, theme, Drawer, Button, App as AntApp, Dropdown, Switch } from 'antd';
-import { FileTextOutlined, ReadOutlined, PictureOutlined, MenuOutlined, DashboardOutlined, FileDoneOutlined, LogoutOutlined, UserOutlined, TeamOutlined, BulbOutlined, DollarOutlined } from '@ant-design/icons';
+import { Layout, Menu, ConfigProvider, theme, Drawer, Button, App as AntApp, Dropdown, Switch, Grid, Modal, Form, Input, Badge } from 'antd';
+import { FileTextOutlined, ReadOutlined, PictureOutlined, MenuOutlined, DashboardOutlined, FileDoneOutlined, LogoutOutlined, UserOutlined, TeamOutlined, BulbOutlined, DollarOutlined, PlusOutlined, SwapOutlined, LockOutlined } from '@ant-design/icons';
 import ReviewsPage from './pages/ReviewsPage';
 import PostsPage from './pages/PostsPage';
 import PortfolioPage from './pages/PortfolioPage';
@@ -21,6 +21,7 @@ import { ProtectedRoute } from './auth/ProtectedRoute';
 import './App.css';
 
 const { Header, Sider, Content } = Layout;
+const { useBreakpoint } = Grid;
 
 function AppContent() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,10 +29,15 @@ function AppContent() {
     const saved = localStorage.getItem('theme');
     return saved === 'dark';
   });
+  const [addProfileModalOpen, setAddProfileModalOpen] = useState(false);
+  const [loginForm] = Form.useForm();
 
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, profiles, activeProfileId, logoutProfile, switchProfile, addProfile } = useAuth();
   const selectedKey = location.pathname === '/' ? 'dashboard' : location.pathname.substring(1);
+  const screens = useBreakpoint();
+  const isMobile = !screens.lg; // < 992px
+  const { message } = AntApp.useApp();
 
   useEffect(() => {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
@@ -94,21 +100,99 @@ function AppContent() {
     });
   }
 
+  const getRoleBadge = (role: string) => {
+    const roleMap: Record<string, { text: string; color: string }> = {
+      'ADMIN': { text: 'Админ', color: 'red' },
+      'MANAGER': { text: 'Менеджер', color: 'blue' },
+      'MASTER': { text: 'Мастер', color: 'green' },
+      'EXECUTOR': { text: 'Исполнитель', color: 'orange' },
+    };
+    return roleMap[role] || { text: role, color: 'default' };
+  };
+
+  const handleAddProfile = async (values: { email: string; password: string }) => {
+    try {
+      await addProfile(values.email, values.password);
+      message.success('Профиль добавлен');
+      setAddProfileModalOpen(false);
+      loginForm.resetFields();
+    } catch (error: any) {
+      message.error(error?.response?.data?.message || 'Неверный email или пароль');
+    }
+  };
+
+  const handleSwitchProfile = (profileId: number) => {
+    switchProfile(profileId);
+    message.success('Профиль переключен');
+  };
+
+  const handleLogoutProfile = (profileId: number) => {
+    logoutProfile(profileId);
+    message.success('Профиль удален');
+  };
+
+  const activeProfile = profiles.find(p => p.id === activeProfileId);
+  const otherProfiles = profiles.filter(p => p.id !== activeProfileId);
+
+  const roleBadge = activeProfile ? getRoleBadge(activeProfile.user.role) : null;
+
   const userMenuItems = [
+    // Active profile header
     {
-      key: 'profile',
+      key: 'active-profile',
       icon: <UserOutlined />,
-      label: `${user?.name} (${user?.role})`,
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>{activeProfile?.user.name || 'Нет активного профиля'}</span>
+          {roleBadge && (
+            <Badge 
+              status={roleBadge.color as any} 
+              text={roleBadge.text}
+              style={{ fontSize: 12 }}
+            />
+          )}
+        </div>
+      ),
       disabled: true,
     },
     {
       type: 'divider' as const,
     },
+    // Other profiles - switch options
+    ...otherProfiles.map(profile => {
+      const profileRole = getRoleBadge(profile.user.role);
+      return {
+        key: `switch-${profile.id}`,
+        icon: <SwapOutlined />,
+        label: (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>{profile.user.name}</span>
+            <Badge 
+              status={profileRole.color as any} 
+              text={profileRole.text}
+              style={{ fontSize: 11 }}
+            />
+          </div>
+        ),
+        onClick: () => handleSwitchProfile(profile.id),
+      };
+    }),
+    // Add profile option
+    {
+      key: 'add-profile',
+      icon: <PlusOutlined />,
+      label: 'Добавить профиль',
+      onClick: () => setAddProfileModalOpen(true),
+    },
+    {
+      type: 'divider' as const,
+    },
+    // Logout current profile
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Выход',
-      onClick: logout,
+      label: `Выйти из профиля`,
+      onClick: () => activeProfileId && handleLogoutProfile(activeProfileId),
       danger: true,
     },
   ];
@@ -176,40 +260,125 @@ function AppContent() {
         <Layout>
           <Header style={{
             background: isDarkMode ? '#141414' : '#fff',
-            padding: '0 24px',
+            padding: isMobile ? '0 12px' : '0 24px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             boxShadow: '0 1px 4px rgba(0,21,41,.08)',
-            borderBottom: isDarkMode ? '1px solid #303030' : '1px solid #f0f0f0'
+            borderBottom: isDarkMode ? '1px solid #303030' : '1px solid #f0f0f0',
+            height: isMobile ? 56 : 64,
+            lineHeight: isMobile ? '56px' : '64px'
           }}>
             <Button
               className="mobile-menu-button"
               type="text"
               icon={<MenuOutlined />}
               onClick={() => setMobileOpen(true)}
-              style={{ fontSize: '18px', width: 48, height: 48 }}
+              style={{ fontSize: '20px', width: 48, height: 48 }}
             />
             <div style={{ flex: 1 }}></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <BulbOutlined style={{ fontSize: 16 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16 }}>
+              {!isMobile && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <BulbOutlined style={{ fontSize: 16 }} />
+                  <Switch
+                    checked={isDarkMode}
+                    onChange={setIsDarkMode}
+                    checkedChildren="🌙"
+                    unCheckedChildren="☀️"
+                  />
+                </div>
+              )}
+              {isMobile && (
                 <Switch
                   checked={isDarkMode}
                   onChange={setIsDarkMode}
                   checkedChildren="🌙"
                   unCheckedChildren="☀️"
+                  size="small"
                 />
-              </div>
+              )}
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-                <Button type="text" icon={<UserOutlined />} style={{ height: 48 }}>
-                  {user?.name}
+                <Button
+                  type="text"
+                  icon={<UserOutlined />}
+                  style={{ height: 48, display: 'flex', alignItems: 'center', gap: 8 }}
+                >
+                  {!isMobile && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span>{activeProfile?.user.name || 'Профиль'}</span>
+                      {roleBadge && (
+                        <Badge 
+                          status={roleBadge.color as any} 
+                          text={roleBadge.text}
+                          style={{ fontSize: 11 }}
+                        />
+                      )}
+                    </div>
+                  )}
                 </Button>
               </Dropdown>
             </div>
           </Header>
-          <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-            <div style={{ padding: 24, minHeight: 'calc(100vh - 112px)' }}>
+
+          {/* Add Profile Modal */}
+          <Modal
+            title="Добавить профиль"
+            open={addProfileModalOpen}
+            onCancel={() => {
+              setAddProfileModalOpen(false);
+              loginForm.resetFields();
+            }}
+            footer={null}
+            width={400}
+          >
+            <Form
+              form={loginForm}
+              name="addProfile"
+              onFinish={handleAddProfile}
+              layout="vertical"
+              size="large"
+            >
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { required: true, message: 'Введите email' },
+                  { type: 'email', message: 'Некорректный email' },
+                ]}
+              >
+                <Input prefix={<UserOutlined />} placeholder="Email" />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                label="Пароль"
+                rules={[{ required: true, message: 'Введите пароль' }]}
+              >
+                <Input.Password prefix={<LockOutlined />} placeholder="Пароль" />
+              </Form.Item>
+
+              <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  style={{ height: 40 }}
+                >
+                  Добавить профиль
+                </Button>
+              </Form.Item>
+            </Form>
+          </Modal>
+          <Content style={{
+            margin: isMobile ? '12px 8px 0' : (screens.md ? '16px 12px 0' : '24px 16px 0'),
+            overflow: 'initial'
+          }}>
+            <div style={{
+              padding: isMobile ? 12 : (screens.md ? 16 : 24),
+              minHeight: `calc(100vh - ${isMobile ? 68 : 88}px)`,
+              background: isDarkMode ? 'transparent' : '#f0f2f5'
+            }}>
               <Routes>
                 <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />

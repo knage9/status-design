@@ -19,7 +19,7 @@ class NewsManager {
 
     async loadNewsData() {
         try {
-            const response = await fetch('http://localhost:3000/api/posts');
+            const response = await fetch('/api/posts');
             if (!response.ok) throw new Error('Failed to fetch news');
 
             const data = await response.json();
@@ -39,7 +39,7 @@ class NewsManager {
                     type: item.type === 'NEWS' ? 'news' : 'article',
                     category: item.category === 'NEWS' ? 'news' : 'articles',
                     content: item.content,
-                    image: item.image ? `http://localhost:3000${item.image}` : null,
+                    image: item.image || null,
                     views: item.views,
                     tags: item.tags || [],
                     slug: item.slug

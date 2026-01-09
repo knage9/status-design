@@ -193,7 +193,7 @@ class ReviewsManager {
     // Загрузка отзывов с API
     async loadReviews() {
         try {
-            const response = await fetch('http://localhost:3000/api/reviews');
+            const response = await fetch('/api/reviews');
             if (!response.ok) throw new Error('Failed to fetch reviews');
 
             const data = await response.json();
@@ -207,7 +207,7 @@ class ReviewsManager {
                 text: review.text,
                 date: new Date(review.datePublished || review.dateCreated).toLocaleDateString('ru-RU'),
                 hasImage: review.images && review.images.length > 0,
-                image: review.images && review.images.length > 0 ? `http://localhost:3000${review.images[0]}` : null,
+                image: review.images && review.images.length > 0 ? review.images[0] : null,
                 tags: review.tags || []
             }));
 
@@ -290,7 +290,7 @@ class ReviewsManager {
                 const uploadPromises = this.uploadedFiles.map(file => {
                     const fd = new FormData();
                     fd.append('file', file);
-                    return fetch('http://localhost:3000/api/uploads/images', {
+                    return fetch('/api/uploads/images', {
                         method: 'POST',
                         body: fd
                     }).then(res => res.json());
@@ -303,7 +303,7 @@ class ReviewsManager {
             }
 
             // 2. Submit Review
-            const response = await fetch('http://localhost:3000/api/reviews/admin', {
+            const response = await fetch('/api/reviews/admin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -1,0 +1,443 @@
+/* ============================================
+   RESPONSIVE DESIGN SYSTEM
+   Mobile-first approach for Admin Panel
+   ============================================ */
+
+:root {
+  /* Breakpoints */
+  --breakpoint-xs: 0;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-xxl: 1600px;
+
+  /* Spacing Scale - Mobile First */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+
+  /* Touch Targets */
+  --touch-target-min: 44px; /* Apple HIG recommendation */
+  --touch-target-comfortable: 48px;
+  --touch-target-large: 56px;
+
+  /* Typography - Mobile */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px; /* Better readability on mobile */
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+  --font-size-xxxl: 28px;
+
+  /* Layout */
+  --header-height-mobile: 56px;
+  --header-height-tablet: 64px;
+  --header-height-desktop: 64px;
+  
+  --content-padding-mobile: 12px;
+  --content-padding-tablet: 16px;
+  --content-padding-desktop: 24px;
+
+  /* Card & Components */
+  --card-padding-mobile: 12px;
+  --card-padding-tablet: 16px;
+  --card-padding-desktop: 24px;
+  
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* Z-index layers */
+  --z-drawer: 1000;
+  --z-modal: 1000;
+  --z-fab: 999;
+  --z-sticky: 100;
+  --z-header: 99;
+}
+
+/* ============================================
+   TABLET ADJUSTMENTS
+   ============================================ */
+@media (min-width: 768px) {
+  :root {
+    --font-size-base: 14px; /* Standard desktop size */
+    --spacing-xl: 24px;
+    --spacing-xxl: 32px;
+  }
+}
+
+/* ============================================
+   DESKTOP ADJUSTMENTS
+   ============================================ */
+@media (min-width: 992px) {
+  :root {
+    --spacing-xxl: 48px;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Visibility Utilities */
+.mobile-only {
+  display: block;
+}
+
+.tablet-only {
+  display: none;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .mobile-only {
+    display: none;
+  }
+  .tablet-only {
+    display: block;
+  }
+}
+
+@media (min-width: 992px) {
+  .mobile-only {
+    display: none;
+  }
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Hide on specific breakpoints */
+.hide-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block;
+  }
+}
+
+.hide-desktop {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  .hide-desktop {
+    display: none;
+  }
+}
+
+/* ============================================
+   TOUCH-FRIENDLY COMPONENTS
+   ============================================ */
+
+/* Minimum touch target size */
+.touch-target {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target-comfortable {
+  min-width: var(--touch-target-comfortable);
+  min-height: var(--touch-target-comfortable);
+}
+
+.touch-target-large {
+  min-width: var(--touch-target-large);
+  min-height: var(--touch-target-large);
+}
+
+/* ============================================
+   SPACING UTILITIES
+   ============================================ */
+
+.p-mobile {
+  padding: var(--content-padding-mobile);
+}
+
+.p-tablet {
+  padding: var(--content-padding-tablet);
+}
+
+.p-desktop {
+  padding: var(--content-padding-desktop);
+}
+
+/* Responsive padding */
+.p-responsive {
+  padding: var(--content-padding-mobile);
+}
+
+@media (min-width: 768px) {
+  .p-responsive {
+    padding: var(--content-padding-tablet);
+  }
+}
+
+@media (min-width: 992px) {
+  .p-responsive {
+    padding: var(--content-padding-desktop);
+  }
+}
+
+/* ============================================
+   LAYOUT HELPERS
+   ============================================ */
+
+/* Stack on mobile, row on desktop */
+.stack-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .stack-mobile {
+    flex-direction: row;
+  }
+}
+
+/* Responsive grid */
+.grid-responsive {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 576px) {
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid-responsive {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ============================================
+   SCROLLING & OVERFLOW
+   ============================================ */
+
+/* Horizontal scroll with hints */
+.scroll-x-mobile {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.scroll-x-mobile::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-x-mobile::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* ============================================
+   STICKY ELEMENTS
+   ============================================ */
+
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-sticky);
+}
+
+/* ============================================
+   FLOATING ACTION BUTTON (FAB)
+   ============================================ */
+
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: var(--z-fab);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .fab {
+    bottom: 32px;
+    right: 32px;
+  }
+}
+
+/* Hide FAB on desktop if not needed */
+.fab-mobile-only {
+  display: flex;
+}
+
+@media (min-width: 992px) {
+  .fab-mobile-only {
+    display: none;
+  }
+}
+
+/* ============================================
+   MOBILE-SPECIFIC OVERRIDES
+   ============================================ */
+
+@media (max-width: 767px) {
+  /* Fullscreen modals on mobile */
+  .ant-modal {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 0 !important;
+  }
+
+  .ant-modal-content {
+    border-radius: 0 !important;
+    min-height: 100vh;
+  }
+
+  /* Fullscreen drawer on mobile */
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+
+  /* Larger form inputs for touch */
+  .ant-input,
+  .ant-input-number,
+  .ant-picker,
+  .ant-select-selector {
+    min-height: var(--touch-target-min) !important;
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  /* Larger buttons */
+  .ant-btn {
+    min-height: var(--touch-target-min);
+    font-size: var(--font-size-base);
+    padding: 8px 16px;
+  }
+
+  .ant-btn-lg {
+    min-height: var(--touch-target-comfortable);
+    font-size: var(--font-size-lg);
+  }
+
+  /* Larger checkboxes and radio buttons */
+  .ant-checkbox-inner,
+  .ant-radio-inner {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper {
+    padding: 8px 0;
+  }
+
+  /* Table to cards transition helper */
+  .ant-table-wrapper.mobile-cards {
+    display: none;
+  }
+}
+
+/* ============================================
+   TABLET OPTIMIZATIONS
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Compact table on tablet */
+  .ant-table {
+    font-size: var(--font-size-sm);
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 12px 8px;
+  }
+}
+
+/* ============================================
+   SAFE AREAS (iOS notch support)
+   ============================================ */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Smooth scrolling on mobile */
+@media (max-width: 767px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  /* Prevent pull-to-refresh on certain elements */
+  body,
+  .ant-layout {
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  .fab,
+  .ant-drawer,
+  .mobile-menu-button,
+  .hide-print {
+    display: none !important;
+  }
+}

@@ -1,9 +1,12 @@
+/* Import responsive design system */
+@import './responsive.css';
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
+  color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #141414;
 
@@ -18,23 +21,48 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #141414;
+  /* Prevent overscroll bounce on mobile */
+  overscroll-behavior: none;
+  /* Better touch scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Scrollbar styling */
+/* Responsive scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
-  background: #1f1f1f; 
+/* Thinner scrollbars on mobile */
+@media (max-width: 767px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
 }
- 
+
+::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
 ::-webkit-scrollbar-thumb {
-  background: #333; 
+  background: #333;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
+}
+
+/* Improve touch interactions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better font rendering on mobile */
+@media (max-width: 767px) {
+  body {
+    font-size: 16px;
+    /* Prevent iOS zoom on input focus */
+  }
 }

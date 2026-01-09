@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Modal, Form, InputNumber, Tag, App, Typography, Space, Drawer, Descriptions } from 'antd';
-import { EyeOutlined, DollarOutlined, LoadingOutlined, CheckCircleOutlined, InfoCircleOutlined, ExportOutlined } from '@ant-design/icons';
+import { Table, Button, Card, Modal, Form, InputNumber, Tag, App, Typography, Space, Drawer, Descriptions, Grid, Flex, FloatButton, Divider } from 'antd';
+import { EyeOutlined, DollarOutlined, LoadingOutlined, CheckCircleOutlined, InfoCircleOutlined, ExportOutlined, UserOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Title, Text } = Typography;
+const { useBreakpoint } = Grid;
 
 interface ExecutorSummary {
     executor: {
@@ -45,11 +46,13 @@ const ExecutorStatsPage: React.FC = () => {
     const [selectedWorkOrder, setSelectedWorkOrder] = useState<{ id: number; number: string; amount: number } | null>(null);
     const [form] = Form.useForm();
     const { notification } = App.useApp();
+    const screens = useBreakpoint();
+    const isMobile = !screens.md; // < 768px
 
     const fetchStats = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:3000/api/dashboard/executor-stats');
+            const response = await axios.get('/api/dashboard/executor-stats');
             setStats(response.data);
         } catch (error) {
             notification.error({ title: 'Ошибка', description: 'Не удалось загрузить статистика' });
@@ -67,10 +70,9 @@ const ExecutorStatsPage: React.FC = () => {
         setDetailsDrawerVisible(true);
         setDetailsLoading(true);
         try {
-            const response = await axios.get(`http://localhost:3000/api/dashboard/executor-stats`, {
+            const response = await axios.get(`/api/dashboard/executor-stats`, {
                 params: { executorId: executor.executor.id }
             });
-            // response.data is an array of 1 executor if executorId is passed
             if (response.data && response.data.length > 0) {
                 setExecutorDetails(response.data[0].works);
             }
@@ -83,7 +85,7 @@ const ExecutorStatsPage: React.FC = () => {
 
     const handleOpenPayment = (work: WorkItem) => {
         setSelectedWorkOrder({
-            id: work.id, // work.id is the assignment ID
+            id: work.id,
             number: work.workOrderNumber,
             amount: work.amount
         });
@@ -95,7 +97,7 @@ const ExecutorStatsPage: React.FC = () => {
         if (!selectedExecutor || !selectedWorkOrder) return;
         try {
             await axios.patch(
-                `http://localhost:3000/api/dashboard/update-payment/${selectedWorkOrder.id}`,
+                `/api/dashboard/update-payment/${selectedWorkOrder.id}`,
                 {
                     paidAmount: values.paidAmount,
                     isPaid: values.paidAmount >= selectedWorkOrder.amount
@@ -103,7 +105,6 @@ const ExecutorStatsPage: React.FC = () => {
             );
             notification.success({ title: 'Успех', description: 'Оплата зафиксирована' });
             setPaymentModalVisible(false);
-            // Refresh details and summary
             handleViewDetails(selectedExecutor);
             fetchStats();
         } catch (error) {
@@ -135,13 +136,114 @@ const ExecutorStatsPage: React.FC = () => {
         document.body.removeChild(link);
     };
 
+    // Mobile Executor Card
+    const MobileExecutorCard = ({ executor }: { executor: ExecutorSummary }) => (
+        <Card
+            size="small"
+            style={{ marginBottom: 12 }}
+            hoverable
+            onClick={() => handleViewDetails(executor)}
+        >
+            <Flex vertical gap={8}>
+                <Flex justify="space-between" align="start">
+                    <div>
+                        <Text strong style={{ fontSize: 16 }}>{executor.executor.name}</Text>
+                        <br />
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                            {executor.executor.email}
+                        </Text>
+                    </div>
+                    <Tag style={{ fontSize: 13, padding: '4px 8px' }}>{executor.workOrdersCount} работ</Tag>
+                </Flex>
+
+                <Divider style={{ margin: '8px 0' }} />
+
+                <Flex vertical gap={4}>
+                    <Flex justify="space-between">
+                        <Text type="secondary">Заработано:</Text>
+                        <Text strong style={{ fontSize: 15 }}>{executor.totalEarned.toLocaleString()} ₽</Text>
+                    </Flex>
+                    <Flex justify="space-between">
+                        <Text type="secondary">Выплачено:</Text>
+                        <Text type="success" strong style={{ fontSize: 15 }}>{executor.paidAmount.toLocaleString()} ₽</Text>
+                    </Flex>
+                    <Flex justify="space-between">
+                        <Text type="secondary">Остаток:</Text>
+                        <Tag color={executor.remaining > 0 ? 'orange' : 'green'} style={{ fontSize: 15, padding: '4px 10px', margin: 0 }}>
+                            {executor.remaining.toLocaleString()} ₽
+                        </Tag>
+                    </Flex>
+                </Flex>
+
+                <Button
+                    type="primary"
+                    icon={<EyeOutlined />}
+                    size="large"
+                    block
+                    style={{ marginTop: 8 }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewDetails(executor);
+                    }}
+                >
+                    Посмотреть детали
+                </Button>
+            </Flex>
+        </Card>
+    );
+
+    // Mobile Work Item Card (for drawer)
+    const MobileWorkCard = ({ work }: { work: WorkItem }) => (
+        <Card size="small" style={{ marginBottom: 12 }}>
+            <Flex vertical gap={8}>
+                <Flex justify="space-between" align="center">
+                    <Text strong>#{work.workOrderNumber}</Text>
+                    {work.isPaid ? (
+                        <Tag icon={<CheckCircleOutlined />} color="success">Оплачено</Tag>
+                    ) : (
+                        <Tag icon={<InfoCircleOutlined />} color="warning">Ожидает</Tag>
+                    )}
+                </Flex>
+
+                <Divider style={{ margin: '4px 0' }} />
+
+                <Flex vertical gap={4}>
+                    <Text style={{ fontSize: 13 }}>{work.carModel}</Text>
+                    <Text type="secondary" style={{ fontSize: 12 }}>{work.customerName}</Text>
+                    <Tag color="blue" style={{ width: 'fit-content', margin: '4px 0' }}>
+                        {work.serviceType || work.workType}
+                    </Tag>
+                    {work.description && (
+                        <Text type="secondary" style={{ fontSize: 11 }}>{work.description}</Text>
+                    )}
+                </Flex>
+
+                <Flex justify="space-between" align="center" style={{ marginTop: 4 }}>
+                    <Text strong style={{ fontSize: 16, color: '#1890ff' }}>
+                        {work.amount.toLocaleString()} ₽
+                    </Text>
+                    {!work.isPaid && (
+                        <Button
+                            type="primary"
+                            size="middle"
+                            icon={<DollarOutlined />}
+                            onClick={() => handleOpenPayment(work)}
+                        >
+                            Оплатить
+                        </Button>
+                    )}
+                </Flex>
+            </Flex>
+        </Card>
+    );
+
     const columns = [
         {
             title: 'Исполнитель',
             dataIndex: ['executor', 'name'],
             key: 'name',
             render: (text: string, record: ExecutorSummary) => (
-                <Space direction="vertical" size={0}>
+                <Space orientation="vertical" size={0}>
                     <Text strong>{text}</Text>
                     <Text type="secondary" style={{ fontSize: 12 }}>{record.executor.email}</Text>
                 </Space>
@@ -261,25 +363,65 @@ const ExecutorStatsPage: React.FC = () => {
 
     return (
         <div style={{ padding: '0 0 24px 0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                <Title level={2} style={{ margin: 0 }}>Статистика и выплаты исполнителям</Title>
-                <Button icon={<ExportOutlined />} onClick={exportToCSV}>Экспорт CSV</Button>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 24,
+                flexWrap: 'wrap',
+                gap: 12
+            }}>
+                <Title level={isMobile ? 3 : 2} style={{ margin: 0 }}>
+                    {isMobile ? 'Статистика выплат' : 'Статистика и выплаты исполнителям'}
+                </Title>
+                {!isMobile && (
+                    <Button icon={<ExportOutlined />} onClick={exportToCSV}>Экспорт CSV</Button>
+                )}
             </div>
 
             <Card bordered={false} className="shadow-sm">
-                <Table
-                    columns={columns}
-                    dataSource={stats}
-                    rowKey={(record) => record.executor.id}
-                    loading={loading}
-                    pagination={false}
-                />
+                {isMobile ? (
+                    /* Mobile Card List */
+                    <div>
+                        {loading ? (
+                            <Card loading={true} />
+                        ) : stats.length > 0 ? (
+                            stats.map(executor => (
+                                <MobileExecutorCard key={executor.executor.id} executor={executor} />
+                            ))
+                        ) : (
+                            <Card>
+                                <Text type="secondary">Нет данных</Text>
+                            </Card>
+                        )}
+                    </div>
+                ) : (
+                    /* Desktop Table */
+                    <Table
+                        columns={columns}
+                        dataSource={stats}
+                        rowKey={(record) => record.executor.id}
+                        loading={loading}
+                        pagination={false}
+                    />
+                )}
             </Card>
+
+            {/* FAB for export on mobile */}
+            {isMobile && (
+                <FloatButton
+                    icon={<ExportOutlined />}
+                    type="default"
+                    style={{ right: 24, bottom: 24 }}
+                    onClick={exportToCSV}
+                    tooltip="Экспорт CSV"
+                />
+            )}
 
             <Drawer
                 title={`Работы: ${selectedExecutor?.executor.name}`}
                 placement="right"
-                width={800}
+                width={isMobile ? '100%' : 800}
                 onClose={() => setDetailsDrawerVisible(false)}
                 open={detailsDrawerVisible}
             >
@@ -289,7 +431,7 @@ const ExecutorStatsPage: React.FC = () => {
                     <>
                         <div style={{ marginBottom: 24 }}>
                             <Card size="small" style={{ background: '#fafafa' }}>
-                                <Descriptions column={3}>
+                                <Descriptions column={isMobile ? 1 : 3} size={isMobile ? 'small' : 'middle'}>
                                     <Descriptions.Item label="Всего заработано">
                                         <Text strong>{selectedExecutor?.totalEarned.toLocaleString()} ₽</Text>
                                     </Descriptions.Item>
@@ -303,12 +445,22 @@ const ExecutorStatsPage: React.FC = () => {
                             </Card>
                         </div>
 
-                        <Table
-                            columns={detailColumns}
-                            dataSource={executorDetails}
-                            rowKey="id"
-                            size="small"
-                        />
+                        {isMobile ? (
+                            /* Mobile Work Cards */
+                            <div>
+                                {executorDetails.map(work => (
+                                    <MobileWorkCard key={work.id} work={work} />
+                                ))}
+                            </div>
+                        ) : (
+                            /* Desktop Table */
+                            <Table
+                                columns={detailColumns}
+                                dataSource={executorDetails}
+                                rowKey="id"
+                                size="small"
+                            />
+                        )}
                     </>
                 )}
             </Drawer>
@@ -319,6 +471,8 @@ const ExecutorStatsPage: React.FC = () => {
                 onCancel={() => setPaymentModalVisible(false)}
                 onOk={() => form.submit()}
                 destroyOnClose
+                width={isMobile ? '100%' : 520}
+                style={isMobile ? { top: 0, maxWidth: '100%', padding: 0 } : undefined}
             >
                 <div style={{ marginBottom: 20 }}>
                     <Text type="secondary">Начислено за работы в этом заказе: </Text>

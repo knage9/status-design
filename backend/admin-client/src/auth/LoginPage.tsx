@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, message, Typography } from 'antd';
+import { Form, Input, Button, Card, Typography, App } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -10,6 +10,7 @@ const LoginPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const { message } = App.useApp(); // берём message из контекста
 
     const onFinish = async (values: { email: string; password: string }) => {
         try {
@@ -18,7 +19,7 @@ const LoginPage: React.FC = () => {
             message.success('Вход выполнен успешно');
             navigate('/');
         } catch (error: any) {
-            message.error(error.response?.data?.message || 'Неверный email или пароль');
+            message.error(error?.response?.data?.message || 'Неверный email или пароль');
         } finally {
             setLoading(false);
         }

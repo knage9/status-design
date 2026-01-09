@@ -24,7 +24,7 @@ import { join } from 'path';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'admin-client/dist'),
-      exclude: ['/api/(.*)'],
+      serveRoot: '/admin',
     }),
     PrismaModule, ReviewsModule, PostsModule, PortfolioModule, UploadsModule, DashboardModule, RequestsModule, AuthModule, UsersModule, WorkOrdersModule, ExecutorStatsModule, LoadChartModule],
   controllers: [AppController],

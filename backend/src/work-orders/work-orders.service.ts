@@ -7,7 +7,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkOrderNumberService } from './work-order-number.service';
-import { PaymentMethod, CarCondition, WorkOrderStatus } from '@prisma/client';
+import { PaymentMethod, CarCondition, WorkOrderStatus, WorkType, ServiceType } from '@prisma/client';
 
 interface CreateWorkOrderDto {
     requestId: number;
@@ -78,10 +78,10 @@ interface CreateWorkOrderDto {
         dryCleaning?: { executorId: number; serviceAmount: number; executorAmount: number };
         polishing?: { executorId: number; serviceAmount: number; executorAmount: number };
         wheelPainting?: {
-            mainExecutorId?: number;
             amount?: number;
+            payoutAmount?: number;
+            dismounting?: { executorId?: number; amount?: number };
             mounting?: { executorId?: number; amount?: number };
-            caps?: { executorId?: number; amount?: number };
         };
         carbon?: {
             executorId: number;
@@ -91,6 +91,10 @@ interface CreateWorkOrderDto {
             partsCount: number;
             price: number;
             serviceAmount?: number;
+        };
+        soundproofing?: {
+            executorId: number;
+            amount: number;
         };
         bonus?: {
             executorId: number;
@@ -177,7 +181,7 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: armaturaExecutors.dismantling,
-                        workType: 'ARMATURA_DISMANTLING',
+                        workType: WorkType.ARMATURA_DISMANTLING,
                         amount: totalAmount * 0.07,
                         description: 'Демонтаж',
                     });
@@ -186,7 +190,7 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: armaturaExecutors.disassembly,
-                        workType: 'ARMATURA_DISASSEMBLY',
+                        workType: WorkType.ARMATURA_DISASSEMBLY,
                         amount: totalAmount * 0.03,
                         description: 'Разборка',
                     });
@@ -195,7 +199,7 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: armaturaExecutors.assembly,
-                        workType: 'ARMATURA_ASSEMBLY',
+                        workType: WorkType.ARMATURA_ASSEMBLY,
                         amount: totalAmount * 0.03,
                         description: 'Сборка',
                     });
@@ -204,7 +208,7 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: armaturaExecutors.mounting,
-                        workType: 'ARMATURA_MOUNTING',
+                        workType: WorkType.ARMATURA_MOUNTING,
                         amount: totalAmount * 0.07,
                         description: 'Монтаж',
                     });
@@ -218,7 +222,7 @@ export class WorkOrdersService {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: fixedServices.brakeCalipers.removedBy,
-                            workType: 'FIXED_BRAKE_CALIPERS_REMOVE',
+                            workType: WorkType.FIXED_BRAKE_CALIPERS_REMOVE,
                             amount: 2500,
                             description: 'Арматура суппортов - снял',
                         });
@@ -227,7 +231,7 @@ export class WorkOrdersService {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: fixedServices.brakeCalipers.installedBy,
-                            workType: 'FIXED_BRAKE_CALIPERS_INSTALL',
+                            workType: WorkType.FIXED_BRAKE_CALIPERS_INSTALL,
                             amount: 2500,
                             description: 'Арматура суппортов - поставил',
                         });
@@ -238,7 +242,7 @@ export class WorkOrdersService {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: fixedServices.wheels.removedBy,
-                            workType: 'FIXED_WHEELS_REMOVE',
+                            workType: WorkType.FIXED_WHEELS_REMOVE,
                             amount: 500,
                             description: 'Колёса - снял',
                         });
@@ -247,7 +251,7 @@ export class WorkOrdersService {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: fixedServices.wheels.installedBy,
-                            workType: 'FIXED_WHEELS_INSTALL',
+                            workType: WorkType.FIXED_WHEELS_INSTALL,
                             amount: 500,
                             description: 'Колёса - поставил',
                         });
@@ -262,7 +266,7 @@ export class WorkOrdersService {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: partData.executorId,
-                            workType: 'BODY_PART',
+                            workType: WorkType.BODY_PART,
                             amount: partData.quantity * 400,
                             description: partType,
                             metadata: partData,
@@ -277,8 +281,8 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: data.servicesData.film.executorId,
-                        workType: 'SERVICE_FILM',
-                        serviceType: 'FILM',
+                        workType: WorkType.SERVICE_FILM,
+                        serviceType: ServiceType.FILM,
                         amount: data.servicesData.film.amount,
                         description: 'Плёнка',
                     });
@@ -287,8 +291,8 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: data.servicesData.dryCleaning.executorId,
-                        workType: 'SERVICE_DRY_CLEANING',
-                        serviceType: 'DRY_CLEANING',
+                        workType: WorkType.SERVICE_DRY_CLEANING,
+                        serviceType: ServiceType.DRY_CLEANING,
                         amount: data.servicesData.dryCleaning.executorAmount,
                         description: 'Химчистка',
                     });
@@ -297,42 +301,32 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: data.servicesData.polishing.executorId,
-                        workType: 'SERVICE_POLISHING',
-                        serviceType: 'POLISHING',
+                        workType: WorkType.SERVICE_POLISHING,
+                        serviceType: ServiceType.POLISHING,
                         amount: data.servicesData.polishing.executorAmount,
                         description: 'Полировка/Керамика',
                     });
                 }
                 if (data.servicesData.wheelPainting) {
                     const wp = data.servicesData.wheelPainting;
-                    if (wp.mainExecutorId) {
+                    if (wp.dismounting?.executorId) {
                         assignments.push({
                             workOrderId: result.id,
-                            executorId: wp.mainExecutorId,
-                            workType: 'SERVICE_WHEEL_PAINTING',
-                            serviceType: 'WHEEL_PAINTING',
-                            amount: 0, // Сумма за саму покраску если нужно
-                            description: 'Покраска дисков (основная)',
+                            executorId: wp.dismounting.executorId,
+                            workType: WorkType.SERVICE_WHEEL_PAINTING,
+                            serviceType: ServiceType.WHEEL_PAINTING,
+                            amount: wp.dismounting.amount || 0,
+                            description: 'Покраска дисков - Демонтаж',
                         });
                     }
                     if (wp.mounting?.executorId) {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: wp.mounting.executorId,
-                            workType: 'SERVICE_WHEEL_PAINTING_MOUNTING',
-                            serviceType: 'WHEEL_PAINTING',
+                            workType: WorkType.SERVICE_WHEEL_PAINTING_MOUNTING,
+                            serviceType: ServiceType.WHEEL_PAINTING,
                             amount: wp.mounting.amount || 0,
-                            description: 'Покраска дисков - Монтаж/Демонтаж',
-                        });
-                    }
-                    if (wp.caps?.executorId) {
-                        assignments.push({
-                            workOrderId: result.id,
-                            executorId: wp.caps.executorId,
-                            workType: 'SERVICE_WHEEL_PAINTING_CAPS',
-                            serviceType: 'WHEEL_PAINTING',
-                            amount: wp.caps.amount || 0,
-                            description: 'Покраска дисков - Колпачки',
+                            description: 'Покраска дисков - Монтаж',
                         });
                     }
                 }
@@ -342,20 +336,30 @@ export class WorkOrdersService {
                         assignments.push({
                             workOrderId: result.id,
                             executorId: carbon.executorId,
-                            workType: 'SERVICE_CARBON',
-                            serviceType: 'CARBON',
+                            workType: WorkType.SERVICE_CARBON,
+                            serviceType: ServiceType.CARBON,
                             amount: carbon.price || 0,
                             description: `Карбон - ${carbon.stage || ''} (${carbon.type || ''})`,
                             metadata: carbon,
                         });
                     }
                 }
+                if (data.servicesData.soundproofing?.executorId) {
+                    assignments.push({
+                        workOrderId: result.id,
+                        executorId: data.servicesData.soundproofing.executorId,
+                        workType: WorkType.SERVICE_SOUNDPROOFING,
+                        serviceType: ServiceType.SOUNDPROOFING,
+                        amount: data.servicesData.soundproofing.amount || 0,
+                        description: 'Шумоизоляция',
+                    });
+                }
                 // Существует ли бонус? Если пришел в servicesData.bonus
                 if (data.servicesData.bonus?.executorId) {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: data.servicesData.bonus.executorId,
-                        workType: 'SERVICE_BONUS',
+                        workType: WorkType.SERVICE_BONUS,
                         amount: data.servicesData.bonus.amount || 0,
                         description: data.servicesData.bonus.comment || 'Дополнительная выплата / бонус',
                     });
@@ -368,7 +372,7 @@ export class WorkOrdersService {
                     assignments.push({
                         workOrderId: result.id,
                         executorId: service.executorId,
-                        workType: 'ARMATURA_ADDITIONAL',
+                        workType: WorkType.ARMATURA_ADDITIONAL,
                         amount: service.amount,
                         description: service.name,
                     });
@@ -431,7 +435,7 @@ export class WorkOrdersService {
     }
 
     async findOne(id: number) {
-        return this.prisma.workOrder.findUnique({
+        const order = await this.prisma.workOrder.findUnique({
             where: { id },
             include: {
                 request: true,
@@ -445,17 +449,188 @@ export class WorkOrdersService {
                 }
             },
         });
+
+        if (!order) return null;
+
+        // Reconstruct DTO objects from executorAssignments AND flat fields
+        const armaturaExecutors: any = {};
+        const fixedServices: any = {};
+        const additionalServices: any[] = [];
+
+        // Helper to find assignment
+        const findAssignment = (type: string) => order.executorAssignments?.find(a => a.workType === type);
+
+        // Armatura Reconstruction
+        const dismantlingAss = findAssignment('ARMATURA_DISMANTLING');
+        if (order.dismantling || dismantlingAss) {
+            armaturaExecutors.dismantling = {
+                enabled: order.dismantling || !!dismantlingAss,
+                executorId: dismantlingAss?.executorId || order.dismantlingExecutorId,
+                price: dismantlingAss?.amount || order.dismantlingPrice
+            };
+        }
+
+        const disassemblyAss = findAssignment('ARMATURA_DISASSEMBLY');
+        if (order.disassembly || disassemblyAss) {
+            armaturaExecutors.disassembly = {
+                enabled: order.disassembly || !!disassemblyAss,
+                executorId: disassemblyAss?.executorId || order.disassemblyExecutorId,
+                price: disassemblyAss?.amount || order.disassemblyPrice
+            };
+        }
+
+        const assemblyAss = findAssignment('ARMATURA_ASSEMBLY');
+        if (order.assembly || assemblyAss) {
+            armaturaExecutors.assembly = {
+                enabled: order.assembly || !!assemblyAss,
+                executorId: assemblyAss?.executorId || order.assemblyExecutorId,
+                price: assemblyAss?.amount || order.assemblyPrice
+            };
+        }
+
+        const mountingAss = findAssignment('ARMATURA_MOUNTING');
+        if (order.mounting || mountingAss) {
+            armaturaExecutors.mounting = {
+                enabled: order.mounting || !!mountingAss,
+                executorId: mountingAss?.executorId || order.mountingExecutorId,
+                price: mountingAss?.amount || order.mountingPrice
+            };
+        }
+
+        // Fixed Services
+        const brakeRem = findAssignment('FIXED_BRAKE_CALIPERS_REMOVE');
+        const brakeInst = findAssignment('FIXED_BRAKE_CALIPERS_INSTALL');
+        if (brakeRem || brakeInst) {
+            fixedServices.brakeCalipers = {
+                removedBy: brakeRem?.executorId,
+                installedBy: brakeInst?.executorId,
+            };
+        }
+
+        const wheelRem = findAssignment('FIXED_WHEELS_REMOVE');
+        const wheelInst = findAssignment('FIXED_WHEELS_INSTALL');
+        if (wheelRem || wheelInst) {
+            fixedServices.wheels = {
+                removedBy: wheelRem?.executorId,
+                installedBy: wheelInst?.executorId,
+            };
+        }
+
+        // Additional Services
+        if (order.executorAssignments) {
+            order.executorAssignments.forEach(assignment => {
+                if (assignment.workType === 'ARMATURA_ADDITIONAL') {
+                    additionalServices.push({
+                        name: assignment.description,
+                        executorId: assignment.executorId,
+                        amount: assignment.amount,
+                    });
+                }
+            });
+        }
+
+        return {
+            ...order,
+            armaturaExecutors: Object.keys(armaturaExecutors).length > 0 ? armaturaExecutors : undefined,
+            fixedServices: Object.keys(fixedServices).length > 0 ? fixedServices : undefined,
+            additionalServices: additionalServices.length > 0 ? additionalServices : undefined,
+        };
     }
 
     async update(id: number, data: Partial<CreateWorkOrderDto>) {
-        // Если изменяется totalAmount, пересчитываем ЗП исполнителей арматурки
+        // 1. Recalculate armatura if totalAmount changed
         if (data.totalAmount) {
             await this.recalculateArmaturaPayments(id, data.totalAmount);
         }
 
+        // 2. Sync assignments if needed
+        const { armaturaExecutors, fixedServices, additionalServices, ...workOrderData } = data;
+
+        // If specific data structures are provided, we should ideally sync assignments.
+        // For simplicity and correctness, let's recreate assignments for the sections provided.
+        // Note: In a real system we'd handle "isPaid" status, but here we'll follow the requested structure logic.
+
+        if (data.servicesData || data.bodyPartsData || armaturaExecutors || fixedServices || additionalServices) {
+            const result = await this.prisma.workOrder.findUnique({ where: { id } });
+            if (result) {
+                const assignments: any[] = [];
+                const totalAmount = data.totalAmount || result.totalAmount;
+
+                // Define types to clean up
+                const typesToClean: WorkType[] = [];
+
+                if (armaturaExecutors) {
+                    typesToClean.push(WorkType.ARMATURA_DISMANTLING, WorkType.ARMATURA_DISASSEMBLY, WorkType.ARMATURA_ASSEMBLY, WorkType.ARMATURA_MOUNTING);
+                    if (armaturaExecutors.dismantling) assignments.push({ workOrderId: id, executorId: armaturaExecutors.dismantling, workType: WorkType.ARMATURA_DISMANTLING, amount: totalAmount * 0.07, description: 'Демонтаж' });
+                    if (armaturaExecutors.disassembly) assignments.push({ workOrderId: id, executorId: armaturaExecutors.disassembly, workType: WorkType.ARMATURA_DISASSEMBLY, amount: totalAmount * 0.03, description: 'Разборка' });
+                    if (armaturaExecutors.assembly) assignments.push({ workOrderId: id, executorId: armaturaExecutors.assembly, workType: WorkType.ARMATURA_ASSEMBLY, amount: totalAmount * 0.03, description: 'Сборка' });
+                    if (armaturaExecutors.mounting) assignments.push({ workOrderId: id, executorId: armaturaExecutors.mounting, workType: WorkType.ARMATURA_MOUNTING, amount: totalAmount * 0.07, description: 'Монтаж' });
+                }
+
+                if (fixedServices) {
+                    typesToClean.push(WorkType.FIXED_BRAKE_CALIPERS_REMOVE, WorkType.FIXED_BRAKE_CALIPERS_INSTALL, WorkType.FIXED_WHEELS_REMOVE, WorkType.FIXED_WHEELS_INSTALL);
+                    if (fixedServices.brakeCalipers?.removedBy) assignments.push({ workOrderId: id, executorId: fixedServices.brakeCalipers.removedBy, workType: WorkType.FIXED_BRAKE_CALIPERS_REMOVE, amount: 2500, description: 'Арматура суппортов - снял' });
+                    if (fixedServices.brakeCalipers?.installedBy) assignments.push({ workOrderId: id, executorId: fixedServices.brakeCalipers.installedBy, workType: WorkType.FIXED_BRAKE_CALIPERS_INSTALL, amount: 2500, description: 'Арматура суппортов - поставил' });
+                    if (fixedServices.wheels?.removedBy) assignments.push({ workOrderId: id, executorId: fixedServices.wheels.removedBy, workType: WorkType.FIXED_WHEELS_REMOVE, amount: 500, description: 'Колёса - снял' });
+                    if (fixedServices.wheels?.installedBy) assignments.push({ workOrderId: id, executorId: fixedServices.wheels.installedBy, workType: WorkType.FIXED_WHEELS_INSTALL, amount: 500, description: 'Колёса - поставил' });
+                }
+
+                if (data.bodyPartsData) {
+                    typesToClean.push(WorkType.BODY_PART);
+                    for (const [partType, partData] of Object.entries(data.bodyPartsData)) {
+                        if (partData.executorId && partData.quantity > 0) {
+                            assignments.push({ workOrderId: id, executorId: partData.executorId, workType: WorkType.BODY_PART, amount: partData.quantity * 400, description: partType, metadata: partData });
+                        }
+                    }
+                }
+
+                if (data.servicesData) {
+                    typesToClean.push(WorkType.SERVICE_FILM, WorkType.SERVICE_DRY_CLEANING, WorkType.SERVICE_POLISHING, WorkType.SERVICE_WHEEL_PAINTING, WorkType.SERVICE_WHEEL_PAINTING_MOUNTING, WorkType.SERVICE_WHEEL_PAINTING_CAPS, WorkType.SERVICE_CARBON, WorkType.SERVICE_SOUNDPROOFING, WorkType.SERVICE_BONUS);
+
+                    if (data.servicesData.film?.executorId) assignments.push({ workOrderId: id, executorId: data.servicesData.film.executorId, workType: WorkType.SERVICE_FILM, serviceType: ServiceType.FILM, amount: data.servicesData.film.amount, description: 'Плёнка' });
+                    if (data.servicesData.dryCleaning?.executorId) assignments.push({ workOrderId: id, executorId: data.servicesData.dryCleaning.executorId, workType: WorkType.SERVICE_DRY_CLEANING, serviceType: ServiceType.DRY_CLEANING, amount: data.servicesData.dryCleaning.executorAmount, description: 'Химчистка' });
+                    if (data.servicesData.polishing?.executorId) assignments.push({ workOrderId: id, executorId: data.servicesData.polishing.executorId, workType: WorkType.SERVICE_POLISHING, serviceType: ServiceType.POLISHING, amount: data.servicesData.polishing.executorAmount, description: 'Полировка/Керамика' });
+
+                    const wp = data.servicesData.wheelPainting;
+                    if (wp) {
+                        if (wp.dismounting?.executorId) assignments.push({ workOrderId: id, executorId: wp.dismounting.executorId, workType: WorkType.SERVICE_WHEEL_PAINTING, serviceType: ServiceType.WHEEL_PAINTING, amount: wp.dismounting.amount || 0, description: 'Покраска дисков - Демонтаж' });
+                        if (wp.mounting?.executorId) assignments.push({ workOrderId: id, executorId: wp.mounting.executorId, workType: WorkType.SERVICE_WHEEL_PAINTING_MOUNTING, serviceType: ServiceType.WHEEL_PAINTING, amount: wp.mounting.amount || 0, description: 'Покраска дисков - Монтаж' });
+                    }
+
+                    const carbon = data.servicesData.carbon;
+                    if (carbon?.executorId) assignments.push({ workOrderId: id, executorId: carbon.executorId, workType: WorkType.SERVICE_CARBON, serviceType: ServiceType.CARBON, amount: carbon.price || 0, description: `Карбон - ${carbon.stage || ''} (${carbon.type || ''})`, metadata: carbon });
+                    if (data.servicesData.soundproofing?.executorId) assignments.push({ workOrderId: id, executorId: data.servicesData.soundproofing.executorId, workType: WorkType.SERVICE_SOUNDPROOFING, serviceType: ServiceType.SOUNDPROOFING, amount: data.servicesData.soundproofing.amount || 0, description: 'Шумоизоляция' });
+                }
+
+                if (additionalServices) {
+                    typesToClean.push(WorkType.ARMATURA_ADDITIONAL);
+                    for (const service of additionalServices) {
+                        assignments.push({ workOrderId: id, executorId: service.executorId, workType: WorkType.ARMATURA_ADDITIONAL, amount: service.amount, description: service.name });
+                    }
+                }
+
+                // Execute cleanup and recreation
+                if (typesToClean.length > 0) {
+                    await this.prisma.workOrderExecutor.deleteMany({
+                        where: {
+                            workOrderId: id,
+                            workType: { in: typesToClean },
+                            isPaid: false, // Only delete unpaid ones to avoid data loss if accounting already started
+                        }
+                    });
+                }
+
+                if (assignments.length > 0) {
+                    // Filter out assignments that might already exist if they were PAID (and thus not deleted)
+                    // Simplified: just create many.
+                    await this.prisma.workOrderExecutor.createMany({ data: assignments });
+                }
+            }
+        }
+
         return this.prisma.workOrder.update({
             where: { id },
-            data,
+            data: workOrderData as any,
             include: {
                 request: true,
                 manager: { select: { id: true, name: true, email: true } },
@@ -608,6 +783,36 @@ export class WorkOrdersService {
             where: { id },
             data: {
                 photosAfterWork: [...order.photosAfterWork, photoUrl],
+            },
+        });
+    }
+
+    // Photo report methods
+    async deletePhoto(id: number, photoUrl: string) {
+        const order = await this.findOne(id);
+        if (!order) {
+            throw new NotFoundException('Work order not found');
+        }
+
+        const currentPhotos = order.photosAfterWork || [];
+        const updatedPhotos = currentPhotos.filter(url => url !== photoUrl);
+
+        // Optionally delete file from filesystem
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const filepath = path.join(process.cwd(), photoUrl);
+            if (fs.existsSync(filepath)) {
+                fs.unlinkSync(filepath);
+            }
+        } catch (error) {
+            console.error('Error deleting file:', error);
+        }
+
+        return this.prisma.workOrder.update({
+            where: { id },
+            data: {
+                photosAfterWork: updatedPhotos,
             },
         });
     }

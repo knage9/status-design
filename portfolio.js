@@ -94,7 +94,7 @@ class PortfolioManager {
 
     async loadPortfolioData() {
         try {
-            const response = await fetch('http://localhost:3000/api/portfolio');
+            const response = await fetch('/api/portfolio');
             if (!response.ok) throw new Error('Failed to fetch portfolio');
 
             const data = await response.json();
@@ -104,8 +104,8 @@ class PortfolioManager {
                 title: item.title,
                 carBrand: item.carBrand,
                 carModel: item.carModel,
-                mainImage: item.mainImage ? `http://localhost:3000${item.mainImage}` : null,
-                gallery: item.gallery ? item.gallery.map(img => `http://localhost:3000${img}`) : [],
+                mainImage: item.mainImage || null,
+                gallery: item.gallery || [],
                 services: item.services || [], // Assuming backend returns services array
                 date: new Date(item.date).toLocaleDateString('ru-RU'),
                 description: item.description,

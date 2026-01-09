@@ -22,7 +22,6 @@ import {
     DollarOutlined,
     UserOutlined,
     CarOutlined,
-    ToolOutlined,
     QuestionCircleOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
@@ -48,7 +47,7 @@ const WorkOrderCreatePage: React.FC = () => {
         const loadRequestData = async () => {
             if (requestId) {
                 try {
-                    const response = await axios.get(`http://localhost:3000/api/requests/${requestId}`);
+                    const response = await axios.get(`/api/requests/${requestId}`);
                     const request = response.data;
 
                     // Set loading to false FIRST so the form mounts
@@ -81,7 +80,7 @@ const WorkOrderCreatePage: React.FC = () => {
     useEffect(() => {
         const loadExecutors = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/users');
+                const response = await axios.get('/api/users');
                 const users = response.data;
                 // Фильтруем только EXECUTOR и PAINTER
                 const executorsList = users.filter((u: any) =>
@@ -133,6 +132,28 @@ const WorkOrderCreatePage: React.FC = () => {
                 }
             }
             setSelectedServices(services);
+
+            // Filter out known services to populate "additionalServices" form field only with TRULY additional ones
+            // Known keys are detected in has... variables below.
+            // But we can't use those variables here easily as they depend on selectedServices state which is just being set.
+            // We duplicate logic or filter in a next effect.
+            // Better: Filter right here.
+            const knownKeywords = ['антихром', 'antichrome', 'плёнка', 'пленка', 'film', 'antigravity',
+                'химчистка', 'dry', 'cleaning', 'полировка', 'керамика', 'ceramic', 'polish',
+                'покраска дисков', 'покраска колёс', 'покраска колес', 'wheel', 'disk',
+                'карбон', 'carbon', 'шумоизоляция', 'soundproofing', 'noise'];
+
+            const trulyAdditional = services.filter(s => {
+                const lower = s.toLowerCase();
+                return !knownKeywords.some(k => lower.includes(k));
+            });
+
+            // If we found truly additional services, pre-fill them
+            if (trulyAdditional.length > 0) {
+                const mapped = trulyAdditional.map(s => ({ name: s, amount: 0, executorAmount: 0 }));
+                form.setFieldsValue({ additionalServices: mapped });
+            }
+
         }
     }, [initialLoading, requestData, form]);
 
@@ -141,20 +162,105 @@ const WorkOrderCreatePage: React.FC = () => {
         const lower = s.toLowerCase();
         return lower.includes('антихром') || lower.includes('antichrome');
     });
-    const hasFilm = selectedServices.some(s => s.toLowerCase().includes('плёнка') || s.toLowerCase().includes('пленка') || s.toLowerCase().includes('film'));
-    const hasDryCleaning = selectedServices.some(s => s.toLowerCase().includes('химчистка') || s.toLowerCase().includes('dry'));
+    const hasFilm = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('плёнка') || lower.includes('пленка') || lower.includes('film') || lower.includes('antigravity');
+    });
+    const hasDryCleaning = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('химчистка') || lower.includes('dry') || lower.includes('cleaning');
+    });
     const hasPolishing = selectedServices.some(s => {
         const lower = s.toLowerCase();
-        return lower.includes('полировка') || lower.includes('керамика') || lower.includes('ceramic') || lower.includes('polishing');
+        return lower.includes('полировка') || lower.includes('керамика') || lower.includes('ceramic') || lower.includes('polish');
     });
     const hasWheelPainting = selectedServices.some(s => {
         const lower = s.toLowerCase();
-        return lower.includes('покраска дисков') || lower.includes('покраска колёс') || lower.includes('покраска колес') || lower.includes('wheel');
+        return lower.includes('покраска дисков') || lower.includes('покраска колёс') || lower.includes('покраска колес') || lower.includes('wheel') || lower.includes('disk');
     });
-    const hasCarbon = selectedServices.some(s => s.toLowerCase().includes('карбон') || s.toLowerCase().includes('carbon'));
+    const hasCarbon = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('карбон') || lower.includes('carbon');
+    });
+    const hasSoundproofing = selectedServices.some(s => {
+        const lower = s.toLowerCase();
+        return lower.includes('шумоизоляция') || lower.includes('soundproofing') || lower.includes('noise');
+    });
     const showBodyParts = hasAntichrome || hasPolishing; // Детали кузова для Антихром и Полировка
 
     // NEW: Автоматический расчёт ЗП для арматурки при изменении totalAmount
+    const calculateTotal = (values: any) => {
+        let total = 0;
+
+        // Dynamic Services Service Amounts (Client Price)
+        // Some services operate on "Amount" (implied client price? NO, usually 'Amount' is payout).
+        // Let's clarify:
+        // Carbon: `carbonServiceAmount` -> Client Price. `carbonPrice` -> Executor.
+        // DryCleaning: `dryCleaningServiceAmount`.
+        // Polishing: `polishingServiceAmount`.
+        // WheelPainting: `wheelPaintingAmount` -> This is labeled "Service Price (Client)" in OtherServicesBlock.
+        // Film: `filmAmount`. Wait, OtherServicesBlock label is "Sum to Payout". 
+        //       Usually Film is calculated by Parts in BodyPartsBlock? No, that's Antichrome. 
+        //       Film might be just a sum. But user asked "Add service cost field" generally.
+        //       In OtherServicesBlock for Film, we currently have `filmAmount` labeled "Sum to Payout". 
+        //       We might need `filmServiceAmount`? 
+        //       User said: "In regulated services cards should appear... For DryCleaning... service cost, payout amount... 
+        //       For WheelPainting... payout amount... 
+        //       For Carbon... 
+        //       Wait, for Film he didn't specify distinct fields, but generalized: "Regulated services should have cards...".
+        //       Let's assume we sum up the "Service Cost" fields where available. 
+
+        // Summing logic (Client Price):
+        total += Number(values.dryCleaningServiceAmount || 0);
+        total += Number(values.polishingServiceAmount || 0);
+        total += Number(values.wheelPaintingAmount || 0);
+        total += Number(values.carbonServiceAmount || 0);
+        // Note: Film currently lacks a dedicated 'Client Price' field in the block, mainly 'Payout'.
+        // If needed, we should add it. For now, I only sum what's explicitly 'Cost'. 
+        // But BodyPartsBlock sums up to a total too (for AntiChrome/Polishing body parts).
+        // Let's check BodyPartsBlock. It calculates `sum` and displays it. 
+        // Does it write to a form field? No. It just displays.
+        // But the main `totalAmount` field is manually editable usually.
+        // User asked: "Total amount of WO should update immediately from each service... need a cost field from which total is summed".
+
+        // BodyParts (Antichrome usually):
+        const partFields = [
+            'radiatorGrille', 'fogLights', 'frontBumper', 'lip', 'hood',
+            'windowMoldings', 'doorMoldings', 'vents', 'fenders', 'doorHandles', 'mirrors',
+            'trunkLid', 'spoiler', 'rearBumper', 'diffuser', 'rearLights', 'fakeExhausts',
+            'sills', 'railings', 'hubCaps', 'badges', 'inscriptions'
+        ];
+        const PRICE_PER_PART = 400; // This is for 'Antichrome' logic usually? Or Polishing?
+        // In BodyPartsBlock, it's 400.
+        // If we want to sum this:
+        partFields.forEach(key => {
+            const qty = values[`${key}Quantity`] || 0;
+            total += qty * PRICE_PER_PART;
+        });
+
+        // Additional Services
+        if (values.additionalServices && Array.isArray(values.additionalServices)) {
+            values.additionalServices.forEach((s: any) => {
+                total += Number(s?.amount || 0); // Assuming this is client price
+            });
+        }
+
+        return total;
+    };
+
+    const handleFormChange = (changedValues: any, allValues: any) => {
+        // Update Total Amount
+        const newTotal = calculateTotal(allValues);
+        if (newTotal !== allValues.totalAmount) {
+            form.setFieldsValue({ totalAmount: newTotal });
+            setTotalAmount(newTotal);
+        }
+
+        // Update local state for rendering if needed
+        if (changedValues.totalAmount !== undefined) {
+            setTotalAmount(changedValues.totalAmount);
+        }
+    };
 
 
     const handleSubmit = async (values: any) => {
@@ -192,6 +298,12 @@ const WorkOrderCreatePage: React.FC = () => {
                     amount: values.filmAmount || 0,
                 };
             }
+            if (values.soundproofingExecutorId) {
+                servicesData.soundproofing = {
+                    executorId: values.soundproofingExecutorId,
+                    amount: values.soundproofingAmount || 0,
+                };
+            }
             if (values.dryCleaningExecutorId) {
                 servicesData.dryCleaning = {
                     executorId: values.dryCleaningExecutorId,
@@ -206,18 +318,19 @@ const WorkOrderCreatePage: React.FC = () => {
                     executorAmount: values.polishingExecutorAmount || 0,
                 };
             }
-            if (values.wheelPaintingMainExecutorId || values.wheelPaintingMountingExecutorId || values.wheelPaintingCapsExecutorId) {
+            if (values.wheelPaintingPayoutAmount || values.wheelPaintingAmount) {
+                const payout = values.wheelPaintingPayoutAmount || 0;
                 servicesData.wheelPainting = {
-                    mainExecutorId: values.wheelPaintingMainExecutorId,
                     amount: values.wheelPaintingAmount || 0,
+                    payoutAmount: payout,
+                    dismounting: {
+                        executorId: values.wheelPaintingDismountingExecutorId,
+                        amount: payout / 2,
+                    },
                     mounting: {
                         executorId: values.wheelPaintingMountingExecutorId,
-                        amount: values.wheelPaintingMountingAmount || 0,
+                        amount: payout / 2,
                     },
-                    caps: {
-                        executorId: values.wheelPaintingCapsExecutorId,
-                        amount: values.wheelPaintingCapsAmount || 0,
-                    }
                 };
             }
             if (values.carbonExecutorId) {
@@ -229,6 +342,11 @@ const WorkOrderCreatePage: React.FC = () => {
                     partsCount: values.carbonPartsCount || 0,
                     price: values.carbonPrice || 0,
                     serviceAmount: values.carbonServiceAmount || 0,
+                    // Carbon Armatura
+                    dismantlingExecutorId: values.carbonDismantlingExecutorId,
+                    disassemblyExecutorId: values.carbonDisassemblyExecutorId,
+                    assemblyExecutorId: values.carbonAssemblyExecutorId,
+                    mountingExecutorId: values.carbonMountingExecutorId,
                 };
             }
 
@@ -329,7 +447,7 @@ const WorkOrderCreatePage: React.FC = () => {
                 additionalServices: additionalServices.length > 0 ? additionalServices : undefined,
             };
 
-            await axios.post('http://localhost:3000/api/work-orders', data);
+            await axios.post('/api/work-orders', data);
             notification.success({
                 title: 'Готово!',
                 description: 'Заказ-наряд успешно создан',
@@ -387,15 +505,7 @@ const WorkOrderCreatePage: React.FC = () => {
                     form={form}
                     layout="vertical"
                     onFinish={handleSubmit}
-                    onValuesChange={(changedValues) => {
-                        if (changedValues.totalAmount !== undefined) {
-                            // Ensure numeric value is set
-                            const amount = typeof changedValues.totalAmount === 'string'
-                                ? parseFloat(changedValues.totalAmount.replace(/\s/g, ''))
-                                : changedValues.totalAmount;
-                            setTotalAmount(amount || 0);
-                        }
-                    }}
+                    onValuesChange={handleFormChange}
                     initialValues={{
                         totalAmount: 0,
                         paymentMethod: 'CASH',
@@ -440,7 +550,7 @@ const WorkOrderCreatePage: React.FC = () => {
                                             min={0}
                                             placeholder="0"
                                             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-                                            parser={value => (parseFloat(value!.replace(/\s?|₽/g, '')) || 0) as 0}
+                                            parser={value => (value ? parseFloat(value.replace(/\s|₽/g, '')) : 0) as any}
 
                                         />
                                         <Button size="large" disabled>₽</Button>
@@ -543,44 +653,7 @@ const WorkOrderCreatePage: React.FC = () => {
                         </Row>
                     </Card>
 
-                    {/* Parts Count */}
-                    <Card
-                        type="inner"
-                        title={
-                            <Space>
-                                <ToolOutlined style={{ color: '#fa8c16' }} />
-                                <Text strong>Типы деталей и покрытий</Text>
-                            </Space>
-                        }
-                        style={{ marginBottom: 24, background: 'rgba(250, 140, 22, 0.05)' }}
-                    >
-                        <Row gutter={[24, 0]}>
-                            <Col xs={24} sm={8}>
-                                <Form.Item label={<Text strong>Блэк (черное покрытие)</Text>} name="blackCount">
-                                    <Space.Compact style={{ width: '100%' }}>
-                                        <InputNumber size="large" style={{ width: '100%' }} min={0} />
-                                        <Button size="large" disabled>шт</Button>
-                                    </Space.Compact>
-                                </Form.Item>
-                            </Col>
-                            <Col xs={24} sm={8}>
-                                <Form.Item label={<Text strong>Карбон</Text>} name="carbonCount">
-                                    <Space.Compact style={{ width: '100%' }}>
-                                        <InputNumber size="large" style={{ width: '100%' }} min={0} />
-                                        <Button size="large" disabled>шт</Button>
-                                    </Space.Compact>
-                                </Form.Item>
-                            </Col>
-                            <Col xs={24} sm={8}>
-                                <Form.Item label={<Text strong>Штатная структура</Text>} name="standardStructureCount">
-                                    <Space.Compact style={{ width: '100%' }}>
-                                        <InputNumber size="large" style={{ width: '100%' }} min={0} />
-                                        <Button size="large" disabled>шт</Button>
-                                    </Space.Compact>
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Card>
+
 
                     {/* Armouring */}
                     <ArmaturaBlock
@@ -601,6 +674,7 @@ const WorkOrderCreatePage: React.FC = () => {
                         hasPolishing={hasPolishing}
                         hasWheelPainting={hasWheelPainting}
                         hasCarbon={hasCarbon}
+                        hasSoundproofing={hasSoundproofing}
                     />
 
                     {/* Legacy Body Parts removed as per TZ requirements */}

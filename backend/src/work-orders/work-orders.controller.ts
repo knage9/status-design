@@ -10,7 +10,12 @@ import {
     UseGuards,
     Request,
     Query,
+    UseInterceptors,
+    UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { WorkOrdersService } from './work-orders.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -50,7 +55,7 @@ export class WorkOrdersController {
     }
 
     @Delete(':id')
-    @Roles('ADMIN')
+    @Roles('ADMIN', 'MANAGER')
     delete(@Param('id', ParseIntPipe) id: number) {
         return this.workOrdersService.delete(id);
     }
@@ -120,5 +125,46 @@ export class WorkOrdersController {
         @Body('photoUrl') photoUrl: string,
     ) {
         return this.workOrdersService.addPhotoAfter(id, photoUrl);
+    }
+
+    // Photo report endpoints
+    @Post(':id/photos/upload')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+                return cb(null, `${randomName}${extname(file.originalname)}`);
+            },
+        }),
+        fileFilter: (req, file, cb) => {
+            const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (allowedMimes.includes(file.mimetype)) {
+                cb(null, true);
+            } else {
+                cb(new Error('Invalid file type. Only JPG, PNG, and WebP are allowed.'), false);
+            }
+        },
+        limits: {
+            fileSize: 5 * 1024 * 1024, // 5MB
+        },
+    }))
+    async uploadPhoto(
+        @Param('id', ParseIntPipe) id: number,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        if (!file) {
+            throw new Error('No file uploaded');
+        }
+        const photoUrl = `/uploads/${file.filename}`;
+        return this.workOrdersService.addPhotoAfter(id, photoUrl);
+    }
+
+    @Delete(':id/photos/:photoUrl')
+    async deletePhoto(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('photoUrl') photoUrl: string,
+    ) {
+        return this.workOrdersService.deletePhoto(id, decodeURIComponent(photoUrl));
     }
 }

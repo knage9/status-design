@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Modal, Form, Input, Select, Tag, App, Switch } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Card, Modal, Form, Input, Select, Tag, App, Switch, Grid, Flex, Typography, FloatButton, Divider } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import axios from 'axios';
+
+const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 interface User {
     id: number;
@@ -20,11 +23,13 @@ const UsersPage: React.FC = () => {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const { notification, modal } = App.useApp();
     const [form] = Form.useForm();
+    const screens = useBreakpoint();
+    const isMobile = !screens.md; // < 768px
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:3000/api/users');
+            const response = await axios.get('/api/users');
             setUsers(response.data);
         } catch (error) {
             notification.error({ title: 'Ошибка загрузки пользователей' });
@@ -56,7 +61,7 @@ const UsersPage: React.FC = () => {
             okType: 'danger',
             onOk: async () => {
                 try {
-                    await axios.delete(`http://localhost:3000/api/users/${id}`);
+                    await axios.delete(`/api/users/${id}`);
                     notification.success({ title: 'Пользователь удален' });
                     fetchUsers();
                 } catch (error) {
@@ -69,10 +74,10 @@ const UsersPage: React.FC = () => {
     const handleSubmit = async (values: any) => {
         try {
             if (editingUser) {
-                await axios.patch(`http://localhost:3000/api/users/${editingUser.id}`, values);
+                await axios.patch(`/api/users/${editingUser.id}`, values);
                 notification.success({ title: 'Пользователь обновлен' });
             } else {
-                await axios.post('http://localhost:3000/api/users', values);
+                await axios.post('/api/users', values);
                 notification.success({ title: 'Пользователь создан' });
             }
             setModalOpen(false);
@@ -97,6 +102,66 @@ const UsersPage: React.FC = () => {
         };
         return <Tag color={colors[role]}>{labels[role]}</Tag>;
     };
+
+    // Mobile User Card
+    const MobileUserCard = ({ user }: { user: User }) => (
+        <Card
+            size="small"
+            style={{ marginBottom: 12 }}
+            hoverable
+        >
+            <Flex vertical gap={8}>
+                <Flex justify="space-between" align="start">
+                    <div>
+                        <Text strong style={{ fontSize: 16 }}>{user.name}</Text>
+                        <br />
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                            ID: {user.id}
+                        </Text>
+                    </div>
+                    <Flex vertical gap={4} align="flex-end">
+                        {getRoleBadge(user.role)}
+                        <Tag color={user.isActive ? 'green' : 'red'}>
+                            {user.isActive ? 'Активен' : 'Неактивен'}
+                        </Tag>
+                    </Flex>
+                </Flex>
+
+                <Divider style={{ margin: '8px 0' }} />
+
+                <Flex vertical gap={4}>
+                    <Text style={{ fontSize: 13 }}>
+                        <MailOutlined /> {user.email}
+                    </Text>
+                    {user.phone && (
+                        <Text style={{ fontSize: 13 }}>
+                            <PhoneOutlined /> {user.phone}
+                        </Text>
+                    )}
+                </Flex>
+
+                <Flex gap={8} style={{ marginTop: 8 }}>
+                    <Button
+                        icon={<EditOutlined />}
+                        size="large"
+                        style={{ flex: 1 }}
+                        onClick={() => handleEdit(user)}
+                    >
+                        Изменить
+                    </Button>
+                    <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        size="large"
+                        style={{ flex: 1 }}
+                        onClick={() => handleDelete(user.id)}
+                    >
+                        Удалить
+                    </Button>
+                </Flex>
+            </Flex>
+        </Card>
+    );
 
     const columns = [
         {
@@ -165,25 +230,57 @@ const UsersPage: React.FC = () => {
             <Card
                 title="Пользователи"
                 extra={
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-                        Создать пользователя
-                    </Button>
+                    !isMobile && (
+                        <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+                            Создать пользователя
+                        </Button>
+                    )
                 }
             >
-                <Table
-                    columns={columns}
-                    dataSource={users}
-                    rowKey="id"
-                    loading={loading}
-                />
+                {isMobile ? (
+                    /* Mobile Card List */
+                    <div>
+                        {loading ? (
+                            <Card loading={true} />
+                        ) : users.length > 0 ? (
+                            users.map(user => (
+                                <MobileUserCard key={user.id} user={user} />
+                            ))
+                        ) : (
+                            <Card>
+                                <Text type="secondary">Нет пользователей</Text>
+                            </Card>
+                        )}
+                    </div>
+                ) : (
+                    /* Desktop Table */
+                    <Table
+                        columns={columns}
+                        dataSource={users}
+                        rowKey="id"
+                        loading={loading}
+                    />
+                )}
             </Card>
+
+            {/* FAB for mobile */}
+            {isMobile && (
+                <FloatButton
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    style={{ right: 24, bottom: 24 }}
+                    onClick={handleCreate}
+                    tooltip="Создать пользователя"
+                />
+            )}
 
             <Modal
                 title={editingUser ? 'Редактировать пользователя' : 'Создать пользователя'}
                 open={modalOpen}
                 onCancel={() => setModalOpen(false)}
                 onOk={() => form.submit()}
-                width={600}
+                width={isMobile ? '100%' : 600}
+                style={isMobile ? { top: 0, maxWidth: '100%', padding: 0 } : undefined}
             >
                 <Form
                     form={form}
@@ -195,7 +292,7 @@ const UsersPage: React.FC = () => {
                         label="Имя"
                         rules={[{ required: true, message: 'Введите имя' }]}
                     >
-                        <Input />
+                        <Input size={isMobile ? 'large' : 'middle'} />
                     </Form.Item>
 
                     <Form.Item
@@ -206,7 +303,7 @@ const UsersPage: React.FC = () => {
                             { type: 'email', message: 'Некорректный email' },
                         ]}
                     >
-                        <Input />
+                        <Input size={isMobile ? 'large' : 'middle'} />
                     </Form.Item>
 
                     {!editingUser && (
@@ -215,12 +312,12 @@ const UsersPage: React.FC = () => {
                             label="Пароль"
                             rules={[{ required: true, message: 'Введите пароль', min: 6 }]}
                         >
-                            <Input.Password />
+                            <Input.Password size={isMobile ? 'large' : 'middle'} />
                         </Form.Item>
                     )}
 
                     <Form.Item name="phone" label="Телефон">
-                        <Input />
+                        <Input size={isMobile ? 'large' : 'middle'} />
                     </Form.Item>
 
                     <Form.Item
@@ -228,7 +325,7 @@ const UsersPage: React.FC = () => {
                         label="Роль"
                         rules={[{ required: true, message: 'Выберите роль' }]}
                     >
-                        <Select>
+                        <Select size={isMobile ? 'large' : 'middle'}>
                             <Select.Option value="ADMIN">Админ</Select.Option>
                             <Select.Option value="MANAGER">Менеджер</Select.Option>
                             <Select.Option value="MASTER">Мастер</Select.Option>

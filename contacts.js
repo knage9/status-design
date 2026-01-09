@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
         // Send to backend API (non-blocking)
-        fetch('http://localhost:3000/api/requests', {
+        fetch('/api/requests', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
