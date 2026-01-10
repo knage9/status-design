@@ -23,6 +23,7 @@ import {
     Statistic,
     Radio,
     Checkbox,
+    theme,
 } from 'antd';
 import {
     ArrowLeftOutlined,
@@ -37,7 +38,8 @@ import {
     UploadOutlined,
     DeleteOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
+import type { UploadFile } from 'antd/es/upload/interface';
+import api from '../api';
 import { useAuth } from '../auth/AuthContext';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
@@ -46,12 +48,29 @@ dayjs.extend(duration);
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+const { useToken } = theme;
 
 // Photo Report Component
 const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUpdate: () => void }> = ({ workOrderId, photos, onUpdate }) => {
     const { notification } = App.useApp();
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [loading, setLoading] = useState(false);
+    const thumbnailWrapperStyle = {
+        width: '100%',
+        aspectRatio: '1 / 1',
+        position: 'relative' as const,
+        overflow: 'hidden',
+        borderRadius: 8,
+        background: isDarkMode ? token.colorFillQuaternary : '#f5f5f5',
+        minHeight: 110, // fallback for browsers without aspect-ratio support
+    };
+    const imageStyle = {
+        width: '100%',
+        height: '100%',
+        display: 'block',
+    };
 
     useEffect(() => {
         // Initialize file list from existing photos
@@ -71,7 +90,7 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
         formData.append('file', file);
 
         try {
-            const response = await axios.post(`/api/work-orders/${workOrderId}/photos/upload`, formData, {
+            const response = await api.post(`/work-orders/${workOrderId}/photos/upload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 onUploadProgress: (progressEvent) => {
                     const percent = progressEvent.total
@@ -99,7 +118,7 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
         if (file.url) {
             try {
                 const photoUrl = file.url.replace(window.location.origin, '');
-                await axios.delete(`/api/work-orders/${workOrderId}/photos/${encodeURIComponent(photoUrl)}`);
+                await api.delete(`/work-orders/${workOrderId}/photos/${encodeURIComponent(photoUrl)}`);
                 notification.success({ title: 'Фото удалено' });
                 onUpdate();
             } catch (error) {
@@ -142,11 +161,11 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
                         if (file.status === 'done' && file.url) {
                             return (
                                 <Col key={file.uid || index} xs={8} sm={6} md={6}>
-                                    <div style={{ position: 'relative' }}>
+                                    <div style={thumbnailWrapperStyle} className="photo-report-thumb">
                                         <Image
                                             src={file.url}
                                             alt={file.name}
-                                            style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 8 }}
+                                            style={imageStyle}
                                             preview={{ mask: 'Просмотр' }}
                                         />
                                         <Button
@@ -160,6 +179,7 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
                                                 right: 4,
                                                 background: 'rgba(255, 255, 255, 0.9)',
                                                 border: 'none',
+                                                zIndex: 1,
                                             }}
                                             onClick={() => handleRemove(file)}
                                         />
@@ -179,16 +199,14 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
                             >
                                 <div
                                     style={{
-                                        width: '100%',
-                                        height: 100,
-                                        border: '2px dashed #d9d9d9',
-                                        borderRadius: 8,
+                                        ...thumbnailWrapperStyle,
+                                        border: `2px dashed ${isDarkMode ? token.colorBorderSecondary : '#d9d9d9'}`,
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         cursor: 'pointer',
-                                        background: '#fafafa',
+                                        background: isDarkMode ? token.colorFillQuaternary : '#fafafa',
                                     }}
                                 >
                                     <UploadOutlined style={{ fontSize: 24, color: '#999' }} />
@@ -293,6 +311,8 @@ const WorkOrderDetailPage: React.FC = () => {
     const { notification } = App.useApp();
     const screens = Grid.useBreakpoint();
     const isMobile = !screens.md; // < 768px
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const [workOrder, setWorkOrder] = useState<WorkOrder | null>(null);
     const [loading, setLoading] = useState(true);
     const [masters, setMasters] = useState<User[]>([]);
@@ -315,7 +335,7 @@ const WorkOrderDetailPage: React.FC = () => {
     const fetchWorkOrder = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`/api/work-orders/${id}`);
+            const response = await api.get(`/work-orders/${id}`);
             setWorkOrder(response.data);
         } catch (error) {
             notification.error({ title: 'Ошибка загрузки заказ-наряда' });
@@ -327,7 +347,7 @@ const WorkOrderDetailPage: React.FC = () => {
     const fetchUsers = async (role: 'MASTER') => {
         try {
             // Для получения мастеров нужен полный список пользователей (только для ADMIN/MANAGER)
-            const response = await axios.get('/api/users?role=MASTER');
+            const response = await api.get('/users?role=MASTER');
             setMasters(response.data);
         } catch (error) {
             console.error(`Failed to fetch ${role}s:`, error);
@@ -374,7 +394,7 @@ const WorkOrderDetailPage: React.FC = () => {
         try {
             const endpoint = 'assign-master';
             const payload = { masterId: selectedUserId };
-            await axios.post(`/api/work-orders/${id}/${endpoint}`, payload);
+            await api.post(`/work-orders/${id}/${endpoint}`, payload);
             notification.success({ title: 'Назначено успешно' });
             setIsAssignModalVisible(false);
             fetchWorkOrder();
@@ -385,7 +405,7 @@ const WorkOrderDetailPage: React.FC = () => {
 
     const handleWorkflowAction = async (action: string, onSuccess?: () => void) => {
         try {
-            await axios.post(`/api/work-orders/${id}/${action}`);
+            await api.post(`/work-orders/${id}/${action}`);
             notification.success({ title: 'Статус обновлен' });
             fetchWorkOrder();
             onSuccess?.();
@@ -400,7 +420,7 @@ const WorkOrderDetailPage: React.FC = () => {
             return;
         }
         try {
-            await axios.post(`/api/work-orders/${id}/complete`, { finalStage });
+            await api.post(`/work-orders/${id}/complete`, { finalStage });
             notification.success({ title: 'Заказ-наряд завершён' });
             fetchWorkOrder();
         } catch (error: any) {
@@ -451,7 +471,7 @@ const WorkOrderDetailPage: React.FC = () => {
     const handleTaskStatusChange = async (assignmentId: number, status: TaskStatus) => {
         try {
             setTaskUpdateId(assignmentId);
-            await axios.patch(`/api/work-orders/${id}/tasks/${assignmentId}/status`, { status });
+            await api.patch(`/work-orders/${id}/tasks/${assignmentId}/status`, { status });
             notification.success({ title: 'Статус задачи обновлен' });
             fetchWorkOrder();
         } catch (error: any) {
@@ -657,7 +677,7 @@ const WorkOrderDetailPage: React.FC = () => {
                             <Text strong style={{ fontSize: 13 }}>Услуги:</Text>
                             <div style={{ marginTop: 8, maxHeight: 150, overflowY: 'auto' }}>
                                 {servicesList.map((service, idx) => (
-                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid #f0f0f0' }}>
+                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, paddingBottom: 6, borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>
                                         <Text style={{ fontSize: 12 }}>{service.name}</Text>
                                         <Text strong style={{ fontSize: 12 }}>{service.amount.toLocaleString('ru-RU')} ₽</Text>
                                     </div>
@@ -819,7 +839,7 @@ const WorkOrderDetailPage: React.FC = () => {
                             </div>
                         </Col>
                         <Col xs={24} sm={12} md={8}>
-                            <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                            <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                 <Text type="secondary" style={{ fontSize: 12 }}>Способ оплаты</Text>
                                 <div style={{ marginTop: 8 }}>
                                     <Tag color="green" style={{ fontSize: 14 }}>
@@ -830,7 +850,7 @@ const WorkOrderDetailPage: React.FC = () => {
                             </div>
                         </Col>
                         <Col xs={24} sm={12} md={8}>
-                            <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                            <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                 <Text type="secondary" style={{ fontSize: 12 }}>Статус оплаты</Text>
                                 <div style={{ marginTop: 8 }}>
                                     <Tag color={workOrder.status === 'COMPLETED' ? 'green' : 'orange'} style={{ fontSize: 14 }}>
@@ -907,7 +927,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                             <>
                                                 <div style={{ padding: '0 8px' }}>
                                                     {myWorks.map(work => (
-                                                        <div key={work.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #f0f0f0' }}>
+                                                        <div key={work.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>
                                                             <div>
                                                                 <Text strong>{work.description || '—'}</Text>
                                                                 <br />
@@ -973,7 +993,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                                 children: (
                                                     <div>
                                                         {assignments.map(work => (
-                                                            <div key={work.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #f0f0f0' }}>
+                                                            <div key={work.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>
                                                                 <div>
                                                                     <Text strong>{work.description || '—'}</Text>
                                                                     <br />
@@ -1021,7 +1041,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                 const status = getTaskStatus(a);
                                 const isDone = status === 'DONE';
                                 return (
-                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
+                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>
                                         <div>
                                             <Text strong>{a.description || a.workType}</Text>
                                             <br />
@@ -1071,7 +1091,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                                 const status = getTaskStatus(a);
                                                 const taskSec = getDurationSec(a);
                                                 return (
-                                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #f5f5f5' }}>
+                                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f5f5f5'}` }}>
                                                         <div>
                                                             <Text strong>{a.description || a.workType}</Text>
                                                             <br />
@@ -1096,7 +1116,7 @@ const WorkOrderDetailPage: React.FC = () => {
                     <Card title={<Space><UserOutlined /> Информация о клиенте и авто</Space>} style={{ marginBottom: 24 }}>
                         <Row gutter={[16, 16]}>
                             <Col xs={24} sm={12} md={8}>
-                                <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                                <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                     <Text type="secondary" style={{ fontSize: 12 }}>ФИО заказчика</Text>
                                     <div style={{ marginTop: 8 }}>
                                         <Text strong style={{ fontSize: 16 }}>{workOrder.customerName}</Text>
@@ -1104,7 +1124,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                 </div>
                             </Col>
                             <Col xs={24} sm={12} md={8}>
-                                <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                                <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                     <Text type="secondary" style={{ fontSize: 12 }}>Телефон</Text>
                                     <div style={{ marginTop: 8 }}>
                                         <Text strong style={{ fontSize: 16 }}>{workOrder.customerPhone}</Text>
@@ -1112,7 +1132,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                 </div>
                             </Col>
                             <Col xs={24} sm={12} md={8}>
-                                <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                                <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                     <Text type="secondary" style={{ fontSize: 12 }}>Марка и модель</Text>
                                     <div style={{ marginTop: 8 }}>
                                         <Text strong style={{ fontSize: 16 }}>{workOrder.carBrand} {workOrder.carModel}</Text>
@@ -1120,7 +1140,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                 </div>
                             </Col>
                             <Col xs={24} sm={12} md={8}>
-                                <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                                <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                     <Text type="secondary" style={{ fontSize: 12 }}>VIN</Text>
                                     <div style={{ marginTop: 8 }}>
                                         <Text strong style={{ fontSize: 16 }}>{workOrder.vin || '—'}</Text>
@@ -1128,7 +1148,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                 </div>
                             </Col>
                             <Col xs={24} sm={12} md={8}>
-                                <div style={{ padding: '12px 16px', background: '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
+                                <div style={{ padding: '12px 16px', background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%', minHeight: 80 }}>
                                     <Text type="secondary" style={{ fontSize: 12 }}>Состояние</Text>
                                     <div style={{ marginTop: 8 }}>
                                         <Tag color={workOrder.carCondition === 'NEW' ? 'green' : 'default'} style={{ fontSize: 14 }}>
@@ -1149,7 +1169,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                     .filter(a => !isExecutor || a.executor?.id === user?.id)
                                     .map(work => (
                                         <Col xs={24} sm={12} md={6} key={work.id}>
-                                            <div style={{ padding: 12, background: '#fafafa', borderRadius: 8, height: '100%' }}>
+                                            <div style={{ padding: 12, background: isDarkMode ? token.colorFillQuaternary : '#fafafa', borderRadius: 8, height: '100%' }}>
                                                 <Text type="secondary" style={{ fontSize: '12px' }}>{work.description || '—'}</Text>
                                                 <div style={{ margin: '4px 0' }}>
                                                     <Text strong>{work.executor?.name || 'Не указан'}</Text>
@@ -1169,12 +1189,12 @@ const WorkOrderDetailPage: React.FC = () => {
                             <div style={{ display: isMobile ? 'none' : 'block' }}>
                                 <div style={{ overflowX: 'auto' }}>
                                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                        <thead style={{ background: '#fafafa' }}>
+                                        <thead style={{ background: isDarkMode ? token.colorFillQuaternary : '#fafafa' }}>
                                             <tr>
-                                                <th style={{ padding: '12px 8px', textAlign: 'left', borderBottom: '2px solid #f0f0f0' }}>Деталь</th>
-                                                <th style={{ padding: '12px 8px', textAlign: 'center', borderBottom: '2px solid #f0f0f0' }}>Кол-во / План-Факт</th>
-                                                <th style={{ padding: '12px 8px', textAlign: 'left', borderBottom: '2px solid #f0f0f0' }}>Статус</th>
-                                                <th style={{ padding: '12px 8px', textAlign: 'left', borderBottom: '2px solid #f0f0f0' }}>Исполнитель</th>
+                                                <th style={{ padding: '12px 8px', textAlign: 'left', borderBottom: `2px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>Деталь</th>
+                                                <th style={{ padding: '12px 8px', textAlign: 'center', borderBottom: `2px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>Кол-во / План-Факт</th>
+                                                <th style={{ padding: '12px 8px', textAlign: 'left', borderBottom: `2px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>Статус</th>
+                                                <th style={{ padding: '12px 8px', textAlign: 'left', borderBottom: `2px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>Исполнитель</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1199,7 +1219,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                                     : `Кол-во: ${data.quantity}`;
 
                                                 return (
-                                                    <tr key={key} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                                                    <tr key={key} style={{ borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>
                                                         <td style={{ padding: '12px 8px' }}>
                                                             <Text strong>{partName}</Text>
                                                             {data.letterCount > 0 && <Text type="secondary"> ({data.letterCount} букв)</Text>}
@@ -1289,12 +1309,12 @@ const WorkOrderDetailPage: React.FC = () => {
                             {workOrder.executorAssignments?.filter(a => a.workType === 'ARMATURA_ADDITIONAL').map(a => {
                                 if (isExecutor && a.executor?.id !== user?.id) return null;
                                 return (
-                                    <div key={a.id} style={{ marginBottom: 16, padding: 16, border: '1px solid #f0f0f0', borderRadius: 8 }}>
+                                    <div key={a.id} style={{ marginBottom: 16, padding: 16, border: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}`, borderRadius: 8 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                                             <Title level={5} style={{ margin: 0 }}>{a.description || 'Дополнительная услуга'}</Title>
                                             <Tag color="cyan">Дополнительная услуга</Tag>
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '8px 12px', borderRadius: 4, border: '1px solid #f5f5f5' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isDarkMode ? token.colorBgContainer : '#fff', padding: '8px 12px', borderRadius: 4, border: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f5f5f5'}` }}>
                                             <Space orientation="vertical" size={0}>
                                                 <Text strong>{a.executor?.name || 'Не указан'}</Text>
                                             </Space>
@@ -1341,7 +1361,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                 }
 
                                 return (
-                                    <div key={key} style={{ marginBottom: 16, padding: 16, border: '1px solid #f0f0f0', borderRadius: 8 }}>
+                                    <div key={key} style={{ marginBottom: 16, padding: 16, border: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}`, borderRadius: 8 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                                             <Title level={5} style={{ margin: 0 }}>{serviceLabels[key] || key}</Title>
                                             {data.comment && <Text type="secondary" style={{ fontSize: 12 }}>“{data.comment}”</Text>}
@@ -1350,7 +1370,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                         {filteredAssignments.length > 0 ? (
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                                 {filteredAssignments.map(a => (
-                                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '8px 12px', borderRadius: 4, border: '1px solid #f5f5f5' }}>
+                                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isDarkMode ? token.colorBgContainer : '#fff', padding: '8px 12px', borderRadius: 4, border: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f5f5f5'}` }}>
                                                         <Space orientation="vertical" size={0}>
                                                             <Text strong>{a.executor?.name || 'Не указан'}</Text>
                                                             <Text type="secondary" style={{ fontSize: 11 }}>{a.description || '—'}</Text>

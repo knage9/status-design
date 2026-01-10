@@ -10,11 +10,13 @@ import {
     Tag,
     Grid,
     Flex,
+    theme,
 } from 'antd';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 const { useBreakpoint } = Grid;
+const { useToken } = theme;
 
 interface ArmaturaBlockProps {
     totalAmount: number;
@@ -26,6 +28,8 @@ const ArmaturaBlock: React.FC<ArmaturaBlockProps> = ({ totalAmount, executors, h
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
     const isTablet = screens.md && !screens.lg; // 768px - 992px
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
 
     if (!hasAntichrome) return null;
 
@@ -42,8 +46,8 @@ const ArmaturaBlock: React.FC<ArmaturaBlockProps> = ({ totalAmount, executors, h
                 size="small"
                 style={{
                     borderRadius: 8,
-                    border: '2px solid #d9d9d9',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    border: `2px solid ${isDarkMode ? token.colorBorderSecondary : '#d9d9d9'}`,
+                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
                     height: '100%'
                 }}
                 styles={{ body: { padding: isMobile ? 16 : 12 } }}
@@ -78,12 +82,12 @@ const ArmaturaBlock: React.FC<ArmaturaBlockProps> = ({ totalAmount, executors, h
 
                 <div style={{
                     padding: isMobile ? '12px 16px' : '10px 12px',
-                    background: '#f6ffed',
+                    background: isDarkMode ? 'rgba(82, 196, 26, 0.15)' : '#f6ffed',
                     borderRadius: 8,
-                    border: '2px solid #b7eb8f',
+                    border: `2px solid ${isDarkMode ? 'rgba(82, 196, 26, 0.4)' : '#b7eb8f'}`,
                     textAlign: 'center'
                 }}>
-                    <Text strong style={{ color: '#389e0d', fontSize: isMobile ? 18 : 15 }}>
+                    <Text strong style={{ color: isDarkMode ? '#73d13d' : '#389e0d', fontSize: isMobile ? 18 : 15 }}>
                         {amount.toLocaleString('ru-RU')} ₽
                     </Text>
                 </div>
@@ -96,9 +100,15 @@ const ArmaturaBlock: React.FC<ArmaturaBlockProps> = ({ totalAmount, executors, h
             <Card
                 size="small"
                 title={<span style={{ fontSize: isMobile ? 15 : 14 }}>{title}</span>}
-                style={{ marginBottom: 16, borderRadius: 8, border: isMobile ? '2px solid #d9d9d9' : '1px solid #d9d9d9' }}
+                style={{ 
+                    marginBottom: 16, 
+                    borderRadius: 8, 
+                    border: isMobile 
+                        ? `2px solid ${isDarkMode ? token.colorBorderSecondary : '#d9d9d9'}` 
+                        : `1px solid ${isDarkMode ? token.colorBorderSecondary : '#d9d9d9'}` 
+                }}
                 styles={{
-                    header: { background: '#fafafa' },
+                    header: { background: isDarkMode ? token.colorFillQuaternary : '#fafafa' },
                     body: { padding: isMobile ? 16 : 12 }
                 }}
             >
@@ -168,13 +178,18 @@ const ArmaturaBlock: React.FC<ArmaturaBlockProps> = ({ totalAmount, executors, h
                 marginBottom: 32,
                 borderRadius: 12,
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                border: '1px solid #91d5ff'
+                boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.05)',
+                border: `1px solid ${isDarkMode ? 'rgba(24, 144, 255, 0.4)' : '#91d5ff'}`
             }}
-            styles={{ header: { background: '#e6f7ff', borderBottom: '1px solid #91d5ff' } }}
+            styles={{ 
+                header: { 
+                    background: isDarkMode ? 'rgba(24, 144, 255, 0.15)' : '#e6f7ff', 
+                    borderBottom: `1px solid ${isDarkMode ? 'rgba(24, 144, 255, 0.4)' : '#91d5ff'}` 
+                } 
+            }}
         >
             <div style={{ marginBottom: 24 }}>
-                <Title level={5} style={{ fontSize: isMobile ? 16 : 15, color: '#003a8c', marginBottom: 16 }}>
+                <Title level={5} style={{ fontSize: isMobile ? 16 : 15, color: isDarkMode ? token.colorPrimary : '#003a8c', marginBottom: 16 }}>
                     Основные этапы (процент от суммы заказа)
                 </Title>
                 <Row gutter={[16, 16]}>
@@ -187,7 +202,7 @@ const ArmaturaBlock: React.FC<ArmaturaBlockProps> = ({ totalAmount, executors, h
 
             <Row gutter={24}>
                 <Col xs={24} xl={14}>
-                    <Title level={5} style={{ fontSize: isMobile ? 16 : 15, color: '#003a8c', marginBottom: 16 }}>
+                    <Title level={5} style={{ fontSize: isMobile ? 16 : 15, color: isDarkMode ? token.colorPrimary : '#003a8c', marginBottom: 16 }}>
                         Фиксированные услуги
                     </Title>
                     <Row gutter={16}>

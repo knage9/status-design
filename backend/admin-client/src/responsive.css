@@ -307,6 +307,62 @@
   }
 }
 
+/* FloatButton - одинаковые размеры для удобного нажатия */
+.ant-float-btn {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+}
+
+.ant-float-btn-circle {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+}
+
+.ant-float-btn-icon {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+/* Увеличенный размер для мобильных устройств для удобного нажатия пальцем */
+@media (max-width: 767px) {
+  .ant-float-btn {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .ant-float-btn-circle {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+  }
+
+  .ant-float-btn-icon {
+    font-size: 24px !important;
+  }
+}
+
+/* Screen reader only class для скрытых описаний */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* ============================================
    MOBILE-SPECIFIC OVERRIDES
    ============================================ */
@@ -427,6 +483,27 @@
   .ant-layout {
     overscroll-behavior-y: contain;
   }
+}
+
+/* ============================================
+   PHOTO REPORT THUMBNAILS
+   ============================================ */
+.photo-report-thumb {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-report-thumb .ant-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.photo-report-thumb .ant-image-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* ============================================

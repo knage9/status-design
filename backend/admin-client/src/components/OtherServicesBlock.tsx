@@ -11,11 +11,13 @@ import {
     Space,
     Tag,
     Button,
+    theme,
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Option } = Select;
+const { useToken } = theme;
 
 interface OtherServicesBlockProps {
     executors: any[];
@@ -36,6 +38,9 @@ const OtherServicesBlock: React.FC<OtherServicesBlockProps> = ({
     hasCarbon,
     hasSoundproofing,
 }) => {
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
+
     // If no regulated services, we might still want to show "Additional Services" if it was populated separately? 
     // But logically, this block is "Regulated and Additional Services".
     if (!hasFilm && !hasDryCleaning && !hasPolishing && !hasWheelPainting && !hasCarbon && !hasSoundproofing) {
@@ -61,9 +66,14 @@ const OtherServicesBlock: React.FC<OtherServicesBlockProps> = ({
                     marginBottom: 20,
                     borderRadius: 10,
                     borderLeft: `4px solid ${color}`,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                    boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.05)'
                 }}
-                styles={{ header: { background: '#fafafa', borderBottom: '1px solid #f0f0f0' } }}
+                styles={{ 
+                    header: { 
+                        background: isDarkMode ? token.colorFillQuaternary : '#fafafa', 
+                        borderBottom: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` 
+                    } 
+                }}
             >
                 <div style={{ padding: '8px 4px' }}>
                     {children}
@@ -84,10 +94,15 @@ const OtherServicesBlock: React.FC<OtherServicesBlockProps> = ({
             style={{
                 marginBottom: 32,
                 borderRadius: 12,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                border: '1px solid #91d5ff'
+                boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.05)',
+                border: `1px solid ${isDarkMode ? 'rgba(24, 144, 255, 0.4)' : '#91d5ff'}`
             }}
-            styles={{ header: { background: '#e6f7ff', borderBottom: '1px solid #91d5ff' } }}
+            styles={{ 
+                header: { 
+                    background: isDarkMode ? 'rgba(24, 144, 255, 0.15)' : '#e6f7ff', 
+                    borderBottom: `1px solid ${isDarkMode ? 'rgba(24, 144, 255, 0.4)' : '#91d5ff'}` 
+                } 
+            }}
         >
             {/* FILM */}
             {renderSection('Плёнка', '🎞️', '#1890ff', (
@@ -339,10 +354,10 @@ const OtherServicesBlock: React.FC<OtherServicesBlockProps> = ({
             <Form.List name="additionalServices">
                 {(fields, { add, remove }) => (
                     <div style={{
-                        background: '#fafafa',
+                        background: isDarkMode ? token.colorFillQuaternary : '#fafafa',
                         padding: 16,
                         borderRadius: 8,
-                        border: '1px solid #f0f0f0'
+                        border: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}`
                     }}>
                         {fields.map(({ key, name, ...restField }) => (
                             <Row key={key} gutter={12} align="middle" style={{ marginBottom: 16 }}>

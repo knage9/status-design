@@ -6,7 +6,8 @@ import React, {
     useMemo,
     useCallback,
   } from 'react';
-  import axios from 'axios';
+import api from '../api';
+import axios from 'axios';
   
   interface User {
     id: number;
@@ -110,7 +111,7 @@ import React, {
       
               if (validateToken) {
                 try {
-                  await axios.get('/api/auth/profile');
+                  await api.get('/auth/profile');
                 } catch {
                   setIsAuthenticated(false);
                   return;

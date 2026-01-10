@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 mainService: data.mainService,
                 additionalServices: data.additionalServices,
                 discount: data.discount,
-                source: 'DISCOUNT_POPUP'
+                source: 'WEBSITE'
             })
         })
             .then(response => {

@@ -11,11 +11,13 @@ import {
     Tag,
     Grid,
     Flex,
+    theme,
 } from 'antd';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 const { useBreakpoint } = Grid;
+const { useToken } = theme;
 
 interface BodyPartsBlockProps {
     executors: any[];
@@ -26,6 +28,8 @@ const BodyPartsBlock: React.FC<BodyPartsBlockProps> = ({ executors, showBodyPart
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
     const isTablet = screens.md && !screens.lg; // 768px - 992px
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
 
     if (!showBodyParts) return null;
 
@@ -292,14 +296,19 @@ const BodyPartsBlock: React.FC<BodyPartsBlockProps> = ({ executors, showBodyPart
             style={{
                 marginBottom: 32,
                 borderRadius: 12,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                border: '1px solid #ffd591'
+                boxShadow: isDarkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 4px 12px rgba(0,0,0,0.05)',
+                border: `1px solid ${isDarkMode ? 'rgba(255, 193, 7, 0.4)' : '#ffd591'}`
             }}
-            styles={{ header: { background: '#fff7e6', borderBottom: '1px solid #ffd591' } }}
+            styles={{ 
+                header: { 
+                    background: isDarkMode ? 'rgba(255, 193, 7, 0.15)' : '#fff7e6', 
+                    borderBottom: `1px solid ${isDarkMode ? 'rgba(255, 193, 7, 0.4)' : '#ffd591'}` 
+                } 
+            }}
         >
             <div style={{ padding: isMobile ? '0' : '0 8px' }}>
                 {!isMobile && (
-                    <Row gutter={isTablet ? 12 : 16} style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '2px solid #f0f0f0' }}>
+                    <Row gutter={isTablet ? 12 : 16} style={{ marginBottom: 12, paddingBottom: 8, borderBottom: `2px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}` }}>
                         <Col span={isTablet ? 6 : 5}><Text strong type="secondary">Деталь</Text></Col>
                         <Col span={isTablet ? 4 : 3}><Text strong type="secondary">План/Кол-во</Text></Col>
                         <Col span={isTablet ? 4 : 3}><Text strong type="secondary">Факт</Text></Col>
@@ -317,7 +326,7 @@ const BodyPartsBlock: React.FC<BodyPartsBlockProps> = ({ executors, showBodyPart
                     marginTop: 16,
                     textAlign: isMobile ? 'center' : 'right',
                     padding: 12,
-                    background: '#fafafa',
+                    background: isDarkMode ? token.colorFillQuaternary : '#fafafa',
                     borderRadius: 8
                 }}>
                     <Text type="secondary" style={{ fontSize: isMobile ? 14 : 13 }}>

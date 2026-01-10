@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Modal, Form, Input, Select, Tag, App, Switch, Grid, Flex, Typography, FloatButton, Divider } from 'antd';
+import { Table, Button, Card, Modal, Form, Input, Select, Tag, App, Switch, Grid, Flex, Typography, FloatButton, Divider, Col } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import api from '../api';
+import FilterBar from '../components/FilterBar';
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -18,6 +19,7 @@ interface User {
 
 const UsersPage: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -25,12 +27,16 @@ const UsersPage: React.FC = () => {
     const [form] = Form.useForm();
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
+    const defaultFilters = { search: '', role: null as string | null, active: 'all' as 'all' | 'active' | 'inactive' };
+    const [filters, setFilters] = useState(defaultFilters);
+    const [appliedFilters, setAppliedFilters] = useState(defaultFilters);
 
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/users');
+            const response = await api.get('/users');
             setUsers(response.data);
+            applyFilters(response.data, appliedFilters);
         } catch (error) {
             notification.error({ title: 'Ошибка загрузки пользователей' });
         } finally {
@@ -38,9 +44,45 @@ const UsersPage: React.FC = () => {
         }
     };
 
+    const applyFilters = (sourceUsers = users, filtersToApply = appliedFilters) => {
+        let result = [...sourceUsers];
+        if (filtersToApply.search) {
+            const searchLower = filtersToApply.search.toLowerCase();
+            result = result.filter(user =>
+                user.name.toLowerCase().includes(searchLower) ||
+                user.email.toLowerCase().includes(searchLower) ||
+                (user.phone || '').toLowerCase().includes(searchLower)
+            );
+        }
+        if (filtersToApply.role) {
+            result = result.filter(user => user.role === filtersToApply.role);
+        }
+        if (filtersToApply.active !== 'all') {
+            const shouldBeActive = filtersToApply.active === 'active';
+            result = result.filter(user => user.isActive === shouldBeActive);
+        }
+        setFilteredUsers(result);
+    };
+
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        applyFilters(users, appliedFilters);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appliedFilters, users]);
+
+    const handleApplyFilters = (nextFilters = filters) => {
+        setAppliedFilters(nextFilters);
+        applyFilters(users, nextFilters);
+    };
+
+    const handleResetFilters = () => {
+        setFilters(defaultFilters);
+        setAppliedFilters(defaultFilters);
+        applyFilters(users, defaultFilters);
+    };
 
     const handleCreate = () => {
         setEditingUser(null);
@@ -61,7 +103,7 @@ const UsersPage: React.FC = () => {
             okType: 'danger',
             onOk: async () => {
                 try {
-                    await axios.delete(`/api/users/${id}`);
+                    await api.delete(`/users/${id}`);
                     notification.success({ title: 'Пользователь удален' });
                     fetchUsers();
                 } catch (error) {
@@ -74,10 +116,10 @@ const UsersPage: React.FC = () => {
     const handleSubmit = async (values: any) => {
         try {
             if (editingUser) {
-                await axios.patch(`/api/users/${editingUser.id}`, values);
+                await api.patch(`/users/${editingUser.id}`, values);
                 notification.success({ title: 'Пользователь обновлен' });
             } else {
-                await axios.post('/api/users', values);
+                await api.post('/users', values);
                 notification.success({ title: 'Пользователь создан' });
             }
             setModalOpen(false);
@@ -237,13 +279,62 @@ const UsersPage: React.FC = () => {
                     )
                 }
             >
+                <FilterBar
+                    actions={
+                        <Flex gap={8} wrap className="filter-bar-actions">
+                            <Button onClick={handleResetFilters}>Сбросить</Button>
+                            <Button type="primary" onClick={() => handleApplyFilters(filters)}>Применить</Button>
+                        </Flex>
+                    }
+                >
+                    <Col xs={24} sm={12} md={8}>
+                        <Input
+                            placeholder="Поиск: имя, email или телефон"
+                            allowClear
+                            size="large"
+                            style={{ width: '100%', minWidth: 240 }}
+                            value={filters.search}
+                            onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                            onPressEnter={() => handleApplyFilters(filters)}
+                        />
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                        <Select
+                            placeholder="Роль"
+                            allowClear
+                            size="large"
+                            style={{ width: '100%', minWidth: 160 }}
+                            value={filters.role}
+                            onChange={(value) => setFilters(prev => ({ ...prev, role: value || null }))}
+                        >
+                            <Select.Option value="ADMIN">Админ</Select.Option>
+                            <Select.Option value="MANAGER">Менеджер</Select.Option>
+                            <Select.Option value="MASTER">Мастер</Select.Option>
+                            <Select.Option value="EXECUTOR">Исполнитель</Select.Option>
+                        </Select>
+                    </Col>
+                    <Col xs={24} sm={12} md={8}>
+                        <Select
+                            placeholder="Активность"
+                            size="large"
+                            value={filters.active}
+                            style={{ width: '100%', minWidth: 140 }}
+                            onChange={(value) => setFilters(prev => ({ ...prev, active: value as any }))}
+                        >
+                            <Select.Option value="all">Все</Select.Option>
+                            <Select.Option value="active">Активные</Select.Option>
+                            <Select.Option value="inactive">Неактивные</Select.Option>
+                        </Select>
+                    </Col>
+                </FilterBar>
+
                 {isMobile ? (
                     /* Mobile Card List */
                     <div>
                         {loading ? (
                             <Card loading={true} />
-                        ) : users.length > 0 ? (
-                            users.map(user => (
+                        ) : filteredUsers.length > 0 ? (
+                            filteredUsers.map(user => (
                                 <MobileUserCard key={user.id} user={user} />
                             ))
                         ) : (
@@ -256,7 +347,7 @@ const UsersPage: React.FC = () => {
                     /* Desktop Table */
                     <Table
                         columns={columns}
-                        dataSource={users}
+                        dataSource={filteredUsers}
                         rowKey="id"
                         loading={loading}
                     />
@@ -265,13 +356,17 @@ const UsersPage: React.FC = () => {
 
             {/* FAB for mobile */}
             {isMobile && (
-                <FloatButton
-                    icon={<PlusOutlined />}
-                    type="primary"
-                    style={{ right: 24, bottom: 24 }}
-                    onClick={handleCreate}
-                    tooltip="Создать пользователя"
-                />
+                <>
+                    <span id="fab-users-desc" className="sr-only">Создать нового пользователя</span>
+                    <FloatButton
+                        icon={<PlusOutlined />}
+                        type="primary"
+                        style={{ right: 24, bottom: 24 }}
+                        onClick={handleCreate}
+                        tooltip="Создать пользователя"
+                        aria-describedby="fab-users-desc"
+                    />
+                </>
             )}
 
             <Modal

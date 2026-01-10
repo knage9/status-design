@@ -46,9 +46,13 @@ export class RequestsService {
         let orderBy: any = { createdAt: 'desc' };
         if (hasPermission(currentUser, 'REQUESTS_VIEW_ALL')) {
             if (searchQuery) {
+                const numeric = Number(searchQuery);
                 where.OR = [
                     { name: { contains: searchQuery, mode: 'insensitive' } },
-                    { phone: { contains: searchQuery } }
+                    { phone: { contains: searchQuery } },
+                    { requestNumber: { contains: searchQuery, mode: 'insensitive' } },
+                    { carModel: { contains: searchQuery, mode: 'insensitive' } },
+                    ...(Number.isFinite(numeric) ? [{ id: numeric }] : []),
                 ];
             }
             if (statusFilter) {
@@ -58,11 +62,15 @@ export class RequestsService {
             // MASTER: только заявки в статусе СДЕЛКА
             where.status = RequestStatus.SDELKA;
             if (searchQuery) {
+                const numeric = Number(searchQuery);
                 where.AND = [
                     {
                         OR: [
                             { name: { contains: searchQuery, mode: 'insensitive' } },
-                            { phone: { contains: searchQuery } }
+                            { phone: { contains: searchQuery } },
+                            { requestNumber: { contains: searchQuery, mode: 'insensitive' } },
+                            { carModel: { contains: searchQuery, mode: 'insensitive' } },
+                            ...(Number.isFinite(numeric) ? [{ id: numeric }] : []),
                         ]
                     },
                     { status: RequestStatus.SDELKA }

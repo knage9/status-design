@@ -580,15 +580,9 @@ export class DashboardService {
     }
 
     async getLoadChart() {
-        const statuses = [
-            'NEW', 'ASSIGNED_TO_MASTER', 'ASSIGNED_TO_EXECUTOR', 'IN_PROGRESS',
-            'PAINTING', 'POLISHING', 'ASSEMBLY_STAGE', 'UNDER_REVIEW', 'READY'
-        ];
+        const statuses = Object.values(WorkOrderStatus);
 
         const workOrders = await this.prisma.workOrder.findMany({
-            where: {
-                status: { in: statuses as any }
-            },
             include: {
                 executor: { select: { name: true } },
                 master: { select: { name: true } },
@@ -598,22 +592,29 @@ export class DashboardService {
         });
 
         const stages: Record<string, any[]> = {};
-        statuses.forEach(status => {
-            stages[status] = workOrders
-                .filter(wo => wo.status === status)
-                .map(wo => ({
-                    id: wo.id,
-                    orderNumber: wo.orderNumber,
-                    carBrand: wo.carBrand,
-                    carModel: wo.carModel,
-                    customerName: wo.customerName,
-                    executorName: wo.executor?.name,
-                    masterName: wo.master?.name,
-                    managerName: wo.manager?.name,
-                    totalAmount: wo.totalAmount,
-                    createdAt: wo.createdAt,
-                    status: wo.status,
-                }));
+        statuses.forEach(status => { stages[status] = []; });
+
+        workOrders.forEach(wo => {
+            if (!stages[wo.status]) {
+                stages[wo.status] = [];
+            }
+
+            stages[wo.status].push({
+                id: wo.id,
+                orderNumber: wo.orderNumber,
+                carBrand: wo.carBrand,
+                carModel: wo.carModel,
+                vin: wo.vin,
+                customerName: wo.customerName,
+                executorName: wo.executor?.name,
+                masterName: wo.master?.name,
+                managerName: wo.manager?.name,
+                totalAmount: wo.totalAmount,
+                createdAt: wo.createdAt,
+                startedAt: wo.startedAt,
+                completedAt: wo.completedAt,
+                status: wo.status,
+            });
         });
 
         return { stages };

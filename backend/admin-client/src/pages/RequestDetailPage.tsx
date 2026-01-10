@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Button, Tag, Space, App, Spin, Table, Divider, Grid, Flex, Typography, Modal, Form, Input, DatePicker } from 'antd';
+import { Card, Descriptions, Button, Tag, Space, App, Spin, Table, Divider, Grid, Flex, Typography, Modal, Form, Input, DatePicker, theme } from 'antd';
 import { ArrowLeftOutlined, ClockCircleOutlined, CheckOutlined, CloseOutlined, PlusOutlined, EyeOutlined, DollarOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../auth/AuthContext';
 import dayjs from 'dayjs';
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
+const { useToken } = theme;
 
 interface Request {
     id: number;
@@ -47,6 +48,8 @@ const RequestDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { notification } = App.useApp();
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const [request, setRequest] = useState<Request | null>(null);
     const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
     const [loading, setLoading] = useState(true);
@@ -59,7 +62,7 @@ const RequestDetailPage: React.FC = () => {
     const fetchRequest = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`/api/requests/${id}`);
+            const response = await api.get(`/requests/${id}`);
             setRequest(response.data);
 
             // Fetch work orders for this request (если они уже включены в response.data.workOrders)
@@ -67,7 +70,7 @@ const RequestDetailPage: React.FC = () => {
                 setWorkOrders(response.data.workOrders);
             } else {
                 // Fallback: загружаем отдельно
-                const woResponse = await axios.get(`/api/work-orders/admin`);
+                const woResponse = await api.get(`/work-orders/admin`);
                 const requestWorkOrders = woResponse.data.filter((wo: any) => wo.requestId === parseInt(id!));
                 setWorkOrders(requestWorkOrders);
             }
@@ -114,7 +117,7 @@ const RequestDetailPage: React.FC = () => {
                 data.arrivalDate = values.arrivalDate.toISOString();
             }
 
-            await axios.patch(`/api/requests/${request.id}/status`, data);
+            await api.patch(`/requests/${request.id}/status`, data);
             notification.success({
                 title: 'Статус изменен',
                 description: statusAction === 'SDELKA' ? 'Заявка переведена в статус "Сделка"' : 'Заявка отклонена'
@@ -358,7 +361,11 @@ const RequestDetailPage: React.FC = () => {
                             label={request.status === 'OTKLONENO' ? 'Причина отклонения' : 'Комментарий менеджера'} 
                             span={isMobile ? 1 : 2}
                         >
-                            <Card size="small" style={{ backgroundColor: request.status === 'OTKLONENO' ? '#fff1f0' : '#f6ffed' }}>
+                            <Card size="small" style={{ 
+                                backgroundColor: request.status === 'OTKLONENO' 
+                                    ? (isDarkMode ? 'rgba(255, 77, 79, 0.15)' : '#fff1f0')
+                                    : (isDarkMode ? 'rgba(82, 196, 26, 0.15)' : '#f6ffed')
+                            }}>
                                 <Text>{request.managerComment}</Text>
                             </Card>
                         </Descriptions.Item>
@@ -511,8 +518,8 @@ const RequestDetailPage: React.FC = () => {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        background: '#fff',
-                        borderTop: '1px solid #f0f0f0',
+                        background: isDarkMode ? token.colorBgContainer : '#fff',
+                        borderTop: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}`,
                         padding: '12px 16px',
                         boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
                         zIndex: 100

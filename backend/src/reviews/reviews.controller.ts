@@ -21,6 +21,12 @@ export class ReviewsController {
         return this.reviewsService.findAllAdmin();
     }
 
+    // Публичное создание отзыва с сайта (без авторизации)
+    @Post()
+    createPublic(@Body() createReviewDto: Prisma.ReviewCreateInput) {
+        return this.reviewsService.create(createReviewDto);
+    }
+
     @Post('admin')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN')

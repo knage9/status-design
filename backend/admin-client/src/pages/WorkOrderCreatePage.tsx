@@ -14,6 +14,7 @@ import {
     Spin,
     Typography,
     Tooltip,
+    theme,
 } from 'antd';
 import {
     ArrowLeftOutlined,
@@ -24,7 +25,7 @@ import {
     CarOutlined,
     QuestionCircleOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../auth/AuthContext';
 import ArmaturaBlock from '../components/ArmaturaBlock';
 import BodyPartsBlock from '../components/BodyPartsBlock';
@@ -32,6 +33,7 @@ import OtherServicesBlock from '../components/OtherServicesBlock';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
+const { useToken } = theme;
 
 const WorkOrderCreatePage: React.FC = () => {
     const [form] = Form.useForm();
@@ -39,6 +41,8 @@ const WorkOrderCreatePage: React.FC = () => {
     const [searchParams] = useSearchParams();
     const { notification } = App.useApp();
     const { user } = useAuth();
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
     const requestId = searchParams.get('requestId');
@@ -47,7 +51,7 @@ const WorkOrderCreatePage: React.FC = () => {
         const loadRequestData = async () => {
             if (requestId) {
                 try {
-                    const response = await axios.get(`/api/requests/${requestId}`);
+                    const response = await api.get(`/requests/${requestId}`);
                     const request = response.data;
 
                     // Set loading to false FIRST so the form mounts
@@ -80,7 +84,7 @@ const WorkOrderCreatePage: React.FC = () => {
     useEffect(() => {
         const loadExecutors = async () => {
             try {
-                const response = await axios.get('/api/users/executors');
+                const response = await api.get('/users/executors');
                 setExecutors(response.data);
             } catch (error) {
                 console.error('Failed to load executors:', error);
@@ -450,7 +454,7 @@ const WorkOrderCreatePage: React.FC = () => {
                 additionalServices: additionalServices.length > 0 ? additionalServices : undefined,
             };
 
-            await axios.post('/api/work-orders', data);
+            await api.post('/work-orders', data);
             notification.success({
                 title: 'Готово!',
                 description: 'Заказ-наряд успешно создан',
@@ -498,11 +502,11 @@ const WorkOrderCreatePage: React.FC = () => {
             <Card
                 title={
                     <Space size="middle">
-                        <FileTextOutlined style={{ fontSize: 24, color: '#1890ff' }} />
+                        <FileTextOutlined style={{ fontSize: 24, color: token.colorPrimary }} />
                         <Title level={3} style={{ margin: 0 }}>Новый заказ-наряд</Title>
                     </Space>
                 }
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                style={{ boxShadow: isDarkMode ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)' }}
             >
                 <Form
                     form={form}
@@ -532,11 +536,11 @@ const WorkOrderCreatePage: React.FC = () => {
                         type="inner"
                         title={
                             <Space>
-                                <DollarOutlined style={{ color: '#52c41a' }} />
+                                <DollarOutlined style={{ color: isDarkMode ? '#73d13d' : '#52c41a' }} />
                                 <Text strong>Финансовая информация</Text>
                             </Space>
                         }
-                        style={{ marginBottom: 24, background: 'rgba(82, 196, 26, 0.05)' }}
+                        style={{ marginBottom: 24, background: isDarkMode ? 'rgba(82, 196, 26, 0.15)' : 'rgba(82, 196, 26, 0.05)' }}
                     >
                         <Row gutter={[24, 0]}>
                             <Col xs={24} sm={12} lg={8}>
@@ -581,11 +585,11 @@ const WorkOrderCreatePage: React.FC = () => {
                         type="inner"
                         title={
                             <Space>
-                                <UserOutlined style={{ color: '#1890ff' }} />
+                                <UserOutlined style={{ color: token.colorPrimary }} />
                                 <Text strong>Информация о клиенте</Text>
                             </Space>
                         }
-                        style={{ marginBottom: 24, background: 'rgba(24, 144, 255, 0.05)' }}
+                        style={{ marginBottom: 24, background: isDarkMode ? 'rgba(24, 144, 255, 0.15)' : 'rgba(24, 144, 255, 0.05)' }}
                     >
                         <Row gutter={[24, 0]}>
                             <Col xs={24} sm={12} lg={8}>
@@ -614,11 +618,11 @@ const WorkOrderCreatePage: React.FC = () => {
                         type="inner"
                         title={
                             <Space>
-                                <CarOutlined style={{ color: '#722ed1' }} />
+                                <CarOutlined style={{ color: isDarkMode ? '#b37feb' : '#722ed1' }} />
                                 <Text strong>Информация об автомобиле</Text>
                             </Space>
                         }
-                        style={{ marginBottom: 24, background: 'rgba(114, 46, 209, 0.05)' }}
+                        style={{ marginBottom: 24, background: isDarkMode ? 'rgba(114, 46, 209, 0.15)' : 'rgba(114, 46, 209, 0.05)' }}
                     >
                         <Row gutter={[24, 0]}>
                             <Col xs={24} sm={12} lg={8}>

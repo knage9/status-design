@@ -516,21 +516,56 @@ export class WorkOrdersService {
         }
     }
 
-    async findAll(currentUser: CurrentUser, view?: string) {
-        const where: any = {};
+    async findAll(currentUser: CurrentUser, view?: string, search?: string) {
+        const searchTerm = search?.trim();
+        const searchNumber = searchTerm ? Number(searchTerm) : null;
+
+        const buildSearchWhere = () => {
+            if (!searchTerm) return undefined;
+            const or: any[] = [
+                { orderNumber: { contains: searchTerm, mode: 'insensitive' } },
+                { carBrand: { contains: searchTerm, mode: 'insensitive' } },
+                { carModel: { contains: searchTerm, mode: 'insensitive' } },
+                { customerName: { contains: searchTerm, mode: 'insensitive' } },
+                { customerPhone: { contains: searchTerm, mode: 'insensitive' } },
+            ];
+            if (Number.isFinite(searchNumber)) {
+                or.push({ id: searchNumber as number });
+            }
+            return { OR: or };
+        };
+
+        const filterBySearch = (orders: any[]) => {
+            if (!searchTerm) return orders;
+            const term = searchTerm.toLowerCase();
+            return orders.filter(o =>
+                o.orderNumber?.toLowerCase().includes(term) ||
+                o.carBrand?.toLowerCase().includes(term) ||
+                o.carModel?.toLowerCase().includes(term) ||
+                o.customerName?.toLowerCase().includes(term) ||
+                o.customerPhone?.toLowerCase().includes(term) ||
+                (Number.isFinite(searchNumber) && o.id === searchNumber)
+            );
+        };
+
+        const baseInclude = {
+            request: true,
+            manager: { select: { id: true, name: true, email: true } },
+            master: { select: { id: true, name: true, email: true } },
+            executor: { select: { id: true, name: true, email: true } },
+        };
 
         if (hasPermission(currentUser, 'WORK_ORDERS_VIEW_ALL')) {
-            // no additional filter
-            return this.prisma.workOrder.findMany({
+            const where: any = buildSearchWhere() || {};
+            if (view === 'my') {
+                where.managerId = currentUser.id;
+            }
+            const orders = await this.prisma.workOrder.findMany({
                 where,
-                include: {
-                    request: true,
-                    manager: { select: { id: true, name: true, email: true } },
-                    master: { select: { id: true, name: true, email: true } },
-                    executor: { select: { id: true, name: true, email: true } },
-                },
+                include: baseInclude,
                 orderBy: { createdAt: 'desc' },
             });
+            return orders;
         }
 
         if (!hasPermission(currentUser, 'WORK_ORDERS_VIEW_OWN')) {
@@ -538,15 +573,10 @@ export class WorkOrdersService {
         }
 
         if (currentUser.role === 'MASTER') {
-            where.masterId = currentUser.id;
+            const where: any = { masterId: currentUser.id, ...(buildSearchWhere() || {}) };
             const orders = await this.prisma.workOrder.findMany({
                 where,
-                include: {
-                    request: true,
-                    manager: { select: { id: true, name: true, email: true } },
-                    master: { select: { id: true, name: true, email: true } },
-                    executor: { select: { id: true, name: true, email: true } },
-                },
+                include: baseInclude,
                 orderBy: { createdAt: 'desc' },
             });
             return this.stripFinanceIfNeeded(orders, currentUser);
@@ -555,10 +585,7 @@ export class WorkOrdersService {
         if (currentUser.role === 'EXECUTOR') {
             const candidateOrders = await this.prisma.workOrder.findMany({
                 include: {
-                    request: true,
-                    manager: { select: { id: true, name: true, email: true } },
-                    master: { select: { id: true, name: true, email: true } },
-                    executor: { select: { id: true, name: true, email: true } },
+                    ...baseInclude,
                     executorAssignments: true,
                 },
                 orderBy: { createdAt: 'desc' },
@@ -569,19 +596,14 @@ export class WorkOrdersService {
                 return hasAssignment || this.hasExecutorTaskInJson(order, currentUser.id);
             });
 
-            return this.stripFinanceIfNeeded(filtered, currentUser);
+            return this.stripFinanceIfNeeded(filterBySearch(filtered), currentUser);
         }
 
         // fallback: manager sees only own
-        where.managerId = currentUser.id;
+        const where: any = { managerId: currentUser.id, ...(buildSearchWhere() || {}) };
         const managerOrders = await this.prisma.workOrder.findMany({
             where,
-            include: {
-                request: true,
-                manager: { select: { id: true, name: true, email: true } },
-                master: { select: { id: true, name: true, email: true } },
-                executor: { select: { id: true, name: true, email: true } },
-            },
+            include: baseInclude,
             orderBy: { createdAt: 'desc' },
         });
         return this.stripFinanceIfNeeded(managerOrders, currentUser);

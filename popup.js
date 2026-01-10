@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 mainService: data.mainService,
                 additionalServices: data.additionalServices,
                 discount: data.discount,
-                source: 'POPUP'
+                source: 'WEBSITE'
             })
         })
             .then(response => {

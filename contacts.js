@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 mainService: data.mainService,
                 additionalServices: data.additionalServices,
                 discount: data.discount,
-                source: 'CONTACTS_PAGE'
+                source: 'WEBSITE'
             })
         })
             .then(response => {

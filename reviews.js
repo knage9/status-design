@@ -278,6 +278,7 @@ class ReviewsManager {
             rating: parseInt(ratingInput.value) || 5,
             carBrand: carBrand,
             carModel: carModel || 'Unknown',
+            service: this.selectedServices?.[0] || 'website',
             text: textInput.value,
             servicesSelected: this.selectedServices,
             status: 'PENDING',
@@ -302,8 +303,8 @@ class ReviewsManager {
                 reviewData.images = [];
             }
 
-            // 2. Submit Review
-            const response = await fetch('/api/reviews/admin', {
+            // 2. Submit Review (публичный endpoint без авторизации)
+            const response = await fetch('/api/reviews', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -57,8 +57,8 @@ export class WorkOrdersController {
     }
 
     @Get('admin')
-    findAll(@Request() req, @Query('view') view?: string) {
-        return this.workOrdersService.findAll(buildCurrentUser(req.user), view);
+    findAll(@Request() req, @Query('view') view?: string, @Query('search') search?: string) {
+        return this.workOrdersService.findAll(buildCurrentUser(req.user), view, search);
     }
 
     @Get(':id')

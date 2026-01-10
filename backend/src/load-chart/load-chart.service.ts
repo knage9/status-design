@@ -20,7 +20,6 @@ export class LoadChartService {
             orderBy: { createdAt: 'desc' },
         });
 
-        // Группировка по статусам
         const stages: Record<
             WorkOrderStatus,
             Array<{
@@ -28,56 +27,43 @@ export class LoadChartService {
                 orderNumber: string;
                 carBrand: string;
                 carModel: string;
+                vin?: string | null;
                 customerName: string;
                 executorName?: string;
                 masterName?: string;
                 managerName?: string;
                 totalAmount: number;
                 createdAt: Date;
+                startedAt?: Date | null;
+                completedAt?: Date | null;
                 status: WorkOrderStatus;
             }>
         > = {} as any;
 
-        // Инициализировать все возможные статусы пустыми массивами
-        const allStatuses: WorkOrderStatus[] = [
-            'NEW',
-            'ASSIGNED_TO_MASTER',
-            'ASSIGNED_TO_EXECUTOR',
-            'IN_PROGRESS',
-            'PAINTING',
-            'POLISHING',
-            'ASSEMBLY_STAGE',
-            'UNDER_REVIEW',
-            'APPROVED',
-            'RETURNED_FOR_REVISION',
-            'SENT',
-            'SHIPPED',
-            'ASSEMBLED',
-            'ISSUED',
-            'READY',
-            'COMPLETED',
-        ];
-
+        const allStatuses = Object.values(WorkOrderStatus);
         allStatuses.forEach((status) => {
             stages[status] = [];
         });
 
-        // Заполнить данными
         workOrders.forEach((wo) => {
             if (!stages[wo.status]) {
                 stages[wo.status] = [];
             }
+
             stages[wo.status].push({
                 id: wo.id,
                 orderNumber: wo.orderNumber,
                 carBrand: wo.carBrand,
                 carModel: wo.carModel,
+                vin: wo.vin,
                 customerName: wo.customerName,
                 executorName: wo.executor?.name,
                 masterName: wo.master?.name,
                 managerName: wo.manager?.name,
                 totalAmount: wo.totalAmount,
                 createdAt: wo.createdAt,
+                startedAt: wo.startedAt,
+                completedAt: wo.completedAt,
                 status: wo.status,
             });
         });

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space, DatePicker, Typography, FloatButton, Grid, Divider, Row, Col } from 'antd';
-import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined, UserOutlined, CalendarOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space, DatePicker, Typography, FloatButton, Grid, Divider, Col } from 'antd';
+import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined, UserOutlined, CalendarOutlined, ClearOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import dayjs from 'dayjs';
 import { useAuth } from '../auth/AuthContext';
+import FilterBar from '../components/FilterBar';
 
 const { Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -36,7 +37,6 @@ const RequestsPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRecord, setEditingRecord] = useState<Request | null>(null);
-    const [filterForm] = Form.useForm();
     const [form] = Form.useForm();
     const { notification, modal } = App.useApp();
     const navigate = useNavigate();
@@ -47,11 +47,15 @@ const RequestsPage: React.FC = () => {
     const isManager = user?.role === 'MANAGER' || user?.role === 'ADMIN';
     const isMaster = user?.role === 'MASTER';
     
-    // Фильтры
-    const [statusFilter, setStatusFilter] = useState<string | null>(null);
-    const [dateRangeFilter, setDateRangeFilter] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
-    const [searchText, setSearchText] = useState<string>('');
-    const [managerFilter, setManagerFilter] = useState<string | null>(null);
+    const defaultFilters = {
+        status: null as string | null,
+        dateRange: null as [dayjs.Dayjs | null, dayjs.Dayjs | null] | null,
+        search: '',
+        manager: null as string | null,
+    };
+    const [filters, setFilters] = useState(defaultFilters);
+    const [appliedFilters, setAppliedFilters] = useState(defaultFilters);
+    const searchDebounceRef = useRef<number | null>(null);
     
     // Инициализация filteredRequests с requests
     useEffect(() => {
@@ -60,17 +64,16 @@ const RequestsPage: React.FC = () => {
         }
     }, [requests]);
 
-    const fetchRequests = async (searchQueryText?: string) => {
+    const fetchRequests = async (filtersToUse = appliedFilters) => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/requests/admin', {
+            const response = await api.get('/requests/admin', {
                 params: {
-                    searchQuery: searchQueryText !== undefined ? searchQueryText : (searchText || undefined),
+                    searchQuery: filtersToUse.search || undefined,
                 }
             });
             setRequests(response.data);
-            // Применяем фильтры к полученным данным сразу
-            applyFilters(response.data);
+            applyFilters(response.data, filtersToUse);
         } catch (error) {
             console.error('Failed to fetch requests:', error);
             notification.error({
@@ -82,19 +85,19 @@ const RequestsPage: React.FC = () => {
         }
     };
 
-    const applyFilters = (requestsToFilter?: Request[]) => {
+    const applyFilters = (requestsToFilter?: Request[], filtersToApply = appliedFilters) => {
         const sourceData = requestsToFilter || requests;
         let filtered = [...sourceData];
 
         // Фильтр по статусу
-        if (statusFilter) {
-            filtered = filtered.filter(r => r.status === statusFilter);
+        if (filtersToApply.status) {
+            filtered = filtered.filter(r => r.status === filtersToApply.status);
         }
 
         // Фильтр по дате создания
-        if (dateRangeFilter && dateRangeFilter[0] && dateRangeFilter[1]) {
-            const startDate = dateRangeFilter[0].startOf('day').toISOString();
-            const endDate = dateRangeFilter[1].endOf('day').toISOString();
+        if (filtersToApply.dateRange && filtersToApply.dateRange[0] && filtersToApply.dateRange[1]) {
+            const startDate = filtersToApply.dateRange[0].startOf('day').toISOString();
+            const endDate = filtersToApply.dateRange[1].endOf('day').toISOString();
             filtered = filtered.filter(r => {
                 const createdDate = new Date(r.createdAt).toISOString();
                 return createdDate >= startDate && createdDate <= endDate;
@@ -102,17 +105,17 @@ const RequestsPage: React.FC = () => {
         }
 
         // Фильтр по менеджеру
-        if (managerFilter) {
-            filtered = filtered.filter(r => r.manager?.name === managerFilter);
+        if (filtersToApply.manager) {
+            filtered = filtered.filter(r => r.manager?.name === filtersToApply.manager);
         }
 
         // Локальный поиск по имени/телефону/авто/номеру заявки (если не менеджер или для дополнительной фильтрации)
         // Для менеджера основной поиск уже применен на сервере через API
-        if (searchText && !isManager) {
-            const searchLower = searchText.toLowerCase();
+        if (filtersToApply.search && !isManager) {
+            const searchLower = filtersToApply.search.toLowerCase();
             filtered = filtered.filter(r => 
                 r.name.toLowerCase().includes(searchLower) ||
-                r.phone.includes(searchText) ||
+                r.phone.includes(filtersToApply.search) ||
                 r.carModel.toLowerCase().includes(searchLower) ||
                 r.requestNumber.toLowerCase().includes(searchLower)
             );
@@ -121,18 +124,18 @@ const RequestsPage: React.FC = () => {
         setFilteredRequests(filtered);
     };
 
-    const handleFilterChange = () => {
-        applyFilters();
+    const handleApplyFilters = async (nextFilters = filters) => {
+        setAppliedFilters(nextFilters);
+        if (isManager) {
+            await fetchRequests(nextFilters);
+        } else {
+            applyFilters(requests, nextFilters);
+        }
     };
 
     const handleClearFilters = () => {
-        setStatusFilter(null);
-        setDateRangeFilter(null);
-        setManagerFilter(null);
-        const clearedSearch = '';
-        setSearchText(clearedSearch);
-        filterForm.resetFields();
-        fetchRequests(clearedSearch);
+        setFilters(defaultFilters);
+        handleApplyFilters(defaultFilters);
     };
 
     useEffect(() => {
@@ -141,13 +144,28 @@ const RequestsPage: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeProfileId, profileChangeToken, authLoading, isAuthenticated]);
 
-    // Применяем фильтры при изменении фильтров или заявок
+    // Автоприменение только поиска (дебаунс 300 мс) для менеджеров
     useEffect(() => {
-        if (requests.length >= 0) {
-            applyFilters();
+        if (!isManager) return;
+        if (filters.search === appliedFilters.search) return;
+        if (searchDebounceRef.current) {
+            clearTimeout(searchDebounceRef.current);
         }
+        searchDebounceRef.current = window.setTimeout(() => {
+            handleApplyFilters({ ...filters, search: filters.search });
+        }, 300);
+        return () => {
+            if (searchDebounceRef.current) {
+                clearTimeout(searchDebounceRef.current);
+            }
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [statusFilter, dateRangeFilter, managerFilter, requests]);
+    }, [filters.search, appliedFilters.search, isManager]);
+
+    useEffect(() => {
+        applyFilters(requests, appliedFilters);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appliedFilters, requests]);
 
     useEffect(() => {
         if (isSwitchingProfile) {
@@ -179,10 +197,10 @@ const RequestsPage: React.FC = () => {
             };
 
             if (editingRecord) {
-                await axios.patch(`/api/requests/admin/${editingRecord.id}`, data);
+                await api.patch(`/requests/admin/${editingRecord.id}`, data);
                 notification.success({ title: 'Заявка обновлена' });
             } else {
-                await axios.post('/api/requests', data);
+                await api.post('/requests', data);
                 notification.success({ title: 'Заявка создана' });
             }
 
@@ -201,7 +219,7 @@ const RequestsPage: React.FC = () => {
             okType: 'danger',
             onOk: async () => {
                 try {
-                    await axios.delete(`/api/requests/admin/${id}`);
+                    await api.delete(`/requests/admin/${id}`);
                     notification.success({ title: 'Заявка удалена' });
                     fetchRequests();
                 } catch (error) {
@@ -531,99 +549,72 @@ const RequestsPage: React.FC = () => {
             >
                 {/* Фильтры для менеджера */}
                 {isManager && (
-                    <Card size="small" style={{ marginBottom: 16 }} title={<><FilterOutlined /> Фильтры</>}>
-                        <Form form={filterForm} layout="vertical">
-                            <Row gutter={16}>
-                                <Col xs={24} sm={12} md={6}>
-                                    <Form.Item label="Поиск">
-                                        <Input.Search
-                                            placeholder="Имя, телефон, авто, № заявки"
-                                            allowClear
-                                            value={searchText}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setSearchText(value);
-                                                // Дебаунс для поиска через API
-                                                clearTimeout((window as any).searchTimeout);
-                                                (window as any).searchTimeout = setTimeout(() => {
-                                                    if (isManager) {
-                                                        fetchRequests(value);
-                                                    } else {
-                                                        applyFilters();
-                                                    }
-                                                }, 500);
-                                            }}
-                                            onSearch={(value) => {
-                                                setSearchText(value);
-                                                fetchRequests(value);
-                                            }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col xs={24} sm={12} md={6}>
-                                    <Form.Item label="Статус">
-                                        <Select
-                                            placeholder="Все статусы"
-                                            allowClear
-                                            value={statusFilter}
-                                            onChange={(value) => {
-                                                setStatusFilter(value || null);
-                                                handleFilterChange();
-                                            }}
-                                        >
-                                            <Select.Option value="NOVA">Новая</Select.Option>
-                                            <Select.Option value="SDELKA">Сделка</Select.Option>
-                                            <Select.Option value="OTKLONENO">Отклонено</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                                <Col xs={24} sm={12} md={6}>
-                                    <Form.Item label="Дата создания">
-                                        <DatePicker.RangePicker
-                                            style={{ width: '100%' }}
-                                            value={dateRangeFilter}
-                                            onChange={(dates) => {
-                                                setDateRangeFilter(dates as any);
-                                                handleFilterChange();
-                                            }}
-                                            format="DD.MM.YYYY"
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col xs={24} sm={12} md={6}>
-                                    <Form.Item label="Ответственный менеджер">
-                                        <Select
-                                            placeholder="Все"
-                                            allowClear
-                                            value={managerFilter}
-                                            onChange={(value) => {
-                                                setManagerFilter(value || null);
-                                                handleFilterChange();
-                                            }}
-                                        >
-                                            {Array.from(new Set(requests.map(r => r.manager?.name).filter(Boolean))).map(name => (
-                                                <Select.Option key={name as string} value={name as string}>
-                                                    {name}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                            <Flex justify="space-between" align="center">
-                                <Text type="secondary">
-                                    Найдено: {filteredRequests.length} из {requests.length}
-                                </Text>
-                                <Button
-                                    icon={<ClearOutlined />}
-                                    onClick={handleClearFilters}
-                                    size="small"
-                                >
+                    <FilterBar
+                        title="Фильтры"
+                        defaultOpen={!isMobile}
+                        actions={
+                            <>
+                                <Button onClick={handleClearFilters}>
                                     Сбросить
                                 </Button>
-                            </Flex>
-                        </Form>
-                    </Card>
+                                <Button type="primary" onClick={() => handleApplyFilters(filters)}>
+                                    Применить
+                                </Button>
+                            </>
+                        }
+                    >
+                        <Col xs={24} sm={12} md={6}>
+                            <Input
+                                placeholder="Имя, телефон, авто, № заявки"
+                                allowClear
+                                value={filters.search}
+                                size="large"
+                                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                                onPressEnter={() => handleApplyFilters(filters)}
+                            />
+                        </Col>
+                        <Col xs={24} sm={12} md={6}>
+                            <Select
+                                placeholder="Все статусы"
+                                allowClear
+                                value={filters.status}
+                                size="large"
+                                onChange={(value) => setFilters(prev => ({ ...prev, status: value || null }))}
+                                style={{ width: '100%' }}
+                            >
+                                <Select.Option value="NOVA">Новая</Select.Option>
+                                <Select.Option value="SDELKA">Сделка</Select.Option>
+                                <Select.Option value="OTKLONENO">Отклонено</Select.Option>
+                                <Select.Option value="ZAVERSHENA">Завершена</Select.Option>
+                            </Select>
+                        </Col>
+                        <Col xs={24} sm={12} md={6}>
+                            <DatePicker.RangePicker
+                                style={{ width: '100%' }}
+                                value={filters.dateRange}
+                                size="large"
+                                dropdownClassName="filter-bar-date-dropdown single-panel-range"
+                                onChange={(dates) => setFilters(prev => ({ ...prev, dateRange: dates as any }))}
+                                format="DD.MM.YYYY"
+                            />
+                        </Col>
+                        <Col xs={24} sm={12} md={6}>
+                            <Select
+                                placeholder="Все менеджеры"
+                                allowClear
+                                value={filters.manager}
+                                size="large"
+                                onChange={(value) => setFilters(prev => ({ ...prev, manager: value || null }))}
+                                style={{ width: '100%' }}
+                            >
+                                {Array.from(new Set(requests.map(r => r.manager?.name).filter(Boolean))).map(name => (
+                                    <Select.Option key={name as string} value={name as string}>
+                                        {name}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </Col>
+                    </FilterBar>
                 )}
 
                 {/* Mobile Card List */}
@@ -637,7 +628,7 @@ const RequestsPage: React.FC = () => {
                             ))
                         ) : (
                             <Card>
-                                <Text type="secondary">Нет заявок{statusFilter || dateRangeFilter || searchText ? ' по выбранным фильтрам' : ''}</Text>
+                                <Text type="secondary">Нет заявок{filters.status || filters.dateRange || filters.search ? ' по выбранным фильтрам' : ''}</Text>
                             </Card>
                         )}
                     </div>
@@ -657,13 +648,17 @@ const RequestsPage: React.FC = () => {
 
             {/* FAB for mobile */}
             {isMobile && (
-                <FloatButton
-                    icon={<PlusOutlined />}
-                    type="primary"
-                    style={{ right: 24, bottom: 24 }}
-                    onClick={handleCreate}
-                    tooltip="Создать заявку"
-                />
+                <>
+                    <span id="fab-requests-desc" className="sr-only">Создать новую заявку</span>
+                    <FloatButton
+                        icon={<PlusOutlined />}
+                        type="primary"
+                        style={{ right: 24, bottom: 24 }}
+                        onClick={handleCreate}
+                        tooltip="Создать заявку"
+                        aria-describedby="fab-requests-desc"
+                    />
+                </>
             )}
 
             {/* Create/Edit Modal */}

@@ -13,6 +13,7 @@ import {
     App,
     Spin,
     Typography,
+    theme,
 } from 'antd';
 import {
     ArrowLeftOutlined,
@@ -25,7 +26,7 @@ import {
     InfoCircleOutlined,
     PrinterOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../auth/AuthContext';
 import ArmaturaBlock from '../components/ArmaturaBlock';
 import BodyPartsBlock from '../components/BodyPartsBlock';
@@ -33,6 +34,7 @@ import OtherServicesBlock from '../components/OtherServicesBlock';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
+const { useToken } = theme;
 
 const WorkOrderEditPage: React.FC = () => {
     const [form] = Form.useForm();
@@ -40,6 +42,8 @@ const WorkOrderEditPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { notification } = App.useApp();
     const { user } = useAuth();
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
 
@@ -68,21 +72,21 @@ const WorkOrderEditPage: React.FC = () => {
         const loadData = async () => {
             try {
                 // Fetch Work Order
-                const woResponse = await axios.get(`/api/work-orders/${id}`);
+                const woResponse = await api.get(`/work-orders/${id}`);
                 const wo = woResponse.data;
                 setWorkOrderData(wo);
                 setTotalAmount(wo.totalAmount);
 
                 // Fetch Request
                 if (wo.requestId) {
-                    const reqResponse = await axios.get(`/api/requests/${wo.requestId}`);
+                    const reqResponse = await api.get(`/requests/${wo.requestId}`);
                     setRequestData(reqResponse.data);
                 } else {
                     setRequestData({});
                 }
 
                 // Fetch Executors
-                const usersResponse = await axios.get('/api/users/executors');
+                const usersResponse = await api.get('/users/executors');
                 setExecutors(usersResponse.data);
 
                 setInitialLoading(false);
@@ -529,7 +533,7 @@ const WorkOrderEditPage: React.FC = () => {
                 additionalServices: additionalServices.length > 0 ? additionalServices : undefined,
             };
 
-            await axios.patch(`/api/work-orders/${id}`, data);
+            await api.patch(`/work-orders/${id}`, data);
 
             notification.success({ title: 'Готово!', description: 'Заказ-наряд обновлен' });
             navigate(`/work-orders/${id}`);
@@ -561,7 +565,7 @@ const WorkOrderEditPage: React.FC = () => {
             <Card
                 title={
                     <Space size="middle">
-                        <FileTextOutlined style={{ fontSize: 24, color: '#1890ff' }} />
+                        <FileTextOutlined style={{ fontSize: 24, color: token.colorPrimary }} />
                         <Title level={3} style={{ margin: 0 }}>Редактирование заказ-наряда</Title>
                     </Space>
                 }
@@ -574,7 +578,7 @@ const WorkOrderEditPage: React.FC = () => {
                     scrollToFirstError
                 >
                     {/* Financial Block */}
-                    <Card type="inner" title={<Space><DollarOutlined style={{ color: '#52c41a' }} /><Text strong>Финансовая информация</Text></Space>} style={{ marginBottom: 24, background: 'rgba(82, 196, 26, 0.05)' }}>
+                    <Card type="inner" title={<Space><DollarOutlined style={{ color: isDarkMode ? '#73d13d' : '#52c41a' }} /><Text strong>Финансовая информация</Text></Space>} style={{ marginBottom: 24, background: isDarkMode ? 'rgba(82, 196, 26, 0.15)' : 'rgba(82, 196, 26, 0.05)' }}>
                         <Row gutter={[24, 0]}>
                             <Col xs={24} sm={12} lg={8}>
                                 <Form.Item 
@@ -609,7 +613,7 @@ const WorkOrderEditPage: React.FC = () => {
                     </Card>
 
                     {/* Customer Block */}
-                    <Card type="inner" title={<Space><UserOutlined style={{ color: '#1890ff' }} /><Text strong>Информация о клиенте</Text></Space>} style={{ marginBottom: 24, background: 'rgba(24, 144, 255, 0.05)' }}>
+                    <Card type="inner" title={<Space><UserOutlined style={{ color: token.colorPrimary }} /><Text strong>Информация о клиенте</Text></Space>} style={{ marginBottom: 24, background: isDarkMode ? 'rgba(24, 144, 255, 0.15)' : 'rgba(24, 144, 255, 0.05)' }}>
                         <Row gutter={[24, 0]}>
                             <Col xs={24} sm={12} lg={8}>
                                 <Form.Item label={<Text strong>ФИО Заказчика</Text>} name="customerName" rules={[{ required: true }]}>
@@ -625,7 +629,7 @@ const WorkOrderEditPage: React.FC = () => {
                     </Card>
 
                     {/* Car Block */}
-                    <Card type="inner" title={<Space><CarOutlined style={{ color: '#722ed1' }} /><Text strong>Информация об автомобиле</Text></Space>} style={{ marginBottom: 24, background: 'rgba(114, 46, 209, 0.05)' }}>
+                    <Card type="inner" title={<Space><CarOutlined style={{ color: isDarkMode ? '#b37feb' : '#722ed1' }} /><Text strong>Информация об автомобиле</Text></Space>} style={{ marginBottom: 24, background: isDarkMode ? 'rgba(114, 46, 209, 0.15)' : 'rgba(114, 46, 209, 0.05)' }}>
                         <Row gutter={[24, 0]}>
                             <Col xs={24} sm={12} lg={8}>
                                 <Form.Item label={<Text strong>Марка и модель</Text>} name="carModel" rules={[{ required: true }]}>

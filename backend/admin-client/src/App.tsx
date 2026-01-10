@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Menu, ConfigProvider, theme, Drawer, Button, App as AntApp, Dropdown, Switch, Grid, Modal, Form, Input, Badge } from 'antd';
-import { FileTextOutlined, ReadOutlined, PictureOutlined, MenuOutlined, DashboardOutlined, FileDoneOutlined, LogoutOutlined, UserOutlined, TeamOutlined, BulbOutlined, DollarOutlined, PlusOutlined, SwapOutlined, LockOutlined } from '@ant-design/icons';
+import { FileTextOutlined, ReadOutlined, PictureOutlined, MenuOutlined, DashboardOutlined, FileDoneOutlined, LogoutOutlined, UserOutlined, TeamOutlined, BulbOutlined, DollarOutlined, PlusOutlined, SwapOutlined, LockOutlined, CloseOutlined } from '@ant-design/icons';
 import ReviewsPage from './pages/ReviewsPage';
 import PostsPage from './pages/PostsPage';
 import PortfolioPage from './pages/PortfolioPage';
@@ -41,7 +41,18 @@ function AppContent() {
 
   useEffect(() => {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    // Apply theme to root and body for CSS selectors
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    document.body.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
+
+  // Apply theme on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const theme = savedTheme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+  }, []);
 
   useEffect(() => {
     const key = 'profile-switch';
@@ -284,6 +295,7 @@ function AppContent() {
         <Sider
           breakpoint="lg"
           collapsedWidth="0"
+          width={240}
           onBreakpoint={(broken) => {
             if (!broken) setMobileOpen(false);
           }}
@@ -293,19 +305,46 @@ function AppContent() {
             position: 'sticky',
             left: 0,
             top: 0,
+            background: 'linear-gradient(180deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%)',
+            boxShadow: '4px 0 24px rgba(0, 0, 0, 0.3)'
           }}
-          className="desktop-sidebar"
+          className="desktop-sidebar modern-sidebar"
         >
-          <div style={{ padding: '24px 16px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            <h2 style={{ color: '#fff', margin: 0 }}>Status Design</h2>
-            <p style={{ color: '#aaa', fontSize: 12, margin: '4px 0 0 0' }}>Админ-панель</p>
+          <div style={{ 
+            padding: '24px 16px 20px', 
+            textAlign: 'center', 
+            borderBottom: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <h2 style={{ 
+              color: '#fff', 
+              margin: 0, 
+              fontSize: 22,
+              fontWeight: 600,
+              lineHeight: '1.2'
+            }}>
+              Status Design
+            </h2>
+            <p style={{ 
+              color: '#94a3b8', 
+              fontSize: 12, 
+              margin: '6px 0 0 0',
+              fontWeight: 400,
+              letterSpacing: '0.3px'
+            }}>
+              Админ-панель
+            </p>
           </div>
           <Menu
             theme="dark"
             mode="inline"
             selectedKeys={[selectedKey]}
             items={menuItems}
-            style={{ borderRight: 0 }}
+            style={{ 
+              borderRight: 0,
+              background: 'transparent',
+              padding: '16px 8px'
+            }}
+            className="modern-sidebar-menu"
           />
         </Sider>
 
@@ -314,45 +353,127 @@ function AppContent() {
           placement="left"
           onClose={() => setMobileOpen(false)}
           open={mobileOpen}
-          className="mobile-drawer"
-          styles={{ body: { padding: 0 } }}
+          className="mobile-drawer modern-drawer"
+          styles={{ 
+            body: { padding: 0 },
+            mask: { background: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(4px)' }
+          }}
+          width={320}
+          title={null}
+          closeIcon={null}
         >
-          <div style={{ padding: '24px 16px', borderBottom: '1px solid #f0f0f0' }}>
-            <h2 style={{ margin: 0 }}>Status Design</h2>
-            <p style={{ color: '#888', fontSize: 12, margin: '4px 0 0 0' }}>Админ-панель</p>
+          <div className="drawer-header" style={{ 
+            padding: '24px 20px', 
+            borderBottom: isDarkMode ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)',
+            background: isDarkMode ? '#1f1f1f' : '#ffffff'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h2 style={{ 
+                  margin: 0, 
+                  fontSize: 22, 
+                  fontWeight: 600,
+                  color: isDarkMode ? '#ffffff' : '#1a1a1a',
+                  lineHeight: '1.2'
+                }}>
+                  Status Design
+                </h2>
+                <p style={{ 
+                  color: isDarkMode ? '#888888' : '#666666', 
+                  fontSize: 12, 
+                  margin: '4px 0 0 0',
+                  fontWeight: 400
+                }}>
+                  Админ-панель
+                </p>
+              </div>
+              <Button
+                type="text"
+                icon={<CloseOutlined />}
+                onClick={() => setMobileOpen(false)}
+                className="drawer-close-button"
+                style={{ 
+                  width: 36, 
+                  height: 36,
+                  minWidth: 36,
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)',
+                  transition: 'all 0.2s ease',
+                  border: 'none',
+                  padding: 0
+                }}
+              />
+            </div>
           </div>
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
             items={menuItems}
             onClick={() => setMobileOpen(false)}
+            className="modern-menu"
+            style={{
+              borderRight: 0,
+              background: 'transparent',
+              padding: '16px 12px'
+            }}
           />
         </Drawer>
 
         <Layout>
-          <Header style={{
-            background: isDarkMode ? '#141414' : '#fff',
-            padding: isMobile ? '0 12px' : '0 24px',
+          <Header className="modern-header" style={{
+            background: isDarkMode 
+              ? 'linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%)' 
+              : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            padding: isMobile ? '0 16px' : '0 32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            boxShadow: '0 1px 4px rgba(0,21,41,.08)',
-            borderBottom: isDarkMode ? '1px solid #303030' : '1px solid #f0f0f0',
-            height: isMobile ? 56 : 64,
-            lineHeight: isMobile ? '56px' : '64px'
+            boxShadow: isDarkMode 
+              ? '0 4px 20px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.05) inset' 
+              : '0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset',
+            borderBottom: isDarkMode ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)',
+            height: isMobile ? 64 : 72,
+            lineHeight: isMobile ? '64px' : '72px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
             <Button
-              className="mobile-menu-button"
+              className={`mobile-menu-button modern-burger ${mobileOpen ? 'active' : ''}`}
               type="text"
               icon={<MenuOutlined />}
-              onClick={() => setMobileOpen(true)}
-              style={{ fontSize: '20px', width: 48, height: 48 }}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              style={{ 
+                fontSize: '20px', 
+                width: 44, 
+                height: 44,
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
             />
             <div style={{ flex: 1 }}></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16 }}>
+            <div className="header-actions" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: isMobile ? 12 : 20 
+            }}>
               {!isMobile && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <BulbOutlined style={{ fontSize: 16 }} />
+                <div className="theme-switcher-wrapper" style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 10,
+                  padding: '6px 12px',
+                  borderRadius: '12px',
+                  background: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                  transition: 'all 0.2s ease'
+                }}>
+                  <BulbOutlined style={{ fontSize: 18, color: isDarkMode ? 'rgba(255, 255, 255, 0.65)' : 'rgba(0, 0, 0, 0.65)' }} />
                   <Switch
                     checked={isDarkMode}
                     onChange={setIsDarkMode}
@@ -362,29 +483,50 @@ function AppContent() {
                 </div>
               )}
               {isMobile && (
-                <Switch
-                  checked={isDarkMode}
-                  onChange={setIsDarkMode}
-                  checkedChildren="🌙"
-                  unCheckedChildren="☀️"
-                  size="small"
-                />
+                <div className="mobile-theme-switcher" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '6px 10px',
+                  borderRadius: '10px',
+                  background: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                  transition: 'all 0.2s ease'
+                }}>
+                  <Switch
+                    checked={isDarkMode}
+                    onChange={setIsDarkMode}
+                    checkedChildren="🌙"
+                    unCheckedChildren="☀️"
+                    size="small"
+                  />
+                </div>
               )}
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
                 <Button
+                  className="user-menu-button"
                   type="text"
                   icon={<UserOutlined />}
-                  style={{ height: 48, display: 'flex', alignItems: 'center', gap: 8 }}
+                  style={{ 
+                    height: isMobile ? 40 : 44, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: isMobile ? 8 : 10,
+                    borderRadius: '12px',
+                    padding: isMobile ? '0 10px' : '0 14px',
+                    transition: 'all 0.2s ease',
+                    background: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                    fontSize: isMobile ? '14px' : 'inherit'
+                  }}
                   loading={isSwitchingProfile}
                 >
                   {!isMobile && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span>{activeProfile?.user.name || 'Профиль'}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontWeight: 500 }}>{activeProfile?.user.name || 'Профиль'}</span>
                       {roleBadge && (
                         <Badge 
                           status={roleBadge.color as any} 
                           text={roleBadge.text}
-                          style={{ fontSize: 11 }}
+                          style={{ fontSize: 11, fontWeight: 500 }}
                         />
                       )}
                     </div>

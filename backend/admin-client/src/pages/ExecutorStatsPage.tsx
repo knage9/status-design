@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Modal, Form, InputNumber, Tag, App, Typography, Space, Drawer, Descriptions, Grid, Flex, FloatButton, Divider } from 'antd';
+import { Table, Button, Card, Modal, Form, InputNumber, Tag, App, Typography, Space, Drawer, Descriptions, Grid, Flex, FloatButton, Divider, Select, Input, Col, theme } from 'antd';
 import { EyeOutlined, DollarOutlined, LoadingOutlined, CheckCircleOutlined, InfoCircleOutlined, ExportOutlined, UserOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import api from '../api';
+import FilterBar from '../components/FilterBar';
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
+const { useToken } = theme;
 
 interface ExecutorSummary {
     executor: {
@@ -47,13 +49,20 @@ const ExecutorStatsPage: React.FC = () => {
     const [form] = Form.useForm();
     const { notification } = App.useApp();
     const screens = useBreakpoint();
+    const { token } = useToken();
+    const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const isMobile = !screens.md; // < 768px
+    const defaultFilters = { search: '', payout: 'all' as 'all' | 'debt' | 'settled' };
+    const [filters, setFilters] = useState(defaultFilters);
+    const [appliedFilters, setAppliedFilters] = useState(defaultFilters);
+    const [filteredStats, setFilteredStats] = useState<ExecutorSummary[]>([]);
 
     const fetchStats = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/dashboard/executor-stats');
+            const response = await api.get('/dashboard/executor-stats');
             setStats(response.data);
+            applyFilters(response.data, appliedFilters);
         } catch (error) {
             notification.error({ title: 'Ошибка', description: 'Не удалось загрузить статистика' });
         } finally {
@@ -61,16 +70,50 @@ const ExecutorStatsPage: React.FC = () => {
         }
     };
 
+    const applyFilters = (source = stats, filtersToApply = appliedFilters) => {
+        let result = [...source];
+        if (filtersToApply.search) {
+            const searchLower = filtersToApply.search.toLowerCase();
+            result = result.filter((item) =>
+                item.executor.name.toLowerCase().includes(searchLower) ||
+                item.executor.email.toLowerCase().includes(searchLower)
+            );
+        }
+        if (filtersToApply.payout === 'debt') {
+            result = result.filter(item => item.remaining > 0);
+        }
+        if (filtersToApply.payout === 'settled') {
+            result = result.filter(item => item.remaining <= 0);
+        }
+        setFilteredStats(result);
+    };
+
+    const handleApplyFilters = (nextFilters = filters) => {
+        setAppliedFilters(nextFilters);
+        applyFilters(stats, nextFilters);
+    };
+
+    const handleResetFilters = () => {
+        setFilters(defaultFilters);
+        setAppliedFilters(defaultFilters);
+        applyFilters(stats, defaultFilters);
+    };
+
     useEffect(() => {
         fetchStats();
     }, []);
+
+    useEffect(() => {
+        applyFilters(stats, appliedFilters);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appliedFilters, stats]);
 
     const handleViewDetails = async (executor: ExecutorSummary) => {
         setSelectedExecutor(executor);
         setDetailsDrawerVisible(true);
         setDetailsLoading(true);
         try {
-            const response = await axios.get(`/api/dashboard/executor-stats`, {
+            const response = await api.get(`/dashboard/executor-stats`, {
                 params: { executorId: executor.executor.id }
             });
             if (response.data && response.data.length > 0) {
@@ -96,8 +139,8 @@ const ExecutorStatsPage: React.FC = () => {
     const handlePaymentSubmit = async (values: any) => {
         if (!selectedExecutor || !selectedWorkOrder) return;
         try {
-            await axios.patch(
-                `/api/dashboard/update-payment/${selectedWorkOrder.id}`,
+            await api.patch(
+                `/dashboard/update-payment/${selectedWorkOrder.id}`,
                 {
                     paidAmount: values.paidAmount,
                     isPaid: values.paidAmount >= selectedWorkOrder.amount
@@ -114,7 +157,8 @@ const ExecutorStatsPage: React.FC = () => {
 
     const exportToCSV = () => {
         const headers = ['Имя', 'Email', 'Заботано', 'Выплачено', 'Остаток', 'Работ'];
-        const rows = stats.map(s => [
+        const source = filteredStats.length ? filteredStats : stats;
+        const rows = source.map(s => [
             s.executor.name,
             s.executor.email,
             s.totalEarned,
@@ -379,14 +423,49 @@ const ExecutorStatsPage: React.FC = () => {
                 )}
             </div>
 
+            <FilterBar
+                actions={
+                    <Flex gap={8} wrap className="filter-bar-actions">
+                        <Button onClick={handleResetFilters}>Сбросить</Button>
+                        <Button type="primary" onClick={() => handleApplyFilters(filters)}>Применить</Button>
+                    </Flex>
+                }
+            >
+                <Col xs={24} sm={12} md={8}>
+                    <Input
+                        placeholder="Поиск: исполнитель или email"
+                        allowClear
+                        size="large"
+                        prefix={<UserOutlined />}
+                        value={filters.search}
+                        style={{ width: '100%', minWidth: 240 }}
+                        onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                        onPressEnter={() => handleApplyFilters(filters)}
+                    />
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                    <Select
+                        size="large"
+                        value={filters.payout}
+                        style={{ width: '100%', minWidth: 180 }}
+                        onChange={(value) => setFilters(prev => ({ ...prev, payout: value as any }))}
+                        options={[
+                            { label: 'Все', value: 'all' },
+                            { label: 'Есть задолженность', value: 'debt' },
+                            { label: 'Закрыто', value: 'settled' },
+                        ]}
+                    />
+                </Col>
+            </FilterBar>
+
             <Card bordered={false} className="shadow-sm">
                 {isMobile ? (
                     /* Mobile Card List */
                     <div>
                         {loading ? (
                             <Card loading={true} />
-                        ) : stats.length > 0 ? (
-                            stats.map(executor => (
+                        ) : filteredStats.length > 0 ? (
+                            filteredStats.map(executor => (
                                 <MobileExecutorCard key={executor.executor.id} executor={executor} />
                             ))
                         ) : (
@@ -399,7 +478,7 @@ const ExecutorStatsPage: React.FC = () => {
                     /* Desktop Table */
                     <Table
                         columns={columns}
-                        dataSource={stats}
+                        dataSource={filteredStats}
                         rowKey={(record) => record.executor.id}
                         loading={loading}
                         pagination={false}
@@ -409,13 +488,17 @@ const ExecutorStatsPage: React.FC = () => {
 
             {/* FAB for export on mobile */}
             {isMobile && (
-                <FloatButton
-                    icon={<ExportOutlined />}
-                    type="default"
-                    style={{ right: 24, bottom: 24 }}
-                    onClick={exportToCSV}
-                    tooltip="Экспорт CSV"
-                />
+                <>
+                    <span id="fab-executor-stats-desc" className="sr-only">Экспортировать статистику в CSV файл</span>
+                    <FloatButton
+                        icon={<ExportOutlined />}
+                        type="default"
+                        style={{ right: 24, bottom: 24 }}
+                        onClick={exportToCSV}
+                        tooltip="Экспорт CSV"
+                        aria-describedby="fab-executor-stats-desc"
+                    />
+                </>
             )}
 
             <Drawer
@@ -430,7 +513,7 @@ const ExecutorStatsPage: React.FC = () => {
                 ) : (
                     <>
                         <div style={{ marginBottom: 24 }}>
-                            <Card size="small" style={{ background: '#fafafa' }}>
+                            <Card size="small" style={{ background: isDarkMode ? token.colorFillQuaternary : '#fafafa' }}>
                                 <Descriptions column={isMobile ? 1 : 3} size={isMobile ? 'small' : 'middle'}>
                                     <Descriptions.Item label="Всего заработано">
                                         <Text strong>{selectedExecutor?.totalEarned.toLocaleString()} ₽</Text>
