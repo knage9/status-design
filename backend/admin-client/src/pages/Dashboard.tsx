@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Statistic, Badge, Button, Typography, Skeleton, App, Flex, Grid, List, Progress } from 'antd';
+import { Row, Col, Card, Statistic, Badge, Button, Typography, Skeleton, App, Flex, Grid, List, Progress, Table, Tag, Space } from 'antd';
 import {
     MessageOutlined,
     FileTextOutlined,
@@ -9,23 +9,34 @@ import {
     CloseOutlined,
     StarFilled,
     ArrowUpOutlined,
-    ArrowDownOutlined
+    ArrowDownOutlined,
+    UserOutlined,
+    ClockCircleOutlined,
+    CarOutlined,
+    NumberOutlined,
+    RocketOutlined,
+    HistoryOutlined,
+    DashboardOutlined,
 } from '@ant-design/icons';
 import {
     LineChart,
     Line,
     XAxis,
     YAxis,
-    Tooltip,
+    Tooltip as ChartTooltip,
     Legend,
-    ResponsiveContainer
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+    Cell
 } from 'recharts';
 import axios from 'axios';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import dayjs from 'dayjs';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 const { useBreakpoint } = Grid;
 
 interface DashboardStats {
@@ -51,6 +62,56 @@ interface DashboardData {
     activityChart: { date: string; reviews: number; posts: number; portfolio: number }[];
 }
 
+const workOrderStatusMap: Record<string, string> = {
+    NEW: 'Новый',
+    ASSIGNED_TO_MASTER: 'У мастера',
+    ASSIGNED_TO_EXECUTOR: 'У исполнителей',
+    IN_PROGRESS: 'В работе',
+    PAINTING: 'Покраска',
+    POLISHING: 'Полировка',
+    ASSEMBLY_STAGE: 'Сборка',
+    UNDER_REVIEW: 'На проверке',
+    APPROVED: 'Одобрен',
+    RETURNED_FOR_REVISION: 'Возврат на доработку',
+    SENT: 'Отправлен',
+    SHIPPED: 'Отгружен',
+    ASSEMBLED: 'Собран',
+    ISSUED: 'Выдан',
+    READY: 'Готов',
+    COMPLETED: 'Завершен',
+};
+
+const requestStatusMap: Record<string, string> = {
+    NOVA: 'Новая',
+    SDELKA: 'Сделка',
+    OTKLONENO: 'Отклонено',
+    ZAVERSHENA: 'Завершена',
+};
+
+const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+        NOVA: 'orange',
+        SDELKA: 'cyan',
+        OTKLONENO: 'red',
+        ZAVERSHENA: 'green',
+        NEW: 'blue',
+        ASSIGNED_TO_MASTER: 'purple',
+        ASSIGNED_TO_EXECUTOR: 'geekblue',
+        IN_PROGRESS: 'processing',
+        COMPLETED: 'success',
+        ISSUED: 'success',
+        SENT: 'success',
+        ASSEMBLED: 'success',
+    };
+    return colors[status] || 'default';
+};
+
+const formatSeconds = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    return h > 0 ? `${h}ч ${m}м` : `${m}м`;
+};
+
 const Dashboard: React.FC = () => {
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -58,13 +119,12 @@ const Dashboard: React.FC = () => {
     const navigate = useNavigate();
     const { notification, modal } = App.useApp();
     const screens = useBreakpoint();
-    const isMobile = !screens.md; // < 768px
-    const { user } = useAuth();
+    const isMobile = !screens.md;
+    const { user, activeProfileId, profileChangeToken, isAuthenticated, isLoading: authLoading, isSwitchingProfile } = useAuth();
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            // USER REQUEST: Use full URL to avoid 404
             const response = await axios.get('/api/dashboard');
             setData(response.data);
         } catch (error) {
@@ -73,66 +133,40 @@ const Dashboard: React.FC = () => {
                 title: 'Ошибка загрузки данных',
                 description: 'Не удалось получить данные дашборда.'
             });
-            // Fallback data
-            setData({
-                stats: {
-                    reviews: { total: 0, pending: 0, avgRating: 0, thisWeek: 0 },
-                    posts: { total: 0, draft: 0, thisWeek: 0 },
-                    portfolio: { total: 0, draft: 0, thisWeek: 0 },
-                    requests: { total: 0, new: 0, thisWeek: 0 }
-                },
-                pendingReviews: [],
-                topServices: [],
-                activityChart: []
-            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchRoleDashboard = async (role: string) => {
+        try {
+            setLoading(true);
+            const endpoint = `/api/dashboard/${role.toLowerCase()}`;
+            const response = await axios.get(endpoint);
+            setRoleData(response.data);
+        } catch (error) {
+            console.error(`Failed to fetch ${role} dashboard data:`, error);
+            notification.error({ title: `Ошибка загрузки дашборда ${role}` });
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (user?.role === 'ADMIN') {
+        if (authLoading || !isAuthenticated || !user) return;
+        if (user.role === 'ADMIN') {
             fetchData();
-        } else if (user?.role === 'MANAGER') {
-            (async () => {
-                try {
-                    setLoading(true);
-                    const response = await axios.get('/api/dashboard/manager');
-                    setRoleData(response.data);
-                } catch (error) {
-                    notification.error({ title: 'Ошибка загрузки дашборда менеджера' });
-                } finally {
-                    setLoading(false);
-                }
-            })();
-        } else if (user?.role === 'MASTER') {
-            (async () => {
-                try {
-                    setLoading(true);
-                    const response = await axios.get('/api/dashboard/master');
-                    setRoleData(response.data);
-                } catch (error) {
-                    notification.error({ title: 'Ошибка загрузки дашборда мастера' });
-                } finally {
-                    setLoading(false);
-                }
-            })();
-        } else if (user?.role === 'EXECUTOR') {
-            (async () => {
-                try {
-                    setLoading(true);
-                    const response = await axios.get('/api/dashboard/executor');
-                    setRoleData(response.data);
-                } catch (error) {
-                    notification.error({ title: 'Ошибка загрузки дашборда исполнителя' });
-                } finally {
-                    setLoading(false);
-                }
-            })();
         } else {
-            fetchData();
+            fetchRoleDashboard(user.role);
         }
-    }, [user?.role]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.role, user?.id, activeProfileId, profileChangeToken, authLoading, isAuthenticated]);
+
+    useEffect(() => {
+        if (isSwitchingProfile) {
+            setLoading(true);
+        }
+    }, [isSwitchingProfile]);
 
     const handleApproveReview = (id: number) => {
         modal.confirm({
@@ -182,22 +216,7 @@ const Dashboard: React.FC = () => {
         return serviceMap[serviceKey] || serviceKey;
     };
 
-    const safeData = data || {
-        stats: {
-            reviews: { total: 0, pending: 0, avgRating: 0, thisWeek: 0 },
-            posts: { total: 0, draft: 0, thisWeek: 0 },
-            portfolio: { total: 0, draft: 0, thisWeek: 0 },
-            requests: { total: 0, new: 0, thisWeek: 0 }
-        },
-        pendingReviews: [],
-        topServices: [],
-        activityChart: []
-    };
-
-    const { stats, pendingReviews, topServices, activityChart } = safeData;
-    const maxServiceCount = Math.max(...(topServices?.map(s => s.count) || [1]), 1);
-
-    const StatCard = ({ title, value, icon, color, trend, badge, onClick, loading }: any) => (
+    const StatCard = ({ title, value, icon, color, trend, badge, onClick, loading, suffix }: any) => (
         <Card
             hoverable
             className="stat-card"
@@ -209,7 +228,7 @@ const Dashboard: React.FC = () => {
                     <div style={{
                         backgroundColor: `${color}20`,
                         padding: 12,
-                        borderRadius: '50%',
+                        borderRadius: '12px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
@@ -221,402 +240,320 @@ const Dashboard: React.FC = () => {
                 <Statistic
                     title={title}
                     value={value}
+                    suffix={suffix}
                     styles={{ content: { fontWeight: 'bold', fontSize: 28, marginTop: 16 } }}
                 />
-                <div style={{ display: 'flex', alignItems: 'center', marginTop: 8, color: trend > 0 ? '#52c41a' : '#8c8c8c' }}>
-                    {trend > 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-                    <span style={{ marginLeft: 4 }}>{trend} за неделю</span>
-                </div>
+                {trend !== undefined && (
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: 8, color: trend >= 0 ? '#52c41a' : '#8c8c8c' }}>
+                        {trend > 0 ? <ArrowUpOutlined /> : (trend < 0 ? <ArrowDownOutlined /> : null)}
+                        <span style={{ marginLeft: 4 }}>{trend} за неделю</span>
+                    </div>
+                )}
             </Skeleton>
         </Card>
     );
 
-    const renderAdmin = () => (
-        <div style={{ padding: isMobile ? 0 : 24 }}>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} lg={6}><StatCard title="Отзывы" value={stats.reviews.total} icon={<MessageOutlined />} color="#1458E4" trend={stats.reviews.thisWeek} badge={stats.reviews.pending} onClick={() => navigate('/reviews')} loading={loading} /></Col>
-                <Col xs={24} sm={12} lg={6}><StatCard title="Новости" value={stats.posts.total} icon={<FileTextOutlined />} color="#52c41a" trend={stats.posts.thisWeek} badge={stats.posts.draft} onClick={() => navigate('/posts')} loading={loading} /></Col>
-                <Col xs={24} sm={12} lg={6}><StatCard title="Портфолио" value={stats.portfolio.total} icon={<AppstoreOutlined />} color="#faad14" trend={stats.portfolio.thisWeek} badge={stats.portfolio.draft} onClick={() => navigate('/portfolio')} loading={loading} /></Col>
-                <Col xs={24} sm={12} lg={6}><StatCard title="Заявки" value={stats.requests?.total || 0} icon={<FormOutlined />} color="#ff4d4f" trend={stats.requests?.thisWeek || 0} badge={stats.requests?.new || 0} onClick={() => navigate('/requests')} loading={loading} /></Col>
-            </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: isMobile ? 16 : 24 }}>
-                <Col span={24}>
-                    <Card title="Активность за последние 7 дней" loading={loading}>
-                        <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
-                            <LineChart data={activityChart}>
-                                <XAxis dataKey="date" tick={{ fontSize: isMobile ? 11 : 12 }} />
-                                <YAxis tick={{ fontSize: isMobile ? 11 : 12 }} />
-                                <Tooltip />
-                                <Legend wrapperStyle={{ fontSize: isMobile ? 12 : 14 }} />
-                                <Line type="monotone" dataKey="reviews" stroke="#1458E4" name="Отзывы" strokeWidth={2} />
-                                <Line type="monotone" dataKey="posts" stroke="#52c41a" name="Новости" strokeWidth={2} />
-                                <Line type="monotone" dataKey="portfolio" stroke="#faad14" name="Портфолио" strokeWidth={2} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Card>
-                </Col>
-            </Row>
-            <Row gutter={[16, 16]} style={{ marginTop: isMobile ? 16 : 24 }}>
-                <Col xs={24} lg={14}>
-                    <Card title={<>Требует модерации <Badge count={pendingReviews?.length || 0} style={{ backgroundColor: '#faad14', marginLeft: 8 }} /></>} style={{ height: '100%' }} loading={loading}>
-                        <Flex vertical gap="middle">
-                            {pendingReviews.map((review) => (
-                                <div key={review.id} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
-                                    <Flex justify="space-between" align="start" vertical={isMobile} gap={isMobile ? 12 : 0}>
-                                        <Flex gap="small" style={{ flex: 1 }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 40 }}>
-                                                <StarFilled style={{ color: '#faad14', fontSize: 20 }} />
-                                                <span style={{ marginTop: 4 }}>{review.rating}</span>
-                                            </div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <Text strong>{`${review.carBrand} ${review.carModel}`}</Text>
-                                                <div>
-                                                    <Text ellipsis style={{ display: 'block', maxWidth: isMobile ? '100%' : 300 }}>{review.text}</Text>
-                                                </div>
-                                            </div>
-                                        </Flex>
-                                        <Flex gap="small" vertical={isMobile} style={{ width: isMobile ? '100%' : 'auto' }}>
-                                            <Button type="primary" icon={<CheckOutlined />} onClick={() => handleApproveReview(review.id)} block={isMobile} size={isMobile ? 'large' : 'middle'}>Одобрить</Button>
-                                            <Button danger icon={<CloseOutlined />} onClick={() => handleRejectReview(review.id)} block={isMobile} size={isMobile ? 'large' : 'middle'}>Отклонить</Button>
-                                        </Flex>
-                                    </Flex>
-                                </div>
-                            ))}
-                            {pendingReviews.length === 0 && <Text type="secondary">Нет отзывов на модерации</Text>}
-                        </Flex>
-                    </Card>
-                </Col>
-                <Col xs={24} lg={10}>
-                    <Card title="Популярные услуги" style={{ height: '100%' }} loading={loading}>
-                        {topServices?.map((item, index) => (
-                            <div key={index} style={{ marginBottom: 16 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text>{getServiceName(item.service)}</Text>
-                                    <Text type="secondary">{item.count}</Text>
-                                </div>
-                                <Progress percent={(item.count / maxServiceCount) * 100} showInfo={false} strokeColor="#1458E4" />
-                            </div>
-                        ))}
-                        <div style={{ marginTop: 32, textAlign: 'center' }}>
-                            <Statistic title="Средний рейтинг" value={stats.reviews.avgRating} precision={1} suffix="/ 5.0" prefix={<StarFilled style={{ color: '#faad14' }} />} styles={{ content: { fontSize: 32 } }} />
-                        </div>
-                    </Card>
-                </Col>
-            </Row>
-        </div>
-    );
+    const renderAdmin = () => {
+        if (!data) return <Skeleton active />;
+        const { stats, pendingReviews, topServices, activityChart } = data;
+        const maxServiceCount = Math.max(...(topServices?.map(s => s.count) || [1]), 1);
 
-    const renderManager = () => (
-        <div style={{ padding: isMobile ? 0 : 24 }}>
-            <Row gutter={[16, 16]}>
-                {(roleData?.requestCounts || []).map((rc: any) => (
-                    <Col xs={12} md={6} key={rc.status}>
-                        <Card>
-                            <Statistic title={`Заявки ${rc.status}`} value={rc.today} suffix="сегодня" />
-                            <Text type="secondary">За 7 дней: {rc.week}</Text>
+        return (
+            <div style={{ padding: isMobile ? 0 : 24 }}>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Отзывы" value={stats.reviews.total} icon={<MessageOutlined />} color="#1458E4" trend={stats.reviews.thisWeek} badge={stats.reviews.pending} onClick={() => navigate('/reviews')} loading={loading} /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Новости" value={stats.posts.total} icon={<FileTextOutlined />} color="#52c41a" trend={stats.posts.thisWeek} badge={stats.posts.draft} onClick={() => navigate('/posts')} loading={loading} /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Портфолио" value={stats.portfolio.total} icon={<AppstoreOutlined />} color="#faad14" trend={stats.portfolio.thisWeek} badge={stats.portfolio.draft} onClick={() => navigate('/portfolio')} loading={loading} /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Заявки" value={stats.requests?.total || 0} icon={<FormOutlined />} color="#ff4d4f" trend={stats.requests?.thisWeek || 0} badge={stats.requests?.new || 0} onClick={() => navigate('/requests')} loading={loading} /></Col>
+                </Row>
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col span={24}>
+                        <Card title="Активность за последние 7 дней" loading={loading}>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <LineChart data={activityChart}>
+                                    <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                                    <YAxis tick={{ fontSize: 12 }} />
+                                    <ChartTooltip />
+                                    <Legend wrapperStyle={{ fontSize: 14 }} />
+                                    <Line type="monotone" dataKey="reviews" stroke="#1458E4" name="Отзывы" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="posts" stroke="#52c41a" name="Новости" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="portfolio" stroke="#faad14" name="Портфолио" strokeWidth={2} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         </Card>
                     </Col>
-                ))}
-                <Col xs={12} md={6}><Card><Statistic title="ЗН у исполнителей" value={roleData?.woCounts?.executor || 0} /><Text type="secondary">У мастера: {roleData?.woCounts?.master || 0}</Text></Card></Col>
-                <Col xs={12} md={6}><Card><Statistic title="Отправлены" value={roleData?.woCounts?.sent || 0} /><Text type="secondary">Выданы: {roleData?.woCounts?.issued || 0}</Text></Card></Col>
-                <Col xs={12} md={6}><Card><Statistic title="Завершены" value={roleData?.woCounts?.completed || 0} /></Card></Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} lg={12}>
-                    <Card title="Мои заявки">
-                        <List dataSource={roleData?.myRequests || []} renderItem={(item: any) => (
-                            <List.Item actions={[<Button type="link" onClick={() => navigate(`/requests/${item.id}`)}>Открыть</Button>]}>
-                                <List.Item.Meta title={`${item.name} • ${item.carModel}`} description={item.phone} />
-                                <Text>{item.status}</Text>
-                            </List.Item>
-                        )} />
-                    </Card>
-                </Col>
-                <Col xs={24} lg={12}>
-                    <Card title="Активные ЗН">
-                        <List dataSource={roleData?.activeWorkOrders || []} renderItem={(item: any) => (
-                            <List.Item actions={[<Button type="link" onClick={() => navigate(`/work-orders/${item.id}`)}>Открыть</Button>]}>
-                                <List.Item.Meta title={`${item.orderNumber} • ${item.customerName}`} description={`${item.carBrand} ${item.carModel}`} />
-                                <Text>{item.status}</Text>
-                            </List.Item>
-                        )} />
-                    </Card>
-                </Col>
-            </Row>
-        </div>
-    );
+                </Row>
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col xs={24} lg={14}>
+                        <Card title={<>Требует модерации <Badge count={pendingReviews?.length || 0} style={{ backgroundColor: '#faad14', marginLeft: 8 }} /></>} loading={loading}>
+                            <Flex vertical gap="middle">
+                                {pendingReviews.map((review) => (
+                                    <div key={review.id} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
+                                        <Flex justify="space-between" align="start" vertical={isMobile} gap={isMobile ? 12 : 0}>
+                                            <Flex gap="small" style={{ flex: 1 }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 40 }}>
+                                                    <StarFilled style={{ color: '#faad14', fontSize: 20 }} />
+                                                    <span style={{ marginTop: 4 }}>{review.rating}</span>
+                                                </div>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <Text strong>{`${review.carBrand} ${review.carModel}`}</Text>
+                                                    <div>
+                                                        <Text ellipsis style={{ display: 'block', maxWidth: 300 }}>{review.text}</Text>
+                                                    </div>
+                                                </div>
+                                            </Flex>
+                                            <Flex gap="small">
+                                                <Button type="primary" icon={<CheckOutlined />} onClick={() => handleApproveReview(review.id)}>Одобрить</Button>
+                                                <Button danger icon={<CloseOutlined />} onClick={() => handleRejectReview(review.id)}>Отклонить</Button>
+                                            </Flex>
+                                        </Flex>
+                                    </div>
+                                ))}
+                                {pendingReviews.length === 0 && <Text type="secondary">Нет отзывов на модерации</Text>}
+                            </Flex>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={10}>
+                        <Card title="Популярные услуги" loading={loading}>
+                            {topServices?.map((item, index) => (
+                                <div key={index} style={{ marginBottom: 16 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <Text>{getServiceName(item.service)}</Text>
+                                        <Text type="secondary">{item.count}</Text>
+                                    </div>
+                                    <Progress percent={(item.count / maxServiceCount) * 100} showInfo={false} strokeColor="#1458E4" />
+                                </div>
+                            ))}
+                            <div style={{ marginTop: 32, textAlign: 'center' }}>
+                                <Statistic title="Средний рейтинг" value={stats.reviews.avgRating} precision={1} suffix="/ 5.0" prefix={<StarFilled style={{ color: '#faad14' }} />} />
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        );
+    };
 
-    const renderMaster = () => (
-        <div style={{ padding: isMobile ? 0 : 24 }}>
-            <Row gutter={[16, 16]}>
-                <Col xs={12} md={6}><Card><Statistic title="У исполнителей" value={roleData?.stats?.executorStage || 0} /></Card></Col>
-                <Col xs={12} md={6}><Card><Statistic title="У мастера" value={roleData?.stats?.masterStage || 0} /></Card></Col>
-                <Col xs={12} md={6}><Card><Statistic title="Завершено сегодня" value={roleData?.stats?.completedToday || 0} /></Card></Col>
-                <Col xs={12} md={6}><Card><Statistic title="Завершено за 7 дней" value={roleData?.stats?.completedWeek || 0} /></Card></Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} lg={12}>
-                    <Card title="ЗН у исполнителей">
-                        <List dataSource={roleData?.executorStage || []} renderItem={(item: any) => (
-                            <List.Item actions={[<Button type="link" onClick={() => navigate(`/work-orders/${item.id}`)}>Открыть</Button>]}>
-                                <List.Item.Meta title={`${item.orderNumber} • ${item.customerName}`} description={`${item.carBrand} ${item.carModel}`} />
-                                <Text type="secondary">Задачи исполнителей: {item.executorAssignments?.length || 0}</Text>
-                            </List.Item>
-                        )} />
-                    </Card>
-                </Col>
-                <Col xs={24} lg={12}>
-                    <Card title="ЗН у мастера">
-                        <List dataSource={roleData?.masterStage || []} renderItem={(item: any) => (
-                            <List.Item actions={[<Button type="primary" onClick={() => navigate(`/work-orders/${item.id}`)}>Открыть и завершить</Button>]}>
-                                <List.Item.Meta title={`${item.orderNumber} • ${item.customerName}`} description={`${item.carBrand} ${item.carModel}`} />
-                                <Text>{item.status}</Text>
-                            </List.Item>
-                        )} />
-                    </Card>
-                </Col>
-            </Row>
-        </div>
-    );
+    const renderManager = () => {
+        if (!roleData) return <Skeleton active />;
+        const { stats, statusStats, myRequests, activeWorkOrders } = roleData;
 
-    const renderExecutor = () => (
-        <div style={{ padding: isMobile ? 0 : 24 }}>
-            <Row gutter={[16, 16]}>
-                <Col xs={12} md={6}><Card><Statistic title="Задач сегодня" value={roleData?.tasksDone?.today || 0} /></Card></Col>
-                <Col xs={12} md={6}><Card><Statistic title="Задач за 7 дней" value={roleData?.tasksDone?.week || 0} /></Card></Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-                <Col xs={24} lg={12}>
-                    <Card title="Мои активные ЗН">
-                        <List dataSource={roleData?.activeWorkOrders || []} renderItem={(item: any) => (
-                            <List.Item actions={[<Button type="link" onClick={() => navigate(`/work-orders/${item.workOrderId}`)}>Открыть</Button>]}>
-                                <List.Item.Meta title={`${item.orderNumber} • ${item.customerName}`} description={item.car} />
-                                <Text>Задач: {item.done}/{item.total}</Text>
-                            </List.Item>
-                        )} />
-                    </Card>
-                </Col>
-                <Col xs={24} lg={12}>
-                    <Card title="История">
-                        <List dataSource={roleData?.history || []} renderItem={(item: any) => (
-                            <List.Item>
-                                <List.Item.Meta title={item.orderNumber} description={item.completedAt ? new Date(item.completedAt).toLocaleDateString() : ''} />
-                                <Text>ЗП: {item.earned?.toLocaleString('ru-RU')} ₽</Text>
-                            </List.Item>
-                        )} />
-                    </Card>
-                </Col>
-            </Row>
-        </div>
-    );
+        return (
+            <div style={{ padding: isMobile ? 0 : 24 }}>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Новые заявки" value={stats.newRequestsToday} suffix="сегодня" icon={<RocketOutlined />} color="#1458E4" /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Сделки" value={stats.dealsToday} suffix="сегодня" icon={<CheckOutlined />} color="#52c41a" /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Активные ЗН" value={stats.activeWOCount} icon={<DashboardOutlined />} color="#faad14" onClick={() => navigate('/work-orders')} /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Завершено ЗН" value={stats.completedWOWeek} suffix="за 7 дн" icon={<HistoryOutlined />} color="#ff4d4f" /></Col>
+                </Row>
+
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col xs={24} lg={8}>
+                        <Card title="Заявки по статусам (7 дней)">
+                            <ResponsiveContainer width="100%" height={250}>
+                                <BarChart data={statusStats} layout="vertical" margin={{ left: 20, right: 30 }}>
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="status" type="category" tickFormatter={(val) => requestStatusMap[val] || val} width={80} />
+                                    <ChartTooltip formatter={(val) => [val, 'Количество']} />
+                                    <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                                        {statusStats.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={getStatusColor(entry.status) === 'orange' ? '#faad14' : getStatusColor(entry.status) === 'cyan' ? '#13c2c2' : getStatusColor(entry.status) === 'red' ? '#ff4d4f' : '#52c41a'} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={16}>
+                        <Card title="Активные заявки (Новая / Сделка)" extra={<Button type="link" onClick={() => navigate('/requests')}>Все заявки</Button>}>
+                            <Table
+                                dataSource={myRequests}
+                                rowKey="id"
+                                pagination={false}
+                                size="small"
+                                columns={[
+                                    { title: 'Дата', dataIndex: 'createdAt', render: (d) => dayjs(d).format('DD.MM HH:mm') },
+                                    { title: 'Клиент', dataIndex: 'name' },
+                                    { title: 'Авто', dataIndex: 'carModel' },
+                                    { title: 'Статус', dataIndex: 'status', render: (s) => <Tag color={getStatusColor(s)}>{requestStatusMap[s] || s}</Tag> },
+                                    { title: 'Действие', render: (_, r) => <Button type="link" size="small" onClick={() => navigate(`/requests/${r.id}`)}>Открыть</Button> }
+                                ]}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col span={24}>
+                        <Card title="Активные заказ-наряды" extra={<Button type="link" onClick={() => navigate('/work-orders')}>Все ЗН</Button>}>
+                            <Table
+                                dataSource={activeWorkOrders}
+                                rowKey="id"
+                                pagination={{ pageSize: 5 }}
+                                size="small"
+                                columns={[
+                                    { title: '№ ЗН', dataIndex: 'orderNumber', render: (n) => <Text strong>{n}</Text> },
+                                    { title: 'Клиент', dataIndex: 'customerName' },
+                                    { title: 'Авто', render: (_, r) => `${r.carBrand} ${r.carModel}` },
+                                    { title: 'Статус', dataIndex: 'status', render: (s) => <Tag color={getStatusColor(s)}>{workOrderStatusMap[s] || s}</Tag> },
+                                    { title: 'Мастер', dataIndex: ['master', 'name'], render: (m) => m || '—' },
+                                    { title: 'В работе', dataIndex: 'createdAt', render: (d) => {
+                                        const diff = dayjs().diff(dayjs(d), 'hour');
+                                        return diff > 24 ? `${Math.floor(diff / 24)} дн` : `${diff} ч`;
+                                    }},
+                                    { title: '', render: (_, r) => <Button type="primary" size="small" onClick={() => navigate(`/work-orders/${r.id}`)}>Открыть</Button> }
+                                ]}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        );
+    };
+
+    const renderMaster = () => {
+        if (!roleData) return <Skeleton active />;
+        const { stats, executorStage, masterStage } = roleData;
+
+        return (
+            <div style={{ padding: isMobile ? 0 : 24 }}>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="ЗН у исполнителей" value={stats.executorStage} icon={<UserOutlined />} color="#1458E4" /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="ЗН у мастера" value={stats.masterStage} icon={<DashboardOutlined />} color="#faad14" /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Завершено сегодня" value={stats.completedToday} icon={<CheckOutlined />} color="#52c41a" /></Col>
+                    <Col xs={24} sm={12} lg={6}><StatCard title="Завершено за 7 дн" value={stats.completedWeek} icon={<HistoryOutlined />} color="#ff4d4f" /></Col>
+                </Row>
+
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col span={24}>
+                        <Card title="ЗН у исполнителей (В работе)">
+                            <Table
+                                dataSource={executorStage}
+                                rowKey="id"
+                                size="small"
+                                columns={[
+                                    { title: '№ ЗН', dataIndex: 'orderNumber', render: (n) => <Text strong>{n}</Text> },
+                                    { title: 'Клиент', dataIndex: 'customerName' },
+                                    { title: 'Авто', render: (_, r) => `${r.carBrand} ${r.carModel}` },
+                                    { title: 'Исполнители', dataIndex: 'executors', render: (exs: string[]) => exs.length > 0 ? exs.join(', ') : '—' },
+                                    { title: 'Прогресс задач', render: (_, r) => <Progress percent={Math.round((r.doneTasks / (r.totalTasks || 1)) * 100)} size="small" format={() => `${r.doneTasks}/${r.totalTasks}`} /> },
+                                    { title: 'Время в работе', dataIndex: 'timeSeconds', render: (s) => formatSeconds(s) },
+                                    { title: '', render: (_, r) => <Button type="link" onClick={() => navigate(`/work-orders/${r.id}`)}>Открыть</Button> }
+                                ]}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col span={24}>
+                        <Card title="ЗН у мастера (Готовы к финалу)">
+                            <Table
+                                dataSource={masterStage}
+                                rowKey="id"
+                                size="small"
+                                columns={[
+                                    { title: '№ ЗН', dataIndex: 'orderNumber', render: (n) => <Text strong>{n}</Text> },
+                                    { title: 'Клиент', dataIndex: 'customerName' },
+                                    { title: 'Авто', render: (_, r) => `${r.carBrand} ${r.carModel}` },
+                                    { title: 'Исполнителей было', dataIndex: 'executorsCount' },
+                                    { title: 'Общее время раб.', dataIndex: 'timeSeconds', render: (s) => formatSeconds(s) },
+                                    { title: '', render: (_, r) => <Button type="primary" onClick={() => navigate(`/work-orders/${r.id}`)}>Открыть и завершить</Button> }
+                                ]}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        );
+    };
+
+    const renderExecutor = () => {
+        if (!roleData) return <Skeleton active />;
+        const { activeWorkOrders, tasksDone, timeTodaySeconds, history } = roleData;
+
+        return (
+            <div style={{ padding: isMobile ? 0 : 24 }}>
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={8} lg={8}><StatCard title="Активные ЗН" value={activeWorkOrders.length} icon={<RocketOutlined />} color="#1458E4" /></Col>
+                    <Col xs={24} sm={8} lg={8}><StatCard title="Задач сегодня" value={tasksDone.today} suffix={` (из ${tasksDone.week} за неделю)`} icon={<CheckOutlined />} color="#52c41a" /></Col>
+                    <Col xs={24} sm={8} lg={8}><StatCard title="Время сегодня" value={formatSeconds(timeTodaySeconds)} icon={<ClockCircleOutlined />} color="#faad14" /></Col>
+                </Row>
+
+                <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                    <Col xs={24} lg={14}>
+                        <Card title="Мои активные ЗН">
+                            <Table
+                                dataSource={activeWorkOrders}
+                                rowKey="workOrderId"
+                                size="small"
+                                columns={[
+                                    { title: '№ ЗН', dataIndex: 'orderNumber', render: (n) => <Text strong>{n}</Text> },
+                                    { title: 'Авто', dataIndex: 'car' },
+                                    { title: 'Статус ЗН', dataIndex: 'status', render: (s) => <Tag color={getStatusColor(s)}>{workOrderStatusMap[s] || s}</Tag> },
+                                    { title: 'Мои задачи', render: (_, r) => <Progress percent={Math.round((r.done / r.total) * 100)} size="small" format={() => `${r.done}/${r.total}`} /> },
+                                    { title: 'Моё время', dataIndex: 'myTimeSeconds', render: (s) => formatSeconds(s) },
+                                    { title: '', render: (_, r) => <Button type="link" onClick={() => navigate(`/work-orders/${r.workOrderId}`)}>Открыть</Button> }
+                                ]}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} lg={10}>
+                        <Card title="История завершённых">
+                            <Table
+                                dataSource={history}
+                                rowKey="workOrderId"
+                                size="small"
+                                pagination={{ pageSize: 5 }}
+                                columns={[
+                                    { title: 'ЗН', dataIndex: 'orderNumber' },
+                                    { title: 'Дата', dataIndex: 'completedAt', render: (d) => dayjs(d).format('DD.MM.YY') },
+                                    { title: 'Время', dataIndex: 'timeSeconds', render: (s) => formatSeconds(s) },
+                                    { title: 'ЗП', dataIndex: 'earned', render: (v) => <Text strong>{v?.toLocaleString('ru-RU')} ₽</Text> }
+                                ]}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        );
+    };
 
     return (
         <div style={{ padding: isMobile ? 0 : 24 }}>
-            {loading && (
+            {loading && !roleData && !data ? (
                 <Card>
-                    <Skeleton active />
+                    <Skeleton active avatar paragraph={{ rows: 4 }} />
                 </Card>
-            )}
-            {!loading && (
+            ) : (
                 <>
                     {user?.role === 'ADMIN' && renderAdmin()}
                     {user?.role === 'MANAGER' && renderManager()}
                     {user?.role === 'MASTER' && renderMaster()}
-                    {user?.role === 'EXECUTOR' && renderExecutor()}
+                    {(user?.role === 'EXECUTOR' || user?.role === 'PAINTER') && renderExecutor()}
                     {!user?.role && renderAdmin()}
                 </>
             )}
-        </div>
-    );
-    return (
-        <div style={{ padding: isMobile ? 0 : 24 }}>
-            {/* ВЕРХНИЙ РЯД */}
-            <Row gutter={[16, 16]}>
-                <Col xs={24} sm={12} lg={6}>
-                    <StatCard
-                        title="Отзывы"
-                        value={stats.reviews.total}
-                        icon={<MessageOutlined />}
-                        color="#1458E4"
-                        trend={stats.reviews.thisWeek}
-                        badge={stats.reviews.pending}
-                        onClick={() => navigate('/reviews')}
-                        loading={loading}
-                    />
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
-                    <StatCard
-                        title="Новости"
-                        value={stats.posts.total}
-                        icon={<FileTextOutlined />}
-                        color="#52c41a"
-                        trend={stats.posts.thisWeek}
-                        badge={stats.posts.draft}
-                        onClick={() => navigate('/posts')}
-                        loading={loading}
-                    />
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
-                    <StatCard
-                        title="Портфолио"
-                        value={stats.portfolio.total}
-                        icon={<AppstoreOutlined />}
-                        color="#faad14"
-                        trend={stats.portfolio.thisWeek}
-                        badge={stats.portfolio.draft}
-                        onClick={() => navigate('/portfolio')}
-                        loading={loading}
-                    />
-                </Col>
-                <Col xs={24} sm={12} lg={6}>
-                    <StatCard
-                        title="Заявки"
-                        value={stats.requests?.total || 0}
-                        icon={<FormOutlined />}
-                        color="#ff4d4f"
-                        trend={stats.requests?.thisWeek || 0}
-                        badge={stats.requests?.new || 0}
-                        onClick={() => navigate('/requests')}
-                        loading={loading}
-                    />
-                </Col>
-            </Row>
-
-            {/* ВТОРОЙ РЯД */}
-            <Row gutter={[16, 16]} style={{ marginTop: isMobile ? 16 : 24 }}>
-                <Col span={24}>
-                    <Card title="Активность за последние 7 дней" loading={loading}>
-                        <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
-                            <LineChart data={activityChart}>
-                                <XAxis
-                                    dataKey="date"
-                                    tick={{ fontSize: isMobile ? 11 : 12 }}
-                                />
-                                <YAxis
-                                    tick={{ fontSize: isMobile ? 11 : 12 }}
-                                />
-                                <Tooltip />
-                                <Legend
-                                    wrapperStyle={{ fontSize: isMobile ? 12 : 14 }}
-                                />
-                                <Line type="monotone" dataKey="reviews" stroke="#1458E4" name="Отзывы" strokeWidth={2} />
-                                <Line type="monotone" dataKey="posts" stroke="#52c41a" name="Новости" strokeWidth={2} />
-                                <Line type="monotone" dataKey="portfolio" stroke="#faad14" name="Портфолио" strokeWidth={2} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </Card>
-                </Col>
-            </Row>
-
-            {/* ТРЕТИЙ РЯД */}
-            <Row gutter={[16, 16]} style={{ marginTop: isMobile ? 16 : 24 }}>
-                <Col xs={24} lg={14}>
-                    <Card
-                        title={<>Требует модерации <Badge count={pendingReviews?.length || 0} style={{ backgroundColor: '#faad14', marginLeft: 8 }} /></>}
-                        style={{ height: '100%' }}
-                        loading={loading}
-                    >
-                        <Flex vertical gap="middle">
-                            {pendingReviews.map((review) => (
-                                <div key={review.id} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }}>
-                                    <Flex
-                                        justify="space-between"
-                                        align="start"
-                                        vertical={isMobile}
-                                        gap={isMobile ? 12 : 0}
-                                    >
-                                        <Flex gap="small" style={{ flex: 1 }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 40 }}>
-                                                <StarFilled style={{ color: '#faad14', fontSize: 20 }} />
-                                                <span style={{ marginTop: 4 }}>{review.rating}</span>
-                                            </div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <Text strong>{`${review.carBrand} ${review.carModel}`}</Text>
-                                                <div>
-                                                    <Text
-                                                        ellipsis
-                                                        style={{
-                                                            display: 'block',
-                                                            maxWidth: isMobile ? '100%' : 300
-                                                        }}
-                                                    >
-                                                        {review.text}
-                                                    </Text>
-                                                </div>
-                                            </div>
-                                        </Flex>
-                                        <Flex
-                                            gap="small"
-                                            vertical={isMobile}
-                                            style={{ width: isMobile ? '100%' : 'auto' }}
-                                        >
-                                            <Button
-                                                type="primary"
-                                                icon={<CheckOutlined />}
-                                                onClick={() => handleApproveReview(review.id)}
-                                                block={isMobile}
-                                                size={isMobile ? 'large' : 'middle'}
-                                            >
-                                                Одобрить
-                                            </Button>
-                                            <Button
-                                                danger
-                                                icon={<CloseOutlined />}
-                                                onClick={() => handleRejectReview(review.id)}
-                                                block={isMobile}
-                                                size={isMobile ? 'large' : 'middle'}
-                                            >
-                                                Отклонить
-                                            </Button>
-                                        </Flex>
-                                    </Flex>
-                                </div>
-                            ))}
-                            {pendingReviews.length === 0 && <Text type="secondary">Нет отзывов на модерации</Text>}
-                        </Flex>
-                    </Card>
-                </Col>
-                <Col xs={24} lg={10}>
-                    <Card title="Популярные услуги" style={{ height: '100%' }} loading={loading}>
-                        {topServices?.map((item, index) => (
-                            <div key={index} style={{ marginBottom: 16 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text>{getServiceName(item.service)}</Text>
-                                    <Text type="secondary">{item.count}</Text>
-                                </div>
-                                <Progress
-                                    percent={(item.count / maxServiceCount) * 100}
-                                    showInfo={false}
-                                    strokeColor="#1458E4"
-                                />
-                            </div>
-                        ))}
-
-                        <div style={{ marginTop: 32, textAlign: 'center' }}>
-                            <Statistic
-                                title="Средний рейтинг"
-                                value={stats.reviews.avgRating}
-                                precision={1}
-                                suffix="/ 5.0"
-                                prefix={<StarFilled style={{ color: '#faad14' }} />}
-                                styles={{ content: { fontSize: 32 } }}
-                            />
-                        </div>
-                    </Card>
-                </Col>
-            </Row>
 
             <style>{`
-        .stat-card {
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-          transition: all 0.3s;
-        }
-        .stat-card:hover {
-          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-          transform: translateY(-2px);
-        }
-      `}</style>
+                .stat-card {
+                    border-radius: 12px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    transition: all 0.3s;
+                    border: 1px solid #f0f0f0;
+                }
+                .stat-card:hover {
+                    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                    transform: translateY(-2px);
+                }
+                .ant-card-head {
+                    border-bottom: 1px solid #f0f0f0;
+                }
+                .ant-statistic-title {
+                    color: #8c8c8c;
+                    font-size: 14px;
+                }
+            `}</style>
         </div>
     );
 };

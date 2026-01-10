@@ -36,7 +36,7 @@ const WorkOrdersPage: React.FC = () => {
     const [searchText, setSearchText] = useState<string>('');
     const { notification, modal } = App.useApp();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, activeProfileId, profileChangeToken, isAuthenticated, isLoading: authLoading, isSwitchingProfile } = useAuth();
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
     const isTablet = screens.md && !screens.lg; // 768px - 992px
@@ -116,8 +116,16 @@ const WorkOrdersPage: React.FC = () => {
     };
 
     useEffect(() => {
+        if (authLoading || !isAuthenticated) return;
         fetchWorkOrders();
-    }, [viewMode]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [viewMode, activeProfileId, profileChangeToken, authLoading, isAuthenticated]);
+
+    useEffect(() => {
+        if (isSwitchingProfile) {
+            setLoading(true);
+        }
+    }, [isSwitchingProfile]);
 
     useEffect(() => {
         applyFilters();
@@ -197,7 +205,9 @@ const WorkOrdersPage: React.FC = () => {
                     )}
                     {isManager && (
                         <Text strong style={{ fontSize: 14, color: '#1890ff' }}>
-                            {order.totalAmount.toLocaleString('ru-RU')} ₽ · {getPaymentMethodText(order.paymentMethod)}
+                            {typeof order.totalAmount === 'number'
+                            ? order.totalAmount.toLocaleString('ru-RU')
+                            : '—'} ₽ · {getPaymentMethodText(order.paymentMethod || '')}
                         </Text>
                     )}
                 </Flex>
@@ -327,7 +337,7 @@ const WorkOrdersPage: React.FC = () => {
                 dataIndex: 'totalAmount',
                 key: 'totalAmount',
                 width: 140,
-                render: (amount: number, record: WorkOrder) => (
+                render: (amount: number) => (
                     <Space>
                         <Text strong>{amount.toLocaleString('ru-RU')} ₽</Text>
                         <Popover 

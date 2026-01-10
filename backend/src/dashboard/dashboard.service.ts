@@ -245,34 +245,45 @@ export class DashboardService {
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const { start: todayStart, end: todayEnd } = this.todayRange();
 
+        // 1. Карточки-счетчики
+        const newRequestsToday = await this.prisma.request.count({
+            where: { status: RequestStatus.NOVA, createdAt: { gte: todayStart, lte: todayEnd } }
+        });
+        const dealsToday = await this.prisma.request.count({
+            where: { status: RequestStatus.SDELKA, createdAt: { gte: todayStart, lte: todayEnd } }
+        });
+        const activeWOCount = await this.prisma.workOrder.count({
+            where: {
+                managerId: userId,
+                status: { notIn: [WorkOrderStatus.COMPLETED, WorkOrderStatus.ISSUED, WorkOrderStatus.SENT, WorkOrderStatus.ASSEMBLED] as any }
+            }
+        });
+        const completedWOWeek = await this.prisma.workOrder.count({
+            where: {
+                managerId: userId,
+                status: { in: [WorkOrderStatus.COMPLETED, WorkOrderStatus.ISSUED, WorkOrderStatus.SENT, WorkOrderStatus.ASSEMBLED] as any },
+                completedAt: { gte: sevenDaysAgo }
+            }
+        });
+
+        // 2. Заявки по статусам (7 дней)
         const requestStatuses = [RequestStatus.NOVA, RequestStatus.SDELKA, RequestStatus.OTKLONENO, RequestStatus.ZAVERSHENA];
-        const requestCounts = await Promise.all(requestStatuses.map(async status => ({
+        const statusStats = await Promise.all(requestStatuses.map(async status => ({
             status,
-            today: await this.prisma.request.count({ where: { status, managerId: userId, createdAt: { gte: todayStart, lte: todayEnd } } }),
-            week: await this.prisma.request.count({ where: { status, managerId: userId, createdAt: { gte: sevenDaysAgo } } }),
+            count: await this.prisma.request.count({
+                where: { status, managerId: userId, createdAt: { gte: sevenDaysAgo } }
+            })
         })));
 
-        const woStatusGroups = {
-            executor: [WorkOrderStatus.ASSIGNED_TO_EXECUTOR, WorkOrderStatus.IN_PROGRESS],
-            master: [WorkOrderStatus.ASSIGNED_TO_MASTER],
-            sent: [WorkOrderStatus.SENT],
-            issued: [WorkOrderStatus.ISSUED],
-            completed: [WorkOrderStatus.COMPLETED, WorkOrderStatus.ASSEMBLED],
-        };
-        const woCounts: any = {};
-        for (const key of Object.keys(woStatusGroups)) {
-            woCounts[key] = await this.prisma.workOrder.count({
-                where: { managerId: userId, status: { in: woStatusGroups[key] as any } },
-            });
-        }
-
+        // 3. Активные заявки
         const myRequests = await this.prisma.request.findMany({
             where: { managerId: userId, status: { in: [RequestStatus.NOVA, RequestStatus.SDELKA] } },
             orderBy: { createdAt: 'desc' },
             take: 20,
-            select: { id: true, name: true, phone: true, carModel: true, status: true, createdAt: true },
+            select: { id: true, requestNumber: true, name: true, phone: true, carModel: true, status: true, createdAt: true },
         });
 
+        // 4. Активные заказ-наряды
         const activeWorkOrders = await this.prisma.workOrder.findMany({
             where: {
                 managerId: userId,
@@ -286,7 +297,17 @@ export class DashboardService {
             },
         });
 
-        return { requestCounts, woCounts, myRequests, activeWorkOrders };
+        return {
+            stats: {
+                newRequestsToday,
+                dealsToday,
+                activeWOCount,
+                completedWOWeek
+            },
+            statusStats,
+            myRequests,
+            activeWorkOrders
+        };
     }
 
     async getMasterDashboard(userId: number) {
@@ -294,27 +315,72 @@ export class DashboardService {
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const { start: todayStart } = this.todayRange();
 
-        const executorStage = await this.prisma.workOrder.findMany({
+        // Помощник для расчета времени из метаданных
+        const calculateTime = (assignments: any[]) => {
+            let totalSeconds = 0;
+            assignments.forEach(a => {
+                const meta = (a.metadata as any) || {};
+                if (meta.startedAt) {
+                    const start = new Date(meta.startedAt);
+                    const end = meta.finishedAt ? new Date(meta.finishedAt) : new Date();
+                    totalSeconds += Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+                }
+            });
+            return totalSeconds;
+        };
+
+        const executorStageRaw = await this.prisma.workOrder.findMany({
             where: {
                 masterId: userId,
                 status: { in: [WorkOrderStatus.ASSIGNED_TO_EXECUTOR, WorkOrderStatus.IN_PROGRESS] as any },
             },
             orderBy: { createdAt: 'desc' },
             select: {
-                id: true, orderNumber: true, customerName: true, carBrand: true, carModel: true, status: true,
-                executorAssignments: { select: { id: true, executorId: true, executor: { select: { name: true } }, metadata: true } },
+                id: true, orderNumber: true, customerName: true, carBrand: true, carModel: true, status: true, createdAt: true,
+                executorAssignments: {
+                    select: { id: true, executorId: true, executor: { select: { name: true } }, metadata: true }
+                },
             },
         });
 
-        const masterStage = await this.prisma.workOrder.findMany({
+        const executorStage = executorStageRaw.map(wo => {
+            const totalTasks = wo.executorAssignments.length;
+            const doneTasks = wo.executorAssignments.filter(a => (a.metadata as any)?.status === 'DONE').length;
+            const timeSeconds = calculateTime(wo.executorAssignments);
+            const executors = Array.from(new Set(wo.executorAssignments.map(a => a.executor?.name).filter(Boolean)));
+
+            return {
+                ...wo,
+                totalTasks,
+                doneTasks,
+                timeSeconds,
+                executors
+            };
+        });
+
+        const masterStageRaw = await this.prisma.workOrder.findMany({
             where: {
                 masterId: userId,
                 status: WorkOrderStatus.ASSIGNED_TO_MASTER,
             },
             orderBy: { createdAt: 'desc' },
             select: {
-                id: true, orderNumber: true, customerName: true, carBrand: true, carModel: true, status: true,
+                id: true, orderNumber: true, customerName: true, carBrand: true, carModel: true, status: true, createdAt: true,
+                executorAssignments: {
+                    select: { id: true, executorId: true, executor: { select: { name: true } }, metadata: true }
+                },
             },
+        });
+
+        const masterStage = masterStageRaw.map(wo => {
+            const timeSeconds = calculateTime(wo.executorAssignments);
+            const executorsCount = new Set(wo.executorAssignments.map(a => a.executorId)).size;
+
+            return {
+                ...wo,
+                timeSeconds,
+                executorsCount
+            };
         });
 
         const completedToday = await this.prisma.workOrder.count({
@@ -339,7 +405,7 @@ export class DashboardService {
     async getExecutorDashboard(userId: number) {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const { start: todayStart } = this.todayRange();
+        const { start: todayStart, end: todayEnd } = this.todayRange();
 
         const activeAssignments = await this.prisma.workOrderExecutor.findMany({
             where: {
@@ -363,31 +429,57 @@ export class DashboardService {
             },
         });
 
-        const activeWorkOrdersMap: Record<number, { workOrderId: number; orderNumber: string; customerName: string; car: string; status: string; total: number; done: number }> = {};
-        activeAssignments.forEach(a => {
+        const activeWorkOrdersMap: Record<number, { workOrderId: number; orderNumber: string; customerName: string; car: string; status: string; total: number; done: number; myTimeSeconds: number }> = {};
+        
+        // Получаем все задачи исполнителя для этих ЗН, чтобы посчитать done/total
+        const allMyAssignmentsForActive = await this.prisma.workOrderExecutor.findMany({
+            where: {
+                executorId: userId,
+                workOrderId: { in: activeAssignments.map(a => a.workOrderId) }
+            }
+        });
+
+        allMyAssignmentsForActive.forEach(a => {
+            const woId = a.workOrderId;
+            // Инициализация если еще нет в карте (хотя должна быть из activeAssignments)
+            // Но лучше перестраховаться и собрать инфо из workOrder
+        });
+
+        // Пересобираем карту правильно
+        for (const a of activeAssignments) {
             const wo = a.workOrder;
-            if (!wo) return;
+            if (!wo) continue;
             if (!activeWorkOrdersMap[wo.id]) {
+                const myTasks = allMyAssignmentsForActive.filter(task => task.workOrderId === wo.id);
+                
+                let myTimeSeconds = 0;
+                myTasks.forEach(task => {
+                    const meta = (task.metadata as any) || {};
+                    if (meta.startedAt) {
+                        const start = new Date(meta.startedAt);
+                        const end = meta.finishedAt ? new Date(meta.finishedAt) : new Date();
+                        myTimeSeconds += Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+                    }
+                });
+
                 activeWorkOrdersMap[wo.id] = {
                     workOrderId: wo.id,
                     orderNumber: wo.orderNumber,
                     customerName: wo.customerName,
                     car: `${wo.carBrand} ${wo.carModel}`,
                     status: wo.status,
-                    total: 0,
-                    done: 0,
+                    total: myTasks.length,
+                    done: myTasks.filter(task => (task.metadata as any)?.status === 'DONE').length,
+                    myTimeSeconds
                 };
             }
-            activeWorkOrdersMap[wo.id].total += 1;
-            const st = (a.metadata as any)?.status;
-            if (st === 'DONE') activeWorkOrdersMap[wo.id].done += 1;
-        });
+        }
 
         const doneToday = await this.prisma.workOrderExecutor.count({
             where: {
                 executorId: userId,
                 metadata: { path: ['status'], equals: 'DONE' } as any,
-                updatedAt: { gte: todayStart },
+                updatedAt: { gte: todayStart, lte: todayEnd },
             },
         });
         const doneWeek = await this.prisma.workOrderExecutor.count({
@@ -398,42 +490,81 @@ export class DashboardService {
             },
         });
 
+        // Время работы сегодня
+        const todayTasks = await this.prisma.workOrderExecutor.findMany({
+            where: {
+                executorId: userId,
+                OR: [
+                    { updatedAt: { gte: todayStart, lte: todayEnd } },
+                    { metadata: { path: ['startedAt'], gte: todayStart.toISOString() } as any }
+                ]
+            }
+        });
+
+        let timeTodaySeconds = 0;
+        todayTasks.forEach(task => {
+            const meta = (task.metadata as any) || {};
+            if (meta.startedAt) {
+                const start = new Date(meta.startedAt);
+                // Если задача началась сегодня
+                const effectiveStart = start < todayStart ? todayStart : start;
+                const end = meta.finishedAt ? new Date(meta.finishedAt) : new Date();
+                const effectiveEnd = end > todayEnd ? todayEnd : end;
+                
+                if (effectiveEnd > effectiveStart) {
+                    timeTodaySeconds += Math.max(0, Math.floor((effectiveEnd.getTime() - effectiveStart.getTime()) / 1000));
+                }
+            }
+        });
+
         const historyAssignments = await this.prisma.workOrderExecutor.findMany({
             where: {
                 executorId: userId,
                 metadata: { path: ['status'], equals: 'DONE' } as any,
             },
             orderBy: { updatedAt: 'desc' },
-            take: 50,
+            take: 100,
             include: {
                 workOrder: {
-                    select: { id: true, orderNumber: true, customerName: true, completedAt: true },
+                    select: { id: true, orderNumber: true, customerName: true, completedAt: true, carBrand: true, carModel: true },
                 },
             },
         });
 
-        const historyMap: Record<number, { orderNumber: string; completedAt?: Date | null; totalAmount: number }> = {};
+        const historyMap: Record<number, { orderNumber: string; completedAt?: Date | null; totalAmount: number; timeSeconds: number; car: string }> = {};
         historyAssignments.forEach(a => {
             const woId = a.workOrderId;
             if (!historyMap[woId]) {
                 historyMap[woId] = {
                     orderNumber: a.workOrder?.orderNumber || `#${woId}`,
-                    completedAt: a.workOrder?.completedAt,
+                    completedAt: a.workOrder?.completedAt || a.updatedAt,
                     totalAmount: 0,
+                    timeSeconds: 0,
+                    car: a.workOrder ? `${a.workOrder.carBrand} ${a.workOrder.carModel}` : ''
                 };
             }
             historyMap[woId].totalAmount += a.amount || 0;
+            
+            const meta = (a.metadata as any) || {};
+            if (meta.startedAt) {
+                const start = new Date(meta.startedAt);
+                const end = meta.finishedAt ? new Date(meta.finishedAt) : new Date();
+                historyMap[woId].timeSeconds += Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+            }
         });
 
         return {
             activeWorkOrders: Object.values(activeWorkOrdersMap),
             tasksDone: { today: doneToday, week: doneWeek },
+            timeTodaySeconds,
             history: Object.entries(historyMap).map(([woId, v]) => ({
                 workOrderId: Number(woId),
                 orderNumber: v.orderNumber,
                 completedAt: v.completedAt,
                 earned: v.totalAmount,
-            })).slice(0, 20),
+                timeSeconds: v.timeSeconds,
+                car: v.car
+            })).sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime()).slice(0, 20),
         };
     }
 

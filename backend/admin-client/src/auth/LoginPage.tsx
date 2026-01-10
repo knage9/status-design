@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Card, Typography, App } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 const { Title } = Typography;
 
 const LoginPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, isAuthenticated, authLoading } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const { message } = App.useApp(); // берём message из контекста
+    const from = (location.state as any)?.from?.pathname || '/';
+
+    useEffect(() => {
+        if (!authLoading && isAuthenticated) {
+            navigate(from, { replace: true });
+        }
+    }, [authLoading, isAuthenticated, from, navigate]);
 
     const onFinish = async (values: { email: string; password: string }) => {
         try {
             setLoading(true);
             await login(values.email, values.password);
             message.success('Вход выполнен успешно');
-            navigate('/');
+            navigate(from, { replace: true });
         } catch (error: any) {
             message.error(error?.response?.data?.message || 'Неверный email или пароль');
         } finally {

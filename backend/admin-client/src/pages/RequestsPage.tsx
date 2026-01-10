@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space, DatePicker, Typography, FloatButton, Grid, Divider, Row, Col } from 'antd';
-import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined, UserOutlined, CalendarOutlined, CheckOutlined, CloseOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined, UserOutlined, CalendarOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -40,7 +40,7 @@ const RequestsPage: React.FC = () => {
     const [form] = Form.useForm();
     const { notification, modal } = App.useApp();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, activeProfileId, profileChangeToken, isAuthenticated, isLoading: authLoading, isSwitchingProfile } = useAuth();
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
     const isTablet = screens.md && !screens.lg; // 768px - 992px
@@ -136,9 +136,10 @@ const RequestsPage: React.FC = () => {
     };
 
     useEffect(() => {
+        if (authLoading || !isAuthenticated) return;
         fetchRequests();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [activeProfileId, profileChangeToken, authLoading, isAuthenticated]);
 
     // Применяем фильтры при изменении фильтров или заявок
     useEffect(() => {
@@ -147,6 +148,12 @@ const RequestsPage: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [statusFilter, dateRangeFilter, managerFilter, requests]);
+
+    useEffect(() => {
+        if (isSwitchingProfile) {
+            setLoading(true);
+        }
+    }, [isSwitchingProfile]);
 
     const handleCreate = () => {
         setEditingRecord(null);

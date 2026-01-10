@@ -33,7 +33,7 @@ function AppContent() {
   const [loginForm] = Form.useForm();
 
   const location = useLocation();
-  const { user, profiles, activeProfileId, logoutProfile, switchProfile, addProfile } = useAuth();
+  const { user, profiles, activeProfileId, activeProfile, logoutProfile, switchProfile, addProfile, isSwitchingProfile } = useAuth();
   const selectedKey = location.pathname === '/' ? 'dashboard' : location.pathname.substring(1);
   const screens = useBreakpoint();
   const isMobile = !screens.lg; // < 992px
@@ -42,6 +42,15 @@ function AppContent() {
   useEffect(() => {
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
+
+  useEffect(() => {
+    const key = 'profile-switch';
+    if (isSwitchingProfile) {
+      message.open({ key, type: 'loading', content: 'Переключаю профиль...' });
+    } else {
+      message.destroy(key);
+    }
+  }, [isSwitchingProfile, message]);
 
   // Don't show layout on login page
   if (location.pathname === '/login') {
@@ -195,7 +204,6 @@ function AppContent() {
     message.success('Профиль удален');
   };
 
-  const activeProfile = profiles.find(p => p.id === activeProfileId);
   const otherProfiles = profiles.filter(p => p.id !== activeProfileId);
 
   const roleBadge = activeProfile ? getRoleBadge(activeProfile.user.role) : null;
@@ -367,6 +375,7 @@ function AppContent() {
                   type="text"
                   icon={<UserOutlined />}
                   style={{ height: 48, display: 'flex', alignItems: 'center', gap: 8 }}
+                  loading={isSwitchingProfile}
                 >
                   {!isMobile && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -469,7 +478,7 @@ function AppContent() {
 function App() {
   return (
     <AntApp>
-      <BrowserRouter>
+      <BrowserRouter basename="/admin">
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -482,3 +491,4 @@ function App() {
 }
 
 export default App;
+
