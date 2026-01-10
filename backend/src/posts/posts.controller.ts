@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards, Request } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Prisma } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -12,13 +15,17 @@ export class PostsController {
     }
 
     @Get('admin')
-    findAllAdmin() {
-        return this.postsService.findAllAdmin();
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'MANAGER')
+    findAllAdmin(@Request() req) {
+        return this.postsService.findAllAdmin(req.user.role);
     }
 
     @Post('admin')
-    create(@Body() createPostDto: Prisma.PostCreateInput) {
-        return this.postsService.create(createPostDto);
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'MANAGER')
+    create(@Body() createPostDto: Prisma.PostCreateInput, @Request() req) {
+        return this.postsService.create(createPostDto, req.user.role);
     }
 
     @Get(':slug')
@@ -32,16 +39,29 @@ export class PostsController {
     }
 
     @Get('admin/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'MANAGER')
     findOneAdmin(@Param('id') id: string) {
         return this.postsService.findOne(+id);
     }
 
     @Put('admin/:id')
-    update(@Param('id') id: string, @Body() updatePostDto: Prisma.PostUpdateInput) {
-        return this.postsService.update(+id, updatePostDto);
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'MANAGER')
+    update(@Param('id') id: string, @Body() updatePostDto: Prisma.PostUpdateInput, @Request() req) {
+        return this.postsService.update(+id, updatePostDto, req.user.role);
+    }
+
+    @Patch('admin/:id/status')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN', 'MANAGER')
+    updateStatus(@Param('id') id: string, @Body() body: { status: string }, @Request() req) {
+        return this.postsService.updateStatus(+id, body.status, req.user.role);
     }
 
     @Delete('admin/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('ADMIN')
     remove(@Param('id') id: string) {
         return this.postsService.remove(+id);
     }

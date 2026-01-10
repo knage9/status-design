@@ -68,7 +68,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                                 await axios.get('/api/auth/profile');
                             } catch (error) {
                                 // Token expired, remove invalid profile
-                                removeProfile(activeId);
+                                const remainingProfiles = parsedProfiles.filter(p => p.id !== activeId);
+                                if (remainingProfiles.length > 0) {
+                                    setProfiles(remainingProfiles);
+                                    const firstProfile = remainingProfiles[0];
+                                    setActiveProfileId(firstProfile.id);
+                                    axios.defaults.headers.common['Authorization'] = `Bearer ${firstProfile.accessToken}`;
+                                } else {
+                                    setProfiles([]);
+                                    setActiveProfileId(null);
+                                    delete axios.defaults.headers.common['Authorization'];
+                                    localStorage.removeItem(PROFILES_STORAGE_KEY);
+                                    localStorage.removeItem(ACTIVE_PROFILE_ID_KEY);
+                                }
                             }
                         } else {
                             // Active profile not found, use first available

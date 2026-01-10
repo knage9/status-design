@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Descriptions, Button, Tag, Space, App, Spin, Table, Divider, Grid, Flex, Typography } from 'antd';
+import { Card, Descriptions, Button, Tag, Space, App, Spin, Table, Divider, Grid, Flex, Typography, Modal, Form, Input, DatePicker } from 'antd';
 import { ArrowLeftOutlined, ClockCircleOutlined, CheckOutlined, CloseOutlined, PlusOutlined, EyeOutlined, DollarOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
@@ -23,13 +23,15 @@ interface Request {
     createdAt: string;
     startedAt?: string;
     completedAt?: string;
+    arrivalDate?: string;
+    managerComment?: string;
     manager?: {
         id: number;
         name: string;
         email: string;
         phone?: string;
     };
-    arrivalAt?: string;
+    workOrders?: WorkOrder[];
 }
 
 interface WorkOrder {
@@ -48,6 +50,9 @@ const RequestDetailPage: React.FC = () => {
     const [request, setRequest] = useState<Request | null>(null);
     const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [statusAction, setStatusAction] = useState<'SDELKA' | 'OTKLONENO' | null>(null);
+    const [statusForm] = Form.useForm();
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
 
@@ -57,10 +62,15 @@ const RequestDetailPage: React.FC = () => {
             const response = await axios.get(`/api/requests/${id}`);
             setRequest(response.data);
 
-            // Fetch work orders for this request
-            const woResponse = await axios.get(`/api/work-orders/admin`);
-            const requestWorkOrders = woResponse.data.filter((wo: any) => wo.requestId === parseInt(id!));
-            setWorkOrders(requestWorkOrders);
+            // Fetch work orders for this request (если они уже включены в response.data.workOrders)
+            if (response.data.workOrders) {
+                setWorkOrders(response.data.workOrders);
+            } else {
+                // Fallback: загружаем отдельно
+                const woResponse = await axios.get(`/api/work-orders/admin`);
+                const requestWorkOrders = woResponse.data.filter((wo: any) => wo.requestId === parseInt(id!));
+                setWorkOrders(requestWorkOrders);
+            }
         } catch (error) {
             notification.error({ title: 'Ошибка загрузки заявки' });
         } finally {
@@ -72,63 +82,71 @@ const RequestDetailPage: React.FC = () => {
         fetchRequest();
     }, [id]);
 
-    const handleTakeToWork = async () => {
-        try {
-            await axios.post(`/api/requests/admin/${id}/take-to-work`);
-            notification.success({ title: 'Заявка взята в работу' });
-            fetchRequest();
-        } catch (error) {
-            notification.error({ title: 'Ошибка' });
-        }
+    const handleDeal = () => {
+        setStatusAction('SDELKA');
+        statusForm.resetFields();
+        setIsStatusModalOpen(true);
     };
 
-    const handleComplete = async () => {
-        try {
-            await axios.post(`/api/requests/admin/${id}/complete`);
-            notification.success({ title: 'Заявка завершена' });
-            fetchRequest();
-        } catch (error) {
-            notification.error({ title: 'Ошибка' });
-        }
+    const handleReject = () => {
+        setStatusAction('OTKLONENO');
+        statusForm.resetFields();
+        setIsStatusModalOpen(true);
     };
 
-    const handleClose = async () => {
-        try {
-            await axios.post(`/api/requests/admin/${id}/close`);
-            notification.success({ title: 'Заявка закрыта' });
-            fetchRequest();
-        } catch (error) {
-            notification.error({ title: 'Ошибка' });
-        }
-    };
+    const handleStatusSubmit = async (values: any) => {
+        if (!statusAction || !request) return;
 
-    const handleDeal = async () => {
         try {
-            await axios.patch(`/api/requests/admin/${id}`, { status: 'SDELKA' });
-            notification.success({ title: 'Статус изменен на "Сделка"' });
+            const data: any = {
+                status: statusAction,
+                managerComment: values.managerComment,
+            };
+
+            if (statusAction === 'SDELKA') {
+                if (!values.arrivalDate) {
+                    notification.error({
+                        title: 'Ошибка',
+                        description: 'Дата и время приезда обязательны для статуса "Сделка"'
+                    });
+                    return;
+                }
+                data.arrivalDate = values.arrivalDate.toISOString();
+            }
+
+            await axios.patch(`/api/requests/${request.id}/status`, data);
+            notification.success({
+                title: 'Статус изменен',
+                description: statusAction === 'SDELKA' ? 'Заявка переведена в статус "Сделка"' : 'Заявка отклонена'
+            });
+            setIsStatusModalOpen(false);
+            statusForm.resetFields();
+            setStatusAction(null);
             fetchRequest();
-        } catch (error) {
-            notification.error({ title: 'Ошибка изменения статуса' });
+        } catch (error: any) {
+            notification.error({
+                title: 'Ошибка изменения статуса',
+                description: error.response?.data?.message || 'Не удалось изменить статус заявки'
+            });
         }
     };
 
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
-            NEW: 'blue',
-            IN_PROGRESS: 'orange',
-            COMPLETED: 'green',
-            CLOSED: 'default',
+            NOVA: 'orange',
+            SDELKA: 'cyan',
+            OTKLONENO: 'red',
+            ZAVERSHENA: 'green',
         };
         return colors[status] || 'default';
     };
 
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
-            NEW: 'Новая',
-            IN_PROGRESS: 'В работе',
-            COMPLETED: 'Завершена',
-            CLOSED: 'Закрыта',
+            NOVA: 'Новая',
             SDELKA: 'Сделка',
+            OTKLONENO: 'Отклонено',
+            ZAVERSHENA: 'Завершена',
         };
         return texts[status] || status;
     };
@@ -167,11 +185,10 @@ const RequestDetailPage: React.FC = () => {
         return <div>Заявка не найдена</div>;
     }
 
-    const canTakeToWork = request.status === 'NEW' && user?.role === 'MANAGER';
-    const canComplete = request.status === 'IN_PROGRESS' && request.manager?.id === user?.id;
-    const canClose = request.status === 'COMPLETED' && request.manager?.id === user?.id;
-    const canDeal = (request.status === 'NEW' || request.status === 'IN_PROGRESS') && (user?.role === 'MANAGER' || user?.role === 'ADMIN');
+    const isManager = user?.role === 'MANAGER' || user?.role === 'ADMIN';
     const isMaster = user?.role === 'MASTER';
+    const canDeal = request.status === 'NOVA' && isManager;
+    const canReject = request.status === 'NOVA' && isManager;
 
     const WorkOrderMobileCard = ({ wo }: { wo: WorkOrder }) => {
         const statusColors: Record<string, string> = {
@@ -227,47 +244,27 @@ const RequestDetailPage: React.FC = () => {
     };
 
     const actionButtons = (
-        <Space orientation={isMobile ? 'vertical' : 'horizontal'} style={{ width: isMobile ? '100%' : 'auto' }}>
+        <Space orientation={isMobile ? 'vertical' : 'horizontal'} style={{ width: isMobile ? '100%' : 'auto' }} wrap>
             {canDeal && (
-                <Button
-                    type="primary"
-                    style={{ backgroundColor: '#722ed1', width: isMobile ? '100%' : 'auto' }}
-                    size={isMobile ? 'large' : 'middle'}
-                    onClick={handleDeal}
-                >
-                    Сделка
-                </Button>
-            )}
-            {canTakeToWork && (
-                <Button
-                    type="primary"
-                    size={isMobile ? 'large' : 'middle'}
-                    onClick={handleTakeToWork}
-                    block={isMobile}
-                >
-                    Взять в работу
-                </Button>
-            )}
-            {canComplete && (
-                <Button
-                    type="primary"
-                    icon={<CheckOutlined />}
-                    size={isMobile ? 'large' : 'middle'}
-                    onClick={handleComplete}
-                    block={isMobile}
-                >
-                    Завершить
-                </Button>
-            )}
-            {canClose && (
-                <Button
-                    icon={<CloseOutlined />}
-                    size={isMobile ? 'large' : 'middle'}
-                    onClick={handleClose}
-                    block={isMobile}
-                >
-                    Закрыть
-                </Button>
+                <>
+                    <Button
+                        type="primary"
+                        style={{ backgroundColor: '#722ed1', borderColor: '#722ed1' }}
+                        size={isMobile ? 'large' : 'middle'}
+                        icon={<CheckOutlined />}
+                        onClick={handleDeal}
+                    >
+                        Сделка
+                    </Button>
+                    <Button
+                        danger
+                        size={isMobile ? 'large' : 'middle'}
+                        icon={<CloseOutlined />}
+                        onClick={handleReject}
+                    >
+                        Отклонено
+                    </Button>
+                </>
             )}
         </Space>
     );
@@ -330,9 +327,11 @@ const RequestDetailPage: React.FC = () => {
                         </Descriptions.Item>
                     )}
 
-                    <Descriptions.Item label="Источник">
-                        {getSourceText(request.source)}
-                    </Descriptions.Item>
+                    {!isMaster && (
+                        <Descriptions.Item label="Источник">
+                            {getSourceText(request.source)}
+                        </Descriptions.Item>
+                    )}
 
                     <Descriptions.Item label="Статус">
                         <Tag color={getStatusColor(request.status)}>
@@ -340,15 +339,34 @@ const RequestDetailPage: React.FC = () => {
                         </Tag>
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Дата создания" span={isMobile ? 1 : 2}>
-                        {new Date(request.createdAt).toLocaleString('ru-RU')}
-                    </Descriptions.Item>
+                    {!isMaster && (
+                        <Descriptions.Item label="Дата создания" span={isMobile ? 1 : 2}>
+                            {new Date(request.createdAt).toLocaleString('ru-RU')}
+                        </Descriptions.Item>
+                    )}
 
-                    {request.arrivalAt && (
+                    {request.arrivalDate && (
                         <Descriptions.Item label="Дата приезда" span={isMobile ? 1 : 2}>
                             <Tag color="cyan" icon={<ClockCircleOutlined />}>
-                                {dayjs(request.arrivalAt).format('DD.MM.YYYY HH:mm')}
+                                {dayjs(request.arrivalDate).format('DD.MM.YYYY HH:mm')}
                             </Tag>
+                        </Descriptions.Item>
+                    )}
+
+                    {request.managerComment && (
+                        <Descriptions.Item 
+                            label={request.status === 'OTKLONENO' ? 'Причина отклонения' : 'Комментарий менеджера'} 
+                            span={isMobile ? 1 : 2}
+                        >
+                            <Card size="small" style={{ backgroundColor: request.status === 'OTKLONENO' ? '#fff1f0' : '#f6ffed' }}>
+                                <Text>{request.managerComment}</Text>
+                            </Card>
+                        </Descriptions.Item>
+                    )}
+
+                    {request.status === 'SDELKA' && !request.managerComment && (
+                        <Descriptions.Item label="Комментарий менеджера" span={isMobile ? 1 : 2}>
+                            <Text type="secondary">Комментарий не указан</Text>
                         </Descriptions.Item>
                     )}
 
@@ -359,7 +377,7 @@ const RequestDetailPage: React.FC = () => {
                         </Descriptions.Item>
                     )}
 
-                    {request.startedAt && (
+                    {!isMaster && request.startedAt && (
                         <Descriptions.Item label="Начало работы" span={isMobile ? 1 : 2}>
                             {new Date(request.startedAt).toLocaleString('ru-RU')}
                         </Descriptions.Item>
@@ -372,10 +390,28 @@ const RequestDetailPage: React.FC = () => {
                     )}
                 </Descriptions>
 
+                {isMaster && request.status === 'SDELKA' && (
+                    <>
+                        <Divider titlePlacement={isMobile ? 'center' : 'left'}>Информация для мастера</Divider>
+                        <Card type="inner" style={{ marginBottom: 16 }}>
+                            <Text strong>Дата приезда клиента: </Text>
+                            <Tag color="cyan" icon={<ClockCircleOutlined />} style={{ marginLeft: 8 }}>
+                                {request.arrivalDate ? dayjs(request.arrivalDate).format('DD.MM.YYYY HH:mm') : 'Не указана'}
+                            </Tag>
+                            {request.managerComment && (
+                                <div style={{ marginTop: 12 }}>
+                                    <Text strong>Комментарий менеджера: </Text>
+                                    <Text>{request.managerComment}</Text>
+                                </div>
+                            )}
+                        </Card>
+                    </>
+                )}
+
                 <Divider titlePlacement={isMobile ? 'center' : 'left'}>Заказ-наряды</Divider>
 
                 <>
-                    {(user?.role === 'ADMIN' || user?.role === 'MANAGER' || isMaster) && (
+                    {(isManager || isMaster) && request.status === 'SDELKA' && (
                         <Button
                             type="dashed"
                             icon={<PlusOutlined />}
@@ -383,7 +419,7 @@ const RequestDetailPage: React.FC = () => {
                             style={{ marginBottom: 16, width: isMobile ? '100%' : 'auto' }}
                             size={isMobile ? 'large' : 'middle'}
                         >
-                            Добавить еще заказ-наряд
+                            Создать заказ-наряд
                         </Button>
                     )}
 
@@ -468,7 +504,7 @@ const RequestDetailPage: React.FC = () => {
             </Card>
 
             {/* Sticky Action Bar for Mobile */}
-            {isMobile && (canDeal || canTakeToWork || canComplete || canClose) && (
+            {isMobile && canDeal && (
                 <div
                     style={{
                         position: 'fixed',
@@ -485,6 +521,67 @@ const RequestDetailPage: React.FC = () => {
                     {actionButtons}
                 </div>
             )}
+
+            {/* Status Change Modal */}
+            <Modal
+                title={statusAction === 'SDELKA' ? 'Перевести в статус "Сделка"' : 'Отклонить заявку'}
+                open={isStatusModalOpen}
+                onCancel={() => {
+                    setIsStatusModalOpen(false);
+                    statusForm.resetFields();
+                    setStatusAction(null);
+                }}
+                footer={null}
+                width={isMobile ? '100%' : 600}
+                style={isMobile ? { top: 0, maxWidth: '100%', padding: 0 } : undefined}
+            >
+                <Form
+                    form={statusForm}
+                    layout="vertical"
+                    onFinish={handleStatusSubmit}
+                >
+                    <Form.Item
+                        name="managerComment"
+                        label={statusAction === 'OTKLONENO' ? 'Причина отклонения' : 'Комментарий менеджера'}
+                        rules={[{ required: true, message: 'Комментарий обязателен' }]}
+                    >
+                        <Input.TextArea 
+                            rows={4} 
+                            placeholder={statusAction === 'OTKLONENO' ? 'Введите причину отклонения заявки' : 'Введите комментарий об отработке заявки'} 
+                        />
+                    </Form.Item>
+
+                    {statusAction === 'SDELKA' && (
+                        <Form.Item
+                            name="arrivalDate"
+                            label="Дата и время приезда клиента"
+                            rules={[{ required: true, message: 'Дата и время приезда обязательны' }]}
+                        >
+                            <DatePicker
+                                showTime
+                                format="DD.MM.YYYY HH:mm"
+                                style={{ width: '100%' }}
+                                placeholder="Выберите дату и время приезда"
+                            />
+                        </Form.Item>
+                    )}
+
+                    <Form.Item>
+                        <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+                            <Button onClick={() => {
+                                setIsStatusModalOpen(false);
+                                statusForm.resetFields();
+                                setStatusAction(null);
+                            }}>
+                                Отмена
+                            </Button>
+                            <Button type="primary" htmlType="submit" danger={statusAction === 'OTKLONENO'}>
+                                {statusAction === 'SDELKA' ? 'Перевести в статус "Сделка"' : 'Отклонить'}
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 };

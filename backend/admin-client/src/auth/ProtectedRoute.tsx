@@ -6,9 +6,10 @@ import { Spin } from 'antd';
 interface ProtectedRouteProps {
     children: React.ReactNode;
     requiredRole?: string;
+    allowedRoles?: string[];
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole, allowedRoles }) => {
     const { user, isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
@@ -23,8 +24,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
         return <Navigate to="/login" replace />;
     }
 
+    // Check requiredRole (backward compatibility)
     if (requiredRole && user?.role !== requiredRole) {
         return <Navigate to="/" replace />;
+    }
+
+    // Check allowedRoles array
+    if (allowedRoles && allowedRoles.length > 0) {
+        if (!user?.role || !allowedRoles.includes(user.role)) {
+            return <Navigate to="/" replace />;
+        }
     }
 
     return <>{children}</>;

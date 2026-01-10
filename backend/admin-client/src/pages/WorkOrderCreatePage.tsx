@@ -80,15 +80,14 @@ const WorkOrderCreatePage: React.FC = () => {
     useEffect(() => {
         const loadExecutors = async () => {
             try {
-                const response = await axios.get('/api/users');
-                const users = response.data;
-                // Фильтруем только EXECUTOR и PAINTER
-                const executorsList = users.filter((u: any) =>
-                    u.role === 'EXECUTOR' || u.role === 'PAINTER'
-                );
-                setExecutors(executorsList);
+                const response = await axios.get('/api/users/executors');
+                setExecutors(response.data);
             } catch (error) {
                 console.error('Failed to load executors:', error);
+                notification.error({
+                    title: 'Ошибка загрузки исполнителей',
+                    description: 'Не удалось загрузить список исполнителей'
+                });
             }
         };
         loadExecutors();
@@ -411,9 +410,13 @@ const WorkOrderCreatePage: React.FC = () => {
                 });
             }
 
-            const data = {
+            // Для мастера: если есть requestId, не передаем managerId - он будет взят из заявки на сервере
+            // Для менеджера/админа: передаем их userId
+            const data: any = {
                 requestId: requestId ? parseInt(requestId) : undefined,
-                managerId: user?.id || 1,
+                // Для мастера с requestId не передаем managerId - будет взят из заявки на сервере
+                // Для остальных - передаем их userId
+                ...(user?.role !== 'MASTER' || !requestId ? { managerId: user?.id || 1 } : {}),
                 totalAmount,
                 paymentMethod: values.paymentMethod,
                 customerName: values.customerName,

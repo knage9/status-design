@@ -102,4 +102,23 @@ export class UsersService {
     async remove(id: number) {
         return this.prisma.user.delete({ where: { id } });
     }
+
+    async findExecutors() {
+        return this.prisma.user.findMany({
+            where: {
+                role: { in: ['EXECUTOR', 'PAINTER'] },
+                isActive: true,
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                phone: true,
+                role: true,
+                isActive: true,
+                createdAt: true,
+            },
+            orderBy: { name: 'asc' },
+        });
+    }
 }

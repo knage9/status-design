@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Card, App, Radio, Space, Flex, Typography, FloatButton, Grid, Divider, Popover } from 'antd';
-import { PlusOutlined, EyeOutlined, DeleteOutlined, CarOutlined, UserOutlined, CalendarOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Table, Button, Tag, Card, App, Radio, Space, Flex, Typography, FloatButton, Grid, Divider, Popover, Input, Select, DatePicker, Row, Col } from 'antd';
+import { PlusOutlined, EyeOutlined, DeleteOutlined, CarOutlined, UserOutlined, CalendarOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -27,8 +27,13 @@ interface WorkOrder {
 
 const WorkOrdersPage: React.FC = () => {
     const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+    const [filteredWorkOrders, setFilteredWorkOrders] = useState<WorkOrder[]>([]);
     const [loading, setLoading] = useState(false);
     const [viewMode, setViewMode] = useState('my');
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
+    const [dateRangeFilter, setDateRangeFilter] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+    const [managerFilter, setManagerFilter] = useState<string | null>(null);
+    const [searchText, setSearchText] = useState<string>('');
     const { notification, modal } = App.useApp();
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -51,12 +56,46 @@ const WorkOrdersPage: React.FC = () => {
             setLoading(true);
             const response = await axios.get(`/api/work-orders/admin?view=${viewMode}`);
             setWorkOrders(response.data);
+            setFilteredWorkOrders(response.data);
         } catch (error) {
             console.error('Failed to fetch work orders:', error);
             notification.error({ title: 'Ошибка загрузки заказ-нарядов' });
         } finally {
             setLoading(false);
         }
+    };
+
+    const applyFilters = (source?: WorkOrder[]) => {
+        const list = source || workOrders;
+        let result = [...list];
+
+        if (statusFilter) {
+            result = result.filter(o => o.status === statusFilter);
+        }
+
+        if (dateRangeFilter && dateRangeFilter[0] && dateRangeFilter[1]) {
+            const startDate = dateRangeFilter[0].startOf('day').toISOString();
+            const endDate = dateRangeFilter[1].endOf('day').toISOString();
+            result = result.filter(o => {
+                const created = new Date(o.createdAt).toISOString();
+                return created >= startDate && created <= endDate;
+            });
+        }
+
+        if (managerFilter) {
+            result = result.filter(o => o.manager?.name === managerFilter);
+        }
+
+        if (searchText) {
+            const searchLower = searchText.toLowerCase();
+            result = result.filter(o =>
+                o.customerName.toLowerCase().includes(searchLower) ||
+                o.customerPhone.toLowerCase().includes(searchLower) ||
+                o.orderNumber.toLowerCase().includes(searchLower)
+            );
+        }
+
+        setFilteredWorkOrders(result);
     };
 
     const handleDelete = (id: number) => {
@@ -80,15 +119,20 @@ const WorkOrdersPage: React.FC = () => {
         fetchWorkOrders();
     }, [viewMode]);
 
+    useEffect(() => {
+        applyFilters();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [statusFilter, dateRangeFilter, managerFilter, searchText, workOrders]);
+
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
             NEW: 'blue',
             ASSIGNED_TO_MASTER: 'cyan',
             ASSIGNED_TO_EXECUTOR: 'purple',
             IN_PROGRESS: 'orange',
-            UNDER_REVIEW: 'gold',
-            APPROVED: 'green',
-            RETURNED_FOR_REVISION: 'red',
+            ASSEMBLED: 'green',
+            SENT: 'blue',
+            ISSUED: 'green',
             COMPLETED: 'default',
         };
         return colors[status] || 'default';
@@ -97,13 +141,13 @@ const WorkOrdersPage: React.FC = () => {
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
             NEW: 'Новый',
-            ASSIGNED_TO_MASTER: 'Назначен мастеру',
-            ASSIGNED_TO_EXECUTOR: 'Назначен исполнителю',
+            ASSIGNED_TO_MASTER: 'У мастера',
+            ASSIGNED_TO_EXECUTOR: 'У исполнителей',
             IN_PROGRESS: 'В работе',
-            UNDER_REVIEW: 'На проверке',
-            APPROVED: 'Одобрен',
-            RETURNED_FOR_REVISION: 'Возвращен на доработку',
-            COMPLETED: 'Завершен',
+            ASSEMBLED: 'Собран',
+            SENT: 'Отправлен',
+            ISSUED: 'Выдан',
+            COMPLETED: 'Завершён',
         };
         return texts[status] || status;
     };
@@ -334,6 +378,56 @@ const WorkOrdersPage: React.FC = () => {
                     )
                 }
             >
+                <Card size="small" style={{ marginBottom: 16 }}>
+                    <Row gutter={[12, 12]}>
+                        <Col xs={24} md={6}>
+                            <Input
+                                prefix={<SearchOutlined />}
+                                placeholder="Поиск: клиент/телефон/№ ЗН"
+                                value={searchText}
+                                allowClear
+                                onChange={(e) => setSearchText(e.target.value)}
+                            />
+                        </Col>
+                        <Col xs={24} sm={12} md={6}>
+                            <Select
+                                placeholder="Статус"
+                                allowClear
+                                value={statusFilter}
+                                style={{ width: '100%' }}
+                                onChange={(value) => setStatusFilter(value || null)}
+                            >
+                                <Select.Option value="NEW">Новый</Select.Option>
+                                <Select.Option value="ASSIGNED_TO_MASTER">Назначен мастеру</Select.Option>
+                                <Select.Option value="ASSIGNED_TO_EXECUTOR">Назначен исполнителю</Select.Option>
+                                <Select.Option value="IN_PROGRESS">В работе</Select.Option>
+                                <Select.Option value="COMPLETED">Завершен</Select.Option>
+                            </Select>
+                        </Col>
+                        <Col xs={24} sm={12} md={6}>
+                            <DatePicker.RangePicker
+                                style={{ width: '100%' }}
+                                value={dateRangeFilter}
+                                onChange={(dates) => setDateRangeFilter(dates as any)}
+                                format="DD.MM.YYYY"
+                            />
+                        </Col>
+                        <Col xs={24} sm={12} md={6}>
+                            <Select
+                                placeholder="Ответственный менеджер"
+                                allowClear
+                                value={managerFilter}
+                                style={{ width: '100%' }}
+                                onChange={(value) => setManagerFilter(value || null)}
+                            >
+                                {Array.from(new Set(workOrders.map(o => o.manager?.name).filter(Boolean))).map(name => (
+                                    <Select.Option key={name as string} value={name as string}>{name}</Select.Option>
+                                ))}
+                            </Select>
+                        </Col>
+                    </Row>
+                </Card>
+
                 {/* Mobile filters */}
                 {isMobile && (
                     <Flex vertical gap={12} style={{ marginBottom: 16 }}>
@@ -356,8 +450,8 @@ const WorkOrdersPage: React.FC = () => {
                     <div>
                         {loading ? (
                             <Card loading={true} />
-                        ) : workOrders.length > 0 ? (
-                            workOrders.map(order => (
+                        ) : filteredWorkOrders.length > 0 ? (
+                            filteredWorkOrders.map(order => (
                                 <MobileWorkOrderCard key={order.id} order={order} />
                             ))
                         ) : (
@@ -370,7 +464,7 @@ const WorkOrdersPage: React.FC = () => {
                     /* Desktop/Tablet Table */
                     <Table
                         columns={columns}
-                        dataSource={workOrders}
+                        dataSource={filteredWorkOrders}
                         rowKey="id"
                         loading={loading}
                         pagination={{ pageSize: 20, showSizeChanger: !isTablet }}

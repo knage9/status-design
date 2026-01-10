@@ -64,47 +64,48 @@ model Request {
   additionalServices String[]
   discount           Int           @default(0)
   source             RequestSource
-  status             RequestStatus @default(NEW)
+  status             RequestStatus @default(NOVA)
   createdAt          DateTime      @default(now())
-  arrivalAt          DateTime?     // NEW: Дата и время приезда клиента
+  arrivalDate        DateTime? // Дата и время приезда клиента
   updatedAt          DateTime      @updatedAt
   completedAt        DateTime?
   managerId          Int?
   startedAt          DateTime?
   requestNumber      String        @unique
   comment            String        @default("")
-  services           String[]      @default([])  // NEW: список услуг для динамических блоков
+  managerComment     String? // Обязательный комментарий при статусе СДЕЛКА или ОТКЛОНЕНО
+  services           String[]      @default([]) // список услуг для динамических блоков
   manager            User?         @relation("Manager", fields: [managerId], references: [id])
   workOrders         WorkOrder[]
 }
 
 model User {
-  id                                                    Int         @id @default(autoincrement())
-  email                                                 String      @unique
+  id                                                    Int                 @id @default(autoincrement())
+  email                                                 String              @unique
   password                                              String
   name                                                  String
   phone                                                 String?
   role                                                  UserRole
-  isActive                                              Boolean     @default(true)
-  createdAt                                             DateTime    @default(now())
-  updatedAt                                             DateTime    @updatedAt
-  managedRequests                                       Request[]   @relation("Manager")
-  WorkOrder_WorkOrder_assemblyExecutorIdToUser          WorkOrder[] @relation("WorkOrder_assemblyExecutorIdToUser")
-  WorkOrder_WorkOrder_carbonAssemblyExecutorIdToUser    WorkOrder[] @relation("WorkOrder_carbonAssemblyExecutorIdToUser")
-  WorkOrder_WorkOrder_carbonDisassemblyExecutorIdToUser WorkOrder[] @relation("WorkOrder_carbonDisassemblyExecutorIdToUser")
-  WorkOrder_WorkOrder_carbonDismantlingExecutorIdToUser WorkOrder[] @relation("WorkOrder_carbonDismantlingExecutorIdToUser")
-  WorkOrder_WorkOrder_carbonMountingExecutorIdToUser    WorkOrder[] @relation("WorkOrder_carbonMountingExecutorIdToUser")
-  WorkOrder_WorkOrder_cleaningExecutorIdToUser          WorkOrder[] @relation("WorkOrder_cleaningExecutorIdToUser")
-  WorkOrder_WorkOrder_disassemblyExecutorIdToUser       WorkOrder[] @relation("WorkOrder_disassemblyExecutorIdToUser")
-  WorkOrder_WorkOrder_diskPaintingExecutorIdToUser      WorkOrder[] @relation("WorkOrder_diskPaintingExecutorIdToUser")
-  WorkOrder_WorkOrder_dismantlingExecutorIdToUser       WorkOrder[] @relation("WorkOrder_dismantlingExecutorIdToUser")
-  workOrdersAsExecutor                                  WorkOrder[] @relation("Executor")
-  workOrdersAsManager                                   WorkOrder[] @relation("WorkOrderManager")
-  workOrdersAsMaster                                    WorkOrder[] @relation("Master")
-  WorkOrder_WorkOrder_mountingExecutorIdToUser          WorkOrder[] @relation("WorkOrder_mountingExecutorIdToUser")
-  WorkOrder_WorkOrder_painterIdToUser                   WorkOrder[] @relation("WorkOrder_painterIdToUser")
-  WorkOrder_WorkOrder_polishCeramicExecutorIdToUser     WorkOrder[] @relation("WorkOrder_polishCeramicExecutorIdToUser")
-  assignedWorks                                         WorkOrderExecutor[] @relation("AssignedExecutor")  // NEW
+  isActive                                              Boolean             @default(true)
+  createdAt                                             DateTime            @default(now())
+  updatedAt                                             DateTime            @updatedAt
+  managedRequests                                       Request[]           @relation("Manager")
+  WorkOrder_WorkOrder_assemblyExecutorIdToUser          WorkOrder[]         @relation("WorkOrder_assemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonAssemblyExecutorIdToUser    WorkOrder[]         @relation("WorkOrder_carbonAssemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonDisassemblyExecutorIdToUser WorkOrder[]         @relation("WorkOrder_carbonDisassemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonDismantlingExecutorIdToUser WorkOrder[]         @relation("WorkOrder_carbonDismantlingExecutorIdToUser")
+  WorkOrder_WorkOrder_carbonMountingExecutorIdToUser    WorkOrder[]         @relation("WorkOrder_carbonMountingExecutorIdToUser")
+  WorkOrder_WorkOrder_cleaningExecutorIdToUser          WorkOrder[]         @relation("WorkOrder_cleaningExecutorIdToUser")
+  WorkOrder_WorkOrder_disassemblyExecutorIdToUser       WorkOrder[]         @relation("WorkOrder_disassemblyExecutorIdToUser")
+  WorkOrder_WorkOrder_diskPaintingExecutorIdToUser      WorkOrder[]         @relation("WorkOrder_diskPaintingExecutorIdToUser")
+  WorkOrder_WorkOrder_dismantlingExecutorIdToUser       WorkOrder[]         @relation("WorkOrder_dismantlingExecutorIdToUser")
+  workOrdersAsExecutor                                  WorkOrder[]         @relation("Executor")
+  workOrdersAsManager                                   WorkOrder[]         @relation("WorkOrderManager")
+  workOrdersAsMaster                                    WorkOrder[]         @relation("Master")
+  WorkOrder_WorkOrder_mountingExecutorIdToUser          WorkOrder[]         @relation("WorkOrder_mountingExecutorIdToUser")
+  WorkOrder_WorkOrder_painterIdToUser                   WorkOrder[]         @relation("WorkOrder_painterIdToUser")
+  WorkOrder_WorkOrder_polishCeramicExecutorIdToUser     WorkOrder[]         @relation("WorkOrder_polishCeramicExecutorIdToUser")
+  assignedWorks                                         WorkOrderExecutor[] @relation("AssignedExecutor") // NEW
 }
 
 model WorkOrder {
@@ -237,13 +238,13 @@ model WorkOrder {
   User_WorkOrder_painterIdToUser                   User?           @relation("WorkOrder_painterIdToUser", fields: [painterId], references: [id])
   User_WorkOrder_polishCeramicExecutorIdToUser     User?           @relation("WorkOrder_polishCeramicExecutorIdToUser", fields: [polishCeramicExecutorId], references: [id])
   request                                          Request?        @relation(fields: [requestId], references: [id])
-  
+
   // NEW: JSON поля для гибкого хранения данных по услугам
   // Структура servicesData: { film?: {executorId, amount}, dryCleaning?: {executorId, serviceAmount, executorAmount}, ...}
-  servicesData       Json?  @default("{}")
+  servicesData        Json?               @default("{}")
   // Структура bodyPartsData: { radiatorGrille?: {quantity, actualQuantity, status, executorId}, fogLights?: {...}, ...}
-  bodyPartsData      Json?  @default("{}")
-  executorAssignments WorkOrderExecutor[]  // NEW: связь с назначениями
+  bodyPartsData       Json?               @default("{}")
+  executorAssignments WorkOrderExecutor[] // NEW: связь с назначениями
 }
 
 enum ReviewStatus {
@@ -264,6 +265,7 @@ enum PostCategory {
 
 enum PostStatus {
   DRAFT
+  REVIEW
   PUBLISHED
 }
 
@@ -314,11 +316,10 @@ enum RequestSource {
 }
 
 enum RequestStatus {
-  NEW
-  IN_PROGRESS
-  COMPLETED
-  CLOSED
-  SDELKA
+  NOVA      // Новая заявка
+  SDELKA    // Сделка - видна мастеру
+  OTKLONENO // Отклонено - скрывается
+  ZAVERSHENA // Завершена
 }
 
 enum CarCondition {
@@ -337,17 +338,17 @@ enum WorkOrderStatus {
   ASSIGNED_TO_MASTER
   ASSIGNED_TO_EXECUTOR
   IN_PROGRESS
-  PAINTING           // NEW: покраска
-  POLISHING          // NEW: полировка
-  ASSEMBLY_STAGE     // NEW: сборка
+  PAINTING // NEW: покраска
+  POLISHING // NEW: полировка
+  ASSEMBLY_STAGE // NEW: сборка
   UNDER_REVIEW
-  APPROVED  
+  APPROVED
   RETURNED_FOR_REVISION
-  SENT               // NEW: отправлен
-  SHIPPED            // существующий
-  ASSEMBLED          // существующий
-  ISSUED             // существующий
-  READY              // существующий
+  SENT // NEW: отправлен
+  SHIPPED // существующий
+  ASSEMBLED // существующий
+  ISSUED // существующий
+  READY // существующий
   COMPLETED
 }
 
@@ -361,27 +362,27 @@ enum UserRole {
 
 // NEW: Таблица для привязки исполнителей к работам и расчёта ЗП
 model WorkOrderExecutor {
-  id            Int       @id @default(autoincrement())
-  workOrderId   Int
-  workOrder     WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
-  
-  executorId    Int
-  executor      User      @relation("AssignedExecutor", fields: [executorId], references: [id])
-  
-  workType      WorkType   // тип работы
-  serviceType   ServiceType?  // тип услуги (опционально)
-  
-  description   String?    // описание работы
-  amount        Float      @default(0)  // сумма ЗП
-  isPaid        Boolean    @default(false)  // выплачено
-  paidAmount    Float      @default(0)  // сколько выплачено
-  
+  id          Int       @id @default(autoincrement())
+  workOrderId Int
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+
+  executorId Int
+  executor   User @relation("AssignedExecutor", fields: [executorId], references: [id])
+
+  workType    WorkType // тип работы
+  serviceType ServiceType? // тип услуги (опционально)
+
+  description String? // описание работы
+  amount      Float   @default(0) // сумма ЗП
+  isPaid      Boolean @default(false) // выплачено
+  paidAmount  Float   @default(0) // сколько выплачено
+
   // Гибкие доп. данные: для деталей { quantity, actualQuantity, status, letterCount }
-  metadata      Json?      @default("{}")
-  
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  
+  metadata Json? @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([workOrderId])
   @@index([executorId])
 }

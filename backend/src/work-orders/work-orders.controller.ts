@@ -12,6 +12,7 @@ import {
     Query,
     UseInterceptors,
     UploadedFile,
+    BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -20,6 +21,7 @@ import { WorkOrdersService } from './work-orders.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { buildCurrentUser } from '../auth/permissions';
 
 @Controller('work-orders')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -27,31 +29,47 @@ export class WorkOrdersController {
     constructor(private readonly workOrdersService: WorkOrdersService) { }
 
     @Post()
-    @Roles('ADMIN', 'MANAGER')
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
     create(@Body() createDto: any, @Request() req) {
         console.log('Controller create called');
         console.log('User:', req.user);
         console.log('Payload:', createDto);
-        return this.workOrdersService.create({
-            ...createDto,
-            managerId: req.user.userId,
-        });
+        
+        // Для MASTER: если передан requestId, НЕ передаем managerId - он будет взят из заявки в сервисе
+        // Для MANAGER/ADMIN: используем их userId как managerId
+        const payload: any = { ...createDto };
+        
+        if (req.user.role === 'MASTER' && createDto.requestId) {
+            // Для мастера с requestId не передаем managerId - сервис возьмет его из заявки
+            delete payload.managerId;
+            // Устанавливаем masterId для мастера, который создает заказ-наряд
+            payload.masterId = req.user.userId;
+        } else if (req.user.role === 'MASTER') {
+            // Если мастер создает заказ-наряд без requestId, устанавливаем его как masterId
+            payload.masterId = req.user.userId;
+            payload.managerId = createDto.managerId || req.user.userId;
+        } else {
+            // Для менеджера/админа устанавливаем их userId
+            payload.managerId = createDto.managerId || req.user.userId;
+        }
+            
+        return this.workOrdersService.create(payload, buildCurrentUser(req.user));
     }
 
     @Get('admin')
     findAll(@Request() req, @Query('view') view?: string) {
-        return this.workOrdersService.findAll(req.user.userId, req.user.role, view);
+        return this.workOrdersService.findAll(buildCurrentUser(req.user), view);
     }
 
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.workOrdersService.findOne(id);
+    findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.workOrdersService.findOne(id, buildCurrentUser(req.user));
     }
 
     @Patch(':id')
-    @Roles('ADMIN', 'MANAGER')
-    update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: any) {
-        return this.workOrdersService.update(id, updateDto);
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
+    async update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: any, @Request() req) {
+        return this.workOrdersService.update(id, updateDto, buildCurrentUser(req.user));
     }
 
     @Delete(':id')
@@ -81,33 +99,53 @@ export class WorkOrdersController {
 
     // Workflow endpoints
     @Post(':id/start')
-    @Roles('ADMIN', 'MASTER', 'EXECUTOR')
-    startWork(@Param('id', ParseIntPipe) id: number) {
-        return this.workOrdersService.startWork(id);
+    @Roles('ADMIN', 'MANAGER', 'MASTER', 'EXECUTOR')
+    startWork(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.workOrdersService.startWork(id, buildCurrentUser(req.user));
     }
 
     @Post(':id/submit-review')
-    @Roles('ADMIN', 'EXECUTOR')
-    submitForReview(@Param('id', ParseIntPipe) id: number) {
-        return this.workOrdersService.submitForReview(id);
+    @Roles('EXECUTOR')
+    submitForReview(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.workOrdersService.submitForReview(id, buildCurrentUser(req.user));
     }
 
     @Post(':id/approve')
-    @Roles('ADMIN', 'MANAGER')
-    approve(@Param('id', ParseIntPipe) id: number) {
-        return this.workOrdersService.approve(id);
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
+    approve(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.workOrdersService.approve(id, buildCurrentUser(req.user));
     }
 
     @Post(':id/request-revision')
-    @Roles('ADMIN', 'MANAGER')
-    requestRevision(@Param('id', ParseIntPipe) id: number) {
-        return this.workOrdersService.requestRevision(id);
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
+    requestRevision(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.workOrdersService.requestRevision(id, buildCurrentUser(req.user));
     }
 
     @Post(':id/complete')
-    @Roles('ADMIN', 'MANAGER')
-    complete(@Param('id', ParseIntPipe) id: number) {
-        return this.workOrdersService.complete(id);
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
+    complete(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: { finalStage: 'ASSEMBLED' | 'SENT' | 'ISSUED' },
+        @Request() req,
+    ) {
+        return this.workOrdersService.complete(id, buildCurrentUser(req.user), body.finalStage);
+    }
+
+    @Patch(':id/tasks/:assignmentId/status')
+    @Roles('EXECUTOR')
+    updateTaskStatus(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('assignmentId', ParseIntPipe) assignmentId: number,
+        @Body() body: { status: 'PENDING' | 'IN_PROGRESS' | 'DONE' },
+        @Request() req,
+    ) {
+        return this.workOrdersService.updateAssignmentStatus(
+            id,
+            assignmentId,
+            body.status,
+            buildCurrentUser(req.user),
+        );
     }
 
     // Photo endpoints

@@ -82,11 +82,8 @@ const WorkOrderEditPage: React.FC = () => {
                 }
 
                 // Fetch Executors
-                const usersResponse = await axios.get('/api/users');
-                const executorsList = usersResponse.data.filter((u: any) =>
-                    u.role === 'EXECUTOR' || u.role === 'PAINTER'
-                );
-                setExecutors(executorsList);
+                const usersResponse = await axios.get('/api/users/executors');
+                setExecutors(usersResponse.data);
 
                 setInitialLoading(false);
 

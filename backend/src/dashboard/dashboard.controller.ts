@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query, Patch, Body } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
+import { Request } from '@nestjs/common';
 
 @Controller('dashboard')
 export class DashboardController {
@@ -41,5 +42,23 @@ export class DashboardController {
             paidAmount,
             isPaid
         );
+    }
+
+    @Get('manager')
+    async manager(@Query('userId') userId?: string, @Request() req?) {
+        const uid = userId ? parseInt(userId) : req?.user?.userId;
+        return this.dashboardService.getManagerDashboard(uid);
+    }
+
+    @Get('master')
+    async master(@Query('userId') userId?: string, @Request() req?) {
+        const uid = userId ? parseInt(userId) : req?.user?.userId;
+        return this.dashboardService.getMasterDashboard(uid);
+    }
+
+    @Get('executor')
+    async executor(@Query('userId') userId?: string, @Request() req?) {
+        const uid = userId ? parseInt(userId) : req?.user?.userId;
+        return this.dashboardService.getExecutorDashboard(uid);
     }
 }

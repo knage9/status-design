@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, RequestStatus } from '@prisma/client';
 import { RequestNumberService } from './request-number.service';
+import { CurrentUser, hasPermission } from '../auth/permissions';
 
 @Injectable()
 export class RequestsService {
@@ -18,7 +19,7 @@ export class RequestsService {
                 ...data,
                 requestNumber,
                 // @ts-ignore
-                arrivalAt: (data as any).arrivalAt,
+                arrivalDate: (data as any).arrivalDate,
             },
             include: {
                 manager: {
@@ -32,41 +33,57 @@ export class RequestsService {
         });
     }
 
-    async findAllAdmin(userId?: number, role?: string, searchQuery?: string) {
+    async findAll(
+        currentUser: CurrentUser,
+        searchQuery?: string, 
+        statusFilter?: string,
+        dateFrom?: string,
+        dateTo?: string
+    ) {
         const where: any = {};
 
-        // Поиск по имени или телефону клиента
-        if (searchQuery) {
-            where.OR = [
-                { name: { contains: searchQuery, mode: 'insensitive' } },
-                { phone: { contains: searchQuery } }
-            ];
-        }
-
-        // Role-based filtering
-        if (role === 'MANAGER' && userId) {
-            const roleFilter = {
-                OR: [
-                    { managerId: userId },
-                    { managerId: null }, // New requests without manager
-                ]
-            };
-
-            // Если есть и поиск, и фильтр по роли, объединяем через AND
+        // ADMIN/MANAGER: полное право просмотра
+        let orderBy: any = { createdAt: 'desc' };
+        if (hasPermission(currentUser, 'REQUESTS_VIEW_ALL')) {
+            if (searchQuery) {
+                where.OR = [
+                    { name: { contains: searchQuery, mode: 'insensitive' } },
+                    { phone: { contains: searchQuery } }
+                ];
+            }
+            if (statusFilter) {
+                where.status = statusFilter as RequestStatus;
+            }
+        } else if (currentUser.role === 'MASTER') {
+            // MASTER: только заявки в статусе СДЕЛКА
+            where.status = RequestStatus.SDELKA;
             if (searchQuery) {
                 where.AND = [
-                    { OR: where.OR }, // Поиск
-                    roleFilter,        // Фильтр по роли
+                    {
+                        OR: [
+                            { name: { contains: searchQuery, mode: 'insensitive' } },
+                            { phone: { contains: searchQuery } }
+                        ]
+                    },
+                    { status: RequestStatus.SDELKA }
                 ];
-                delete where.OR;
-            } else {
-                where.OR = roleFilter.OR;
             }
+            orderBy = { arrivalDate: 'asc' };
+        } else {
+            throw new ForbiddenException('Недостаточно прав для просмотра заявок');
         }
 
-        // Role-based filtering for MASTER (only SDELKA)
-        if (role === 'MASTER') {
-            where.status = 'SDELKA';
+        // Фильтр по дате создания (если нужно)
+        if (dateFrom || dateTo) {
+            where.createdAt = {};
+            if (dateFrom) {
+                where.createdAt.gte = new Date(dateFrom);
+            }
+            if (dateTo) {
+                const endDate = new Date(dateTo);
+                endDate.setHours(23, 59, 59, 999);
+                where.createdAt.lte = endDate;
+            }
         }
 
         return this.prisma.request.findMany({
@@ -80,12 +97,12 @@ export class RequestsService {
                     },
                 },
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy,
         });
     }
 
-    async findOne(id: number) {
-        return this.prisma.request.findUnique({
+    async findOne(id: number, currentUser: CurrentUser) {
+        const request = await this.prisma.request.findUnique({
             where: { id },
             include: {
                 manager: {
@@ -101,10 +118,35 @@ export class RequestsService {
                         manager: { select: { name: true } },
                         master: { select: { name: true } },
                         executor: { select: { name: true } },
+                        executorAssignments: {
+                            include: {
+                                executor: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },
         });
+
+        if (!request) {
+            throw new NotFoundException('Заявка не найдена');
+        }
+
+        if (hasPermission(currentUser, 'REQUESTS_VIEW_ALL')) {
+            return request;
+        }
+
+        if (currentUser.role === 'MASTER' && request.status === RequestStatus.SDELKA) {
+            return request;
+        }
+
+        throw new NotFoundException('Заявка не найдена или доступ запрещен');
     }
 
     async update(id: number, data: Prisma.RequestUpdateInput) {
@@ -126,13 +168,72 @@ export class RequestsService {
         return this.prisma.request.delete({ where: { id } });
     }
 
-    // Workflow methods
-    async takeToWork(requestId: number, userId: number) {
+    // Изменение статуса заявки (только для MANAGER)
+    async changeStatus(
+        requestId: number,
+        currentUser: CurrentUser,
+        status: 'SDELKA' | 'OTKLONENO',
+        data: { managerComment: string; arrivalDate?: Date }
+    ) {
+        if (!hasPermission(currentUser, 'REQUESTS_PROCESS')) {
+            throw new ForbiddenException('Недостаточно прав для обработки заявки');
+        }
+
+        // Проверка валидации
+        const statusEnum = status === 'SDELKA' ? RequestStatus.SDELKA : RequestStatus.OTKLONENO;
+        
+        if (status === 'SDELKA') {
+            if (!data.managerComment || data.managerComment.trim() === '') {
+                throw new BadRequestException('Комментарий менеджера обязателен при переводе в статус "Сделка"');
+            }
+            if (!data.arrivalDate) {
+                throw new BadRequestException('Дата и время приезда обязательны при переводе в статус "Сделка"');
+            }
+        }
+
+        if (status === 'OTKLONENO') {
+            if (!data.managerComment || data.managerComment.trim() === '') {
+                throw new BadRequestException('Комментарий менеджера обязателен при отклонении заявки');
+            }
+        }
+
+        const updateData: any = {
+            status: statusEnum,
+            managerId: currentUser.id,
+            managerComment: data.managerComment,
+            startedAt: new Date(), // Время отработки заявки
+        };
+
+        if (status === 'SDELKA' && data.arrivalDate) {
+            updateData.arrivalDate = data.arrivalDate;
+        }
+
+        return this.prisma.request.update({
+            where: { id: requestId },
+            data: updateData,
+            include: {
+                manager: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+    }
+
+    // Workflow methods (старые методы для обратной совместимости)
+    async takeToWork(requestId: number, currentUser: CurrentUser) {
+        if (!hasPermission(currentUser, 'REQUESTS_PROCESS')) {
+            throw new ForbiddenException('Недостаточно прав для обработки заявки');
+        }
+
         return this.prisma.request.update({
             where: { id: requestId },
             data: {
-                managerId: userId,
-                status: 'IN_PROGRESS',
+                managerId: currentUser.id,
+                status: RequestStatus.NOVA,
                 startedAt: new Date(),
             },
             include: {
@@ -150,7 +251,7 @@ export class RequestsService {
         return this.prisma.request.update({
             where: { id: requestId },
             data: {
-                status: 'COMPLETED',
+                status: RequestStatus.ZAVERSHENA,
                 completedAt: new Date(),
             },
         });
@@ -160,7 +261,7 @@ export class RequestsService {
         return this.prisma.request.update({
             where: { id: requestId },
             data: {
-                status: 'CLOSED',
+                status: RequestStatus.OTKLONENO,
                 completedAt: new Date(),
             },
         });
@@ -173,7 +274,7 @@ export class RequestsService {
 
         const total = await this.prisma.request.count();
         const newRequests = await this.prisma.request.count({
-            where: { status: 'NEW' },
+            where: { status: RequestStatus.NOVA },
         });
         const thisWeek = await this.prisma.request.count({
             where: { createdAt: { gte: sevenDaysAgo } },

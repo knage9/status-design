@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Card,
@@ -21,6 +21,8 @@ import {
     message,
     Image,
     Statistic,
+    Radio,
+    Checkbox,
 } from 'antd';
 import {
     ArrowLeftOutlined,
@@ -265,6 +267,9 @@ interface WorkOrder {
     completedAt?: string;
     createdAt: string;
     requestId?: number;
+    managerId?: number;
+    masterId?: number;
+    executorId?: number;
     manager?: { id: number; name: string; email: string };
     master?: { id: number; name: string; email: string };
     executor?: { id: number; name: string; email: string };
@@ -279,6 +284,8 @@ interface User {
     role: string;
 }
 
+type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE';
+
 const WorkOrderDetailPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -289,11 +296,21 @@ const WorkOrderDetailPage: React.FC = () => {
     const [workOrder, setWorkOrder] = useState<WorkOrder | null>(null);
     const [loading, setLoading] = useState(true);
     const [masters, setMasters] = useState<User[]>([]);
-    const [executors, setExecutors] = useState<User[]>([]);
     const [isAssignModalVisible, setIsAssignModalVisible] = useState(false);
-    const [assignType, setAssignType] = useState<'MASTER' | 'EXECUTOR' | null>(null);
+    const [assignType, setAssignType] = useState<'MASTER' | null>(null);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState<string>('');
+    const [taskUpdateId, setTaskUpdateId] = useState<number | null>(null);
+    const [finalStage, setFinalStage] = useState<'SENT' | 'ISSUED' | null>(null);
+    const myAssignments = useMemo(
+        () => (workOrder?.executorAssignments || []).filter(a => a.executor?.id === user?.id),
+        [workOrder?.executorAssignments, user?.id]
+    );
+    const hasStarted = useMemo(
+        () => myAssignments.some(a => (a.metadata as any)?.startedAt),
+        [myAssignments]
+    );
+    const [mySeconds, setMySeconds] = useState(0);
 
     const fetchWorkOrder = async () => {
         try {
@@ -307,13 +324,17 @@ const WorkOrderDetailPage: React.FC = () => {
         }
     };
 
-    const fetchUsers = async (role: 'MASTER' | 'EXECUTOR') => {
+    const fetchUsers = async (role: 'MASTER') => {
         try {
-            const response = await axios.get(`/api/users?role=${role}`);
-            if (role === 'MASTER') setMasters(response.data);
-            else setExecutors(response.data);
+            // Для получения мастеров нужен полный список пользователей (только для ADMIN/MANAGER)
+            const response = await axios.get('/api/users?role=MASTER');
+            setMasters(response.data);
         } catch (error) {
             console.error(`Failed to fetch ${role}s:`, error);
+            notification.error({
+                title: 'Ошибка загрузки',
+                description: 'Не удалось загрузить список мастеров'
+            });
         }
     };
 
@@ -351,8 +372,8 @@ const WorkOrderDetailPage: React.FC = () => {
     const handleAssign = async () => {
         if (!selectedUserId || !assignType) return;
         try {
-            const endpoint = assignType === 'MASTER' ? 'assign-master' : 'assign-executor';
-            const payload = assignType === 'MASTER' ? { masterId: selectedUserId } : { executorId: selectedUserId };
+            const endpoint = 'assign-master';
+            const payload = { masterId: selectedUserId };
             await axios.post(`/api/work-orders/${id}/${endpoint}`, payload);
             notification.success({ title: 'Назначено успешно' });
             setIsAssignModalVisible(false);
@@ -362,17 +383,88 @@ const WorkOrderDetailPage: React.FC = () => {
         }
     };
 
-    const handleWorkflowAction = async (action: string) => {
+    const handleWorkflowAction = async (action: string, onSuccess?: () => void) => {
         try {
             await axios.post(`/api/work-orders/${id}/${action}`);
             notification.success({ title: 'Статус обновлен' });
             fetchWorkOrder();
+            onSuccess?.();
         } catch (error) {
             notification.error({ title: 'Ошибка обновления статуса' });
         }
     };
 
-    const openAssignModal = (type: 'MASTER' | 'EXECUTOR') => {
+    const handleCompleteWithStage = async () => {
+        if (!finalStage) {
+            notification.warning({ title: 'Выберите финальный этап' });
+            return;
+        }
+        try {
+            await axios.post(`/api/work-orders/${id}/complete`, { finalStage });
+            notification.success({ title: 'Заказ-наряд завершён' });
+            fetchWorkOrder();
+        } catch (error: any) {
+            notification.error({
+                title: 'Ошибка завершения',
+                description: error.response?.data?.message || 'Не удалось завершить заказ-наряд',
+            });
+        }
+    };
+
+    const formatDuration = (seconds: number) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const sec = seconds % 60;
+        if (hrs > 0) return `${hrs} ч ${mins.toString().padStart(2, '0')} мин`;
+        return `${mins} мин ${sec.toString().padStart(2, '0')} с`;
+    };
+
+    const calcMySeconds = () => {
+        let total = 0;
+        const now = new Date();
+        myAssignments.forEach(a => {
+            const meta: any = a.metadata || {};
+            if (!meta.startedAt) return;
+            const start = new Date(meta.startedAt);
+            const end = meta.finishedAt ? new Date(meta.finishedAt) : now;
+            total += Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+        });
+        return total;
+    };
+
+    useEffect(() => {
+        if (!workOrder || !user?.id) {
+            setMySeconds(0);
+            return;
+        }
+        const update = () => setMySeconds(calcMySeconds());
+        update();
+        const hasActive = myAssignments.some(a => {
+            const meta: any = a.metadata || {};
+            return meta.startedAt && !meta.finishedAt;
+        });
+        if (!hasActive) return;
+        const int = setInterval(update, 1000);
+        return () => clearInterval(int);
+    }, [workOrder, user?.id, myAssignments]);
+
+    const handleTaskStatusChange = async (assignmentId: number, status: TaskStatus) => {
+        try {
+            setTaskUpdateId(assignmentId);
+            await axios.patch(`/api/work-orders/${id}/tasks/${assignmentId}/status`, { status });
+            notification.success({ title: 'Статус задачи обновлен' });
+            fetchWorkOrder();
+        } catch (error: any) {
+            notification.error({
+                title: 'Не удалось обновить задачу',
+                description: error.response?.data?.message || 'Ошибка',
+            });
+        } finally {
+            setTaskUpdateId(null);
+        }
+    };
+
+    const openAssignModal = (type: 'MASTER') => {
         setAssignType(type);
         fetchUsers(type);
         setIsAssignModalVisible(true);
@@ -385,9 +477,6 @@ const WorkOrderDetailPage: React.FC = () => {
             ASSIGNED_TO_MASTER: 'cyan',
             ASSIGNED_TO_EXECUTOR: 'purple',
             IN_PROGRESS: 'orange',
-            UNDER_REVIEW: 'gold',
-            APPROVED: 'green',
-            RETURNED_FOR_REVISION: 'red',
             COMPLETED: 'default',
         };
         return colors[status] || 'default';
@@ -396,15 +485,22 @@ const WorkOrderDetailPage: React.FC = () => {
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
             NEW: 'Новый',
-            ASSIGNED_TO_MASTER: 'Назначен мастеру',
-            ASSIGNED_TO_EXECUTOR: 'Назначен исполнителю',
+            ASSIGNED_TO_MASTER: 'У мастера',
+            ASSIGNED_TO_EXECUTOR: 'У исполнителей',
             IN_PROGRESS: 'В работе',
             UNDER_REVIEW: 'На проверке',
             APPROVED: 'Одобрен',
-            RETURNED_FOR_REVISION: 'Возвращен на доработку',
-            COMPLETED: 'Завершен',
+            RETURNED_FOR_REVISION: 'Возврат на доработку',
+            ASSEMBLED: 'Собран',
+            SENT: 'Отправлен',
+            ISSUED: 'Выдан',
+            COMPLETED: 'Завершён',
         };
         return texts[status] || status;
+    };
+
+    const getTaskStatus = (assignment: any): TaskStatus => {
+        return (assignment.metadata?.status as TaskStatus) || 'PENDING';
     };
 
     const partLabels: Record<string, string> = {
@@ -540,7 +636,7 @@ const WorkOrderDetailPage: React.FC = () => {
         // From executorAssignments (for additional services)
         if (workOrder.executorAssignments) {
             workOrder.executorAssignments.forEach(assignment => {
-                if (assignment.workType === 'ARMATURA_ADDITIONAL' && assignment.amount > 0) {
+                if (assignment.workType === 'ARMATURA_ADDITIONAL' && assignment.amount && assignment.amount > 0) {
                     servicesList.push({ name: assignment.description || 'Дополнительная услуга', amount: assignment.amount });
                 }
             });
@@ -598,8 +694,45 @@ const WorkOrderDetailPage: React.FC = () => {
 
     const isAdmin = user?.role === 'ADMIN';
     const isManager = isAdmin || user?.role === 'MANAGER';
-    const isMaster = isAdmin || user?.role === 'MASTER';
+    const isMaster = user?.role === 'MASTER';
     const isExecutor = user?.role === 'EXECUTOR' || user?.role === 'PAINTER';
+    const canViewFinance = isManager || isAdmin;
+    const showAmounts = canViewFinance && !isMaster;
+    const canShowAmountFor = (executorId?: number | null) =>
+        showAmounts || (isExecutor && executorId && executorId === user?.id);
+
+    const getDurationSec = (assignment: any) => {
+        const meta: any = assignment.metadata || {};
+        if (!meta.startedAt) return 0;
+        const start = new Date(meta.startedAt);
+        const end = meta.finishedAt ? new Date(meta.finishedAt) : new Date();
+        return Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+    };
+
+    const renderAmountAndTime = (assignment: any) => {
+        if (!assignment) return null;
+        const amount = assignment.amount || 0;
+        const durationSec = (assignment as any)?.durationSeconds ?? getDurationSec(assignment);
+        return (
+            <>
+                {canShowAmountFor(assignment.executor?.id) && amount > 0 && (
+                    <Tag color="blue" style={{ marginTop: 4 }}>{amount.toLocaleString('ru-RU')} ₽</Tag>
+                )}
+                {durationSec > 0 && (
+                    <Text type="secondary" style={{ fontSize: 11, display: 'block', marginTop: 4 }}>
+                        Время: {formatDuration(durationSec)}
+                    </Text>
+                )}
+            </>
+        );
+    };
+    
+    // Мастер может редактировать заказ-наряды, которые ему назначены
+    // Проверяем masterId (если есть прямое поле) или master.id (если загружена связь)
+    const canMasterEdit = isMaster && workOrder && user?.id && (
+        workOrder.masterId === user.id || 
+        workOrder.master?.id === user.id
+    );
 
     return (
         <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 40 }}>
@@ -636,7 +769,7 @@ const WorkOrderDetailPage: React.FC = () => {
                         )}
                         <Space>
                             {/* NEW: Edit Button - Manager or Master */}
-                            {(isManager || (isMaster && workOrder.master?.id === user?.id)) && (
+                            {(isManager || canMasterEdit) && (
                                 <Button
                                     icon={<EditOutlined />}
                                     onClick={() => navigate(`/work-orders/${id}/edit`)}
@@ -649,27 +782,9 @@ const WorkOrderDetailPage: React.FC = () => {
                             {isManager && workOrder.status === 'NEW' && (
                                 <Button type="primary" onClick={() => openAssignModal('MASTER')}>Назначить мастера</Button>
                             )}
-                            {isManager && workOrder.status === 'APPROVED' && (
-                                <Button type="primary" icon={<CheckOutlined />} onClick={() => handleWorkflowAction('complete')}>Завершить заказ</Button>
-                            )}
-
-                            {/* Master Actions */}
-                            {isMaster && workOrder.status === 'ASSIGNED_TO_MASTER' && (
-                                <Button type="primary" onClick={() => openAssignModal('EXECUTOR')}>Назначить исполнителя</Button>
-                            )}
-                            {isMaster && workOrder.status === 'UNDER_REVIEW' && (
-                                <>
-                                    <Button danger onClick={() => handleWorkflowAction('request-revision')}>На доработку</Button>
-                                    <Button type="primary" icon={<CheckOutlined />} onClick={() => handleWorkflowAction('approve')}>Принять работу</Button>
-                                </>
-                            )}
-
                             {/* Executor Actions */}
                             {(isExecutor || isAdmin) && (workOrder.status === 'ASSIGNED_TO_EXECUTOR' || workOrder.status === 'RETURNED_FOR_REVISION') && (
-                                <Button type="primary" onClick={() => handleWorkflowAction('start')}>Начать работу</Button>
-                            )}
-                            {(isExecutor || isAdmin) && workOrder.status === 'IN_PROGRESS' && (
-                                <Button type="primary" onClick={() => handleWorkflowAction('submit-review')}>Отправить на проверку</Button>
+                                <Button type="primary" onClick={() => handleWorkflowAction('start', () => setTimeout(fetchWorkOrder, 200))}>Начать работу</Button>
                             )}
                         </Space>
                     </Space>
@@ -680,7 +795,6 @@ const WorkOrderDetailPage: React.FC = () => {
                 <Descriptions column={{ xs: 1, sm: 2, md: 3 }} size="small">
                     <Descriptions.Item label="Менеджер">{workOrder.manager?.name || '—'}</Descriptions.Item>
                     <Descriptions.Item label="Мастер">{workOrder.master?.name || '—'}</Descriptions.Item>
-                    <Descriptions.Item label="Исполнитель">{workOrder.executor?.name || '—'}</Descriptions.Item>
                 </Descriptions>
             </Card>
 
@@ -729,12 +843,52 @@ const WorkOrderDetailPage: React.FC = () => {
                 </Card>
             )}
 
+            {(workOrder.status === 'ASSIGNED_TO_MASTER') && (isMaster || isManager || isAdmin) && (
+                <Card
+                    title="Завершение заказ-наряда"
+                    style={{ marginBottom: 24, border: '1px solid #e6f7ff' }}
+                    styles={{ header: { background: '#e6f7ff' } }}
+                >
+                    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                        <div>
+                            <Text strong>Выберите финальный этап:</Text>
+                            <br />
+                            <Radio.Group
+                                value={finalStage}
+                                onChange={(e) => setFinalStage(e.target.value)}
+                                style={{ marginTop: 8 }}
+                            >
+                                <Radio.Button value="SENT">Отправлен</Radio.Button>
+                                <Radio.Button value="ISSUED">Выдан</Radio.Button>
+                            </Radio.Group>
+                        </div>
+                        <Button type="primary" onClick={handleCompleteWithStage} disabled={!finalStage}>
+                            Завершить заказ-наряд
+                        </Button>
+                    </Space>
+                </Card>
+            )}
+
             <Row gutter={[24, 24]}>
                 {/* Left Column */}
                 <Col xs={24} lg={16}>
-                    {/* Executor Salary Section */}
-                    {workOrder.executorAssignments && workOrder.executorAssignments.length > 0 && (
+            {/* Executor Salary Section (no display for Master) */}
+            {workOrder.executorAssignments && workOrder.executorAssignments.length > 0 && (isExecutor || isManager) && (
                         <>
+                            {isExecutor && (
+                                <Card
+                                    title="Моё время по заказ-наряду"
+                                    style={{ marginBottom: 16, border: '1px solid #e6f7ff' }}
+                                    styles={{ header: { background: '#e6f7ff' } }}
+                                >
+                                    {hasStarted ? (
+                                        <Text strong>{mySeconds > 0 ? formatDuration(mySeconds) : 'В работе...'}</Text>
+                                    ) : (
+                                        <Text type="secondary">Работа ещё не начата</Text>
+                                    )}
+                                </Card>
+                            )}
+
                             {/* For EXECUTOR: Show only their own salary */}
                             {isExecutor && (
                                 <Card
@@ -743,7 +897,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                     styles={{ header: { background: '#f6ffed' } }}
                                 >
                                     {(() => {
-                                        const myWorks = workOrder.executorAssignments.filter(a => a.executor.id === user?.id);
+                                        const myWorks = workOrder.executorAssignments?.filter(a => a.executor?.id === user?.id) || [];
                                         if (myWorks.length === 0) return <Text type="secondary">Работ не найдено</Text>;
 
                                         const total = myWorks.reduce((sum, w) => sum + w.amount, 0);
@@ -755,12 +909,12 @@ const WorkOrderDetailPage: React.FC = () => {
                                                     {myWorks.map(work => (
                                                         <div key={work.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #f0f0f0' }}>
                                                             <div>
-                                                                <Text strong>{work.description}</Text>
+                                                                <Text strong>{work.description || '—'}</Text>
                                                                 <br />
-                                                                <Text type="secondary" style={{ fontSize: '12px' }}>{work.workType}</Text>
+                                                                <Text type="secondary" style={{ fontSize: '12px' }}>{work.workType || '—'}</Text>
                                                             </div>
                                                             <div style={{ textAlign: 'right' }}>
-                                                                <Text strong style={{ fontSize: '16px' }}>{work.amount.toLocaleString('ru-RU')} ₽</Text>
+                                                                <Text strong style={{ fontSize: '16px' }}>{(work.amount || 0).toLocaleString('ru-RU')} ₽</Text>
                                                                 {work.isPaid && <Tag color="green" style={{ marginLeft: 8 }}>Выплачено</Tag>}
                                                             </div>
                                                         </div>
@@ -789,23 +943,25 @@ const WorkOrderDetailPage: React.FC = () => {
                                     {(() => {
                                         // Group assignments by executor
                                         const groupedByExecutor: Record<number, WorkOrderExecutor[]> = {};
-                                        workOrder.executorAssignments.forEach(assignment => {
-                                            if (!groupedByExecutor[assignment.executor.id]) {
-                                                groupedByExecutor[assignment.executor.id] = [];
+                                        workOrder.executorAssignments?.forEach(assignment => {
+                                            if (assignment.executor?.id) {
+                                                if (!groupedByExecutor[assignment.executor.id]) {
+                                                    groupedByExecutor[assignment.executor.id] = [];
+                                                }
+                                                groupedByExecutor[assignment.executor.id].push(assignment);
                                             }
-                                            groupedByExecutor[assignment.executor.id].push(assignment);
                                         });
 
                                         const collapseItems = Object.entries(groupedByExecutor).map(([executorId, assignments]) => {
-                                            const executor = assignments[0].executor;
-                                            const total = assignments.reduce((sum, w) => sum + w.amount, 0);
-                                            const paid = assignments.reduce((sum, w) => sum + w.paidAmount, 0);
+                                            const executor = assignments[0]?.executor;
+                                            const total = assignments.reduce((sum, w) => sum + (w.amount || 0), 0);
+                                            const paid = assignments.reduce((sum, w) => sum + (w.paidAmount || 0), 0);
 
                                             return {
                                                 key: executorId,
                                                 label: (
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                                        <Text strong>{executor.name}</Text>
+                                                        <Text strong>{executor?.name || 'Не указан'}</Text>
                                                         <Space>
                                                             <Text type="secondary">Работ: {assignments.length}</Text>
                                                             <Text strong style={{ color: '#52c41a', fontSize: 16 }}>
@@ -819,12 +975,12 @@ const WorkOrderDetailPage: React.FC = () => {
                                                         {assignments.map(work => (
                                                             <div key={work.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #f0f0f0' }}>
                                                                 <div>
-                                                                    <Text strong>{work.description}</Text>
+                                                                    <Text strong>{work.description || '—'}</Text>
                                                                     <br />
-                                                                    <Text type="secondary" style={{ fontSize: '12px' }}>{work.workType}</Text>
+                                                                    <Text type="secondary" style={{ fontSize: '12px' }}>{work.workType || '—'}</Text>
                                                                 </div>
                                                                 <div style={{ textAlign: 'right' }}>
-                                                                    <Text strong style={{ fontSize: '16px' }}>{work.amount.toLocaleString('ru-RU')} ₽</Text>
+                                                                    <Text strong style={{ fontSize: '16px' }}>{(work.amount || 0).toLocaleString('ru-RU')} ₽</Text>
                                                                     {work.isPaid && <Tag color="green" style={{ marginLeft: 8 }}>Выплачено</Tag>}
                                                                 </div>
                                                             </div>
@@ -851,6 +1007,89 @@ const WorkOrderDetailPage: React.FC = () => {
                                 </Card>
                             )}
                         </>
+                    )}
+
+                    {/* Tasks for executor and master */}
+                    {isExecutor && (
+                        <Card
+                            title="Мои задачи"
+                            style={{ marginBottom: 24, border: '1px solid #e6f7ff' }}
+                            styles={{ header: { background: '#e6f7ff' } }}
+                        >
+                            {workOrder?.executorAssignments?.length === 0 && <Text type="secondary">Задач нет</Text>}
+                            {(workOrder?.executorAssignments || []).map(a => {
+                                const status = getTaskStatus(a);
+                                const isDone = status === 'DONE';
+                                return (
+                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
+                                        <div>
+                                            <Text strong>{a.description || a.workType}</Text>
+                                            <br />
+                                            <Tag color={status === 'DONE' ? 'green' : status === 'IN_PROGRESS' ? 'gold' : 'default'}>
+                                                {status === 'DONE' ? 'Готово' : status === 'IN_PROGRESS' ? 'В работе' : 'В ожидании'}
+                                            </Tag>
+                                        </div>
+                                        <Button
+                                            type={isDone ? 'default' : 'primary'}
+                                            onClick={() => handleTaskStatusChange(a.id, 'DONE')}
+                                            disabled={isDone || !hasStarted}
+                                            loading={taskUpdateId === a.id}
+                                        >
+                                            {isDone ? 'Выполнено' : 'Отметить выполненным'}
+                                        </Button>
+                                    </div>
+                                );
+                            })}
+                        </Card>
+                    )}
+
+                    {isMaster && (
+                        <Card
+                            title="Задачи исполнителей"
+                            style={{ marginBottom: 24 }}
+                        >
+                            {(workOrder?.executorAssignments || []).length === 0 && <Text type="secondary">Задач нет</Text>}
+                            {(() => {
+                                const groups: Record<number, any[]> = {};
+                                (workOrder?.executorAssignments || []).forEach(a => {
+                                    const key = a.executorId || -1;
+                                    if (!groups[key]) groups[key] = [];
+                                    groups[key].push(a);
+                                });
+                                return Object.entries(groups).map(([executorId, tasks]) => {
+                                    const name = tasks[0]?.executor?.name || 'Исполнитель не указан';
+                                    const totalSec = tasks.reduce((sum: number, t: any) => sum + getDurationSec(t), 0);
+                                    return (
+                                        <div key={executorId} style={{ marginBottom: 16 }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                                <Text strong>{name}</Text>
+                                                {totalSec > 0 && (
+                                                    <Text type="secondary">Итого по исполнителю: {formatDuration(totalSec)}</Text>
+                                                )}
+                                            </div>
+                                            {tasks.map((a: any) => {
+                                                const status = getTaskStatus(a);
+                                                const taskSec = getDurationSec(a);
+                                                return (
+                                                    <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #f5f5f5' }}>
+                                                        <div>
+                                                            <Text strong>{a.description || a.workType}</Text>
+                                                            <br />
+                                                            {taskSec > 0 && (
+                                                                <Text type="secondary" style={{ fontSize: 12 }}>Время: {formatDuration(taskSec)}</Text>
+                                                            )}
+                                                        </div>
+                                                        <Tag color={status === 'DONE' ? 'green' : status === 'IN_PROGRESS' ? 'gold' : 'default'}>
+                                                            {status === 'DONE' ? 'Готово' : status === 'IN_PROGRESS' ? 'В работе' : 'В ожидании'}
+                                                        </Tag>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                });
+                            })()}
+                        </Card>
                     )}
 
                     {/* Customer & Car */}
@@ -902,20 +1141,20 @@ const WorkOrderDetailPage: React.FC = () => {
                     </Card>
 
                     {/* Armaturka Section - Includes Fixed Services (Exclude Additional) */}
-                    {workOrder.executorAssignments?.some(a => (a.workType.startsWith('ARMATURA_') && a.workType !== 'ARMATURA_ADDITIONAL') || a.workType.startsWith('FIXED_')) && (
+                    {workOrder.executorAssignments?.some(a => (a.workType?.startsWith('ARMATURA_') && a.workType !== 'ARMATURA_ADDITIONAL') || a.workType?.startsWith('FIXED_')) && (
                         <Card title={<Space><ToolOutlined /> Арматурные работы (Антихром)</Space>} style={{ marginBottom: 24 }}>
                             <Row gutter={[16, 16]}>
-                                {workOrder.executorAssignments
-                                    .filter(a => (a.workType.startsWith('ARMATURA_') && a.workType !== 'ARMATURA_ADDITIONAL') || a.workType.startsWith('FIXED_'))
-                                    .filter(a => !isExecutor || a.executor.id === user?.id)
+                                {(workOrder.executorAssignments || [])
+                                    .filter(a => (a.workType?.startsWith('ARMATURA_') && a.workType !== 'ARMATURA_ADDITIONAL') || a.workType?.startsWith('FIXED_'))
+                                    .filter(a => !isExecutor || a.executor?.id === user?.id)
                                     .map(work => (
                                         <Col xs={24} sm={12} md={6} key={work.id}>
                                             <div style={{ padding: 12, background: '#fafafa', borderRadius: 8, height: '100%' }}>
-                                                <Text type="secondary" style={{ fontSize: '12px' }}>{work.description}</Text>
+                                                <Text type="secondary" style={{ fontSize: '12px' }}>{work.description || '—'}</Text>
                                                 <div style={{ margin: '4px 0' }}>
-                                                    <Text strong>{work.executor.name}</Text>
+                                                    <Text strong>{work.executor?.name || 'Не указан'}</Text>
                                                 </div>
-                                                <Tag color="blue">{work.amount.toLocaleString('ru-RU')} ₽</Tag>
+                                                {renderAmountAndTime(work)}
                                             </div>
                                         </Col>
                                     ))}
@@ -946,8 +1185,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                                 );
 
                                                 const executorId = assignment?.executor.id || data.executorId;
-                                                const executorName = assignment?.executor.name ||
-                                                    executors.find(u => u.id === data.executorId)?.name || '—';
+                                                const executorName = assignment?.executor?.name || '—';
 
                                                 // Executor sees only their own parts
                                                 if (isExecutor && executorId !== user?.id) {
@@ -976,8 +1214,8 @@ const WorkOrderDetailPage: React.FC = () => {
                                                         </td>
                                                         <td style={{ padding: '12px 8px' }}>
                                                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                                <Text strong>{executorName}</Text>
-                                                                {(assignment?.amount || 0) > 0 && <Text type="secondary" style={{ fontSize: 11 }}>{assignment!.amount.toLocaleString('ru-RU')} ₽</Text>}
+                                                            <Text strong>{executorName}</Text>
+                                                            {renderAmountAndTime(assignment)}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -998,8 +1236,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                         );
 
                                         const executorId = assignment?.executor.id || data.executorId;
-                                        const executorName = assignment?.executor.name ||
-                                            executors.find(u => u.id === data.executorId)?.name || '—';
+                                        const executorName = assignment?.executor?.name || '—';
 
                                         // Executor sees only their own parts
                                         if (isExecutor && executorId !== user?.id) {
@@ -1032,11 +1269,7 @@ const WorkOrderDetailPage: React.FC = () => {
                                                         <div>
                                                             <Text type="secondary" style={{ fontSize: 12 }}>Исполнитель: </Text>
                                                             <Text strong>{executorName}</Text>
-                                                            {(assignment?.amount || 0) > 0 && (
-                                                                <div>
-                                                                    <Text type="secondary" style={{ fontSize: 11 }}>{assignment!.amount.toLocaleString('ru-RU')} ₽</Text>
-                                                                </div>
-                                                            )}
+                                                            {renderAmountAndTime(assignment)}
                                                         </div>
                                                     </Space>
                                                 </Card>
@@ -1054,21 +1287,29 @@ const WorkOrderDetailPage: React.FC = () => {
 
                             {/* 1. ARMATURA_ADDITIONAL (Additional Services from Form) */}
                             {workOrder.executorAssignments?.filter(a => a.workType === 'ARMATURA_ADDITIONAL').map(a => {
-                                if (isExecutor && a.executor.id !== user?.id) return null;
+                                if (isExecutor && a.executor?.id !== user?.id) return null;
                                 return (
                                     <div key={a.id} style={{ marginBottom: 16, padding: 16, border: '1px solid #f0f0f0', borderRadius: 8 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                                            <Title level={5} style={{ margin: 0 }}>{a.description}</Title>
+                                            <Title level={5} style={{ margin: 0 }}>{a.description || 'Дополнительная услуга'}</Title>
                                             <Tag color="cyan">Дополнительная услуга</Tag>
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '8px 12px', borderRadius: 4, border: '1px solid #f5f5f5' }}>
                                             <Space orientation="vertical" size={0}>
-                                                <Text strong>{a.executor.name}</Text>
+                                                <Text strong>{a.executor?.name || 'Не указан'}</Text>
                                             </Space>
                                             <div style={{ textAlign: 'right' }}>
-                                                <Text strong>{a.amount.toLocaleString('ru-RU')} ₽</Text>
-                                                <br />
-                                                {a.isPaid && <Tag color="green" style={{ margin: 0 }}>Выплачено</Tag>}
+                                                {canShowAmountFor(a.executor?.id) && (a.amount || 0) > 0 && (
+                                                    <>
+                                                        <Text strong>{(a.amount || 0).toLocaleString('ru-RU')} ₽</Text><br />
+                                                        {a.isPaid && <Tag color="green" style={{ margin: 0 }}>Выплачено</Tag>}
+                                                    </>
+                                                )}
+                                                {getDurationSec(a) > 0 && (
+                                                    <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>
+                                                        {formatDuration(getDurationSec(a))}
+                                                    </Text>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -1091,7 +1332,7 @@ const WorkOrderDetailPage: React.FC = () => {
 
                                 // Executor sees only their own assignments in this service
                                 const filteredAssignments = isExecutor
-                                    ? relatedAssignments.filter(a => a.executor.id === user?.id)
+                                    ? relatedAssignments.filter(a => a.executor?.id === user?.id)
                                     : relatedAssignments;
 
                                 // If executor has no assignments in this block, hide the block
@@ -1111,13 +1352,21 @@ const WorkOrderDetailPage: React.FC = () => {
                                                 {filteredAssignments.map(a => (
                                                     <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '8px 12px', borderRadius: 4, border: '1px solid #f5f5f5' }}>
                                                         <Space orientation="vertical" size={0}>
-                                                            <Text strong>{a.executor.name}</Text>
-                                                            <Text type="secondary" style={{ fontSize: 11 }}>{a.description}</Text>
+                                                            <Text strong>{a.executor?.name || 'Не указан'}</Text>
+                                                            <Text type="secondary" style={{ fontSize: 11 }}>{a.description || '—'}</Text>
                                                         </Space>
                                                         <div style={{ textAlign: 'right' }}>
-                                                            <Text strong>{a.amount.toLocaleString('ru-RU')} ₽</Text>
-                                                            <br />
-                                                            {a.isPaid && <Tag color="green" style={{ margin: 0 }}>Выплачено</Tag>}
+                                                            {canShowAmountFor(a.executor?.id) && (a.amount || 0) > 0 && (
+                                                                <>
+                                                                    <Text strong>{(a.amount || 0).toLocaleString('ru-RU')} ₽</Text><br />
+                                                                    {a.isPaid && <Tag color="green" style={{ margin: 0 }}>Выплачено</Tag>}
+                                                                </>
+                                                            )}
+                                                            {getDurationSec(a) > 0 && (
+                                                                <Text type="secondary" style={{ fontSize: 11, display: 'block' }}>
+                                                                    {formatDuration(getDurationSec(a))}
+                                                                </Text>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ))}
@@ -1143,7 +1392,7 @@ const WorkOrderDetailPage: React.FC = () => {
 
             {/* Assign Modal */}
             <Modal
-                title={`Назначить ${assignType === 'MASTER' ? 'мастера' : 'исполнителя'}`}
+                title="Назначить мастера"
                 open={isAssignModalVisible}
                 onOk={handleAssign}
                 onCancel={() => setIsAssignModalVisible(false)}
@@ -1156,7 +1405,7 @@ const WorkOrderDetailPage: React.FC = () => {
                     onChange={setSelectedUserId}
                     value={selectedUserId}
                 >
-                    {(assignType === 'MASTER' ? masters : executors).map(u => (
+                    {(masters || []).map(u => (
                         <Option key={u.id} value={u.id}>{u.name}</Option>
                     ))}
                 </Select>

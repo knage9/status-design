@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -16,9 +16,33 @@ export class UsersController {
     }
 
     @Get()
-    @Roles('ADMIN')
-    findAll() {
-        return this.usersService.findAll();
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
+    findAll(@Request() req, @Query('role') role?: string) {
+        const userRole = req.user?.role;
+        
+        // Если указана конкретная роль, фильтруем
+        if (role === 'executor' || role === 'EXECUTOR' || role === 'PAINTER') {
+            return this.usersService.findExecutors();
+        }
+        
+        // ADMIN и MANAGER могут получить всех пользователей (для назначения мастеров и т.д.)
+        if (userRole === 'ADMIN' || userRole === 'MANAGER') {
+            return this.usersService.findAll();
+        }
+        
+        // MASTER получает только исполнителей
+        if (userRole === 'MASTER') {
+            return this.usersService.findExecutors();
+        }
+        
+        // По умолчанию для других ролей возвращаем исполнителей
+        return this.usersService.findExecutors();
+    }
+
+    @Get('executors')
+    @Roles('ADMIN', 'MANAGER', 'MASTER')
+    findExecutors() {
+        return this.usersService.findExecutors();
     }
 
     @Get(':id')

@@ -48,57 +48,121 @@ function AppContent() {
     return null;
   }
 
-  const menuItems = [
-    {
+  // Define menu items based on role
+  const getMenuItems = () => {
+    const role = user?.role;
+    const items: any[] = [];
+
+    // Dashboard - доступен всем
+    items.push({
       key: 'dashboard',
       icon: <DashboardOutlined />,
       label: <Link to="/">Дашборд</Link>,
-    },
-    {
-      key: 'reviews',
-      icon: <FileTextOutlined />,
-      label: <Link to="/reviews">Отзывы</Link>,
-    },
-    {
-      key: 'posts',
-      icon: <ReadOutlined />,
-      label: <Link to="/posts">Новости/Статьи</Link>,
-    },
-    {
-      key: 'portfolio',
-      icon: <PictureOutlined />,
-      label: <Link to="/portfolio">Портфолио</Link>,
-    },
-    {
-      key: 'requests',
-      icon: <FileDoneOutlined />,
-      label: <Link to="/requests">Заявки</Link>,
-    },
-    {
-      key: 'work-orders',
-      icon: <FileTextOutlined />,
-      label: <Link to="/work-orders">Заказ-наряды</Link>,
-    },
-    {
-      key: 'load-chart',
-      icon: <DashboardOutlined />,
-      label: <Link to="/load-chart">График загрузки</Link>,
-    },
-    {
-      key: 'executor-stats',
-      icon: <DollarOutlined />,
-      label: <Link to="/executor-stats">Статистика выплат</Link>,
-    },
-  ];
-
-  // Add Users menu item for admins only
-  if (user?.role === 'ADMIN') {
-    menuItems.push({
-      key: 'users',
-      icon: <TeamOutlined />,
-      label: <Link to="/users">Пользователи</Link>,
     });
-  }
+
+    // ADMIN - все разделы
+    if (role === 'ADMIN') {
+      items.push(
+        {
+          key: 'reviews',
+          icon: <FileTextOutlined />,
+          label: <Link to="/reviews">Отзывы</Link>,
+        },
+        {
+          key: 'posts',
+          icon: <ReadOutlined />,
+          label: <Link to="/posts">Новости/Статьи</Link>,
+        },
+        {
+          key: 'portfolio',
+          icon: <PictureOutlined />,
+          label: <Link to="/portfolio">Портфолио</Link>,
+        },
+        {
+          key: 'requests',
+          icon: <FileDoneOutlined />,
+          label: <Link to="/requests">Заявки</Link>,
+        },
+        {
+          key: 'work-orders',
+          icon: <FileTextOutlined />,
+          label: <Link to="/work-orders">Заказ-наряды</Link>,
+        },
+        {
+          key: 'load-chart',
+          icon: <DashboardOutlined />,
+          label: <Link to="/load-chart">График загрузки</Link>,
+        },
+        {
+          key: 'executor-stats',
+          icon: <DollarOutlined />,
+          label: <Link to="/executor-stats">Статистика выплат</Link>,
+        },
+        {
+          key: 'users',
+          icon: <TeamOutlined />,
+          label: <Link to="/users">Пользователи</Link>,
+        }
+      );
+    }
+    // MANAGER - Дашборд, Заявки, Заказ-наряды, График загрузки, Новости/Статьи (опционально)
+    else if (role === 'MANAGER') {
+      items.push(
+        {
+          key: 'posts',
+          icon: <ReadOutlined />,
+          label: <Link to="/posts">Новости/Статьи</Link>,
+        },
+        {
+          key: 'requests',
+          icon: <FileDoneOutlined />,
+          label: <Link to="/requests">Заявки</Link>,
+        },
+        {
+          key: 'work-orders',
+          icon: <FileTextOutlined />,
+          label: <Link to="/work-orders">Заказ-наряды</Link>,
+        },
+        {
+          key: 'load-chart',
+          icon: <DashboardOutlined />,
+          label: <Link to="/load-chart">График загрузки</Link>,
+        }
+      );
+    }
+    // MASTER - Дашборд, Заявки, Заказ-наряды, График загрузки
+    else if (role === 'MASTER') {
+      items.push(
+        {
+          key: 'requests',
+          icon: <FileDoneOutlined />,
+          label: <Link to="/requests">Заявки</Link>,
+        },
+        {
+          key: 'work-orders',
+          icon: <FileTextOutlined />,
+          label: <Link to="/work-orders">Заказ-наряды</Link>,
+        },
+        {
+          key: 'load-chart',
+          icon: <DashboardOutlined />,
+          label: <Link to="/load-chart">График загрузки</Link>,
+        }
+      );
+    }
+    // EXECUTOR - только Дашборд и Заказ-наряды
+    else if (role === 'EXECUTOR') {
+      items.push({
+        key: 'work-orders',
+        icon: <FileTextOutlined />,
+        label: <Link to="/work-orders">Заказ-наряды</Link>,
+      });
+    }
+
+    return items;
+  };
+
+  const menuItems = getMenuItems();
 
   const getRoleBadge = (role: string) => {
     const roleMap: Record<string, { text: string; color: string }> = {
@@ -381,18 +445,18 @@ function AppContent() {
             }}>
               <Routes>
                 <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
-                <Route path="/posts" element={<ProtectedRoute><PostsPage /></ProtectedRoute>} />
-                <Route path="/portfolio" element={<ProtectedRoute><PortfolioPage /></ProtectedRoute>} />
-                <Route path="/requests" element={<ProtectedRoute><RequestsPage /></ProtectedRoute>} />
-                <Route path="/requests/:id" element={<ProtectedRoute><RequestDetailPage /></ProtectedRoute>} />
-                <Route path="/work-orders" element={<ProtectedRoute><WorkOrdersPage /></ProtectedRoute>} />
-                <Route path="/work-orders/new" element={<ProtectedRoute><WorkOrderCreatePage /></ProtectedRoute>} />
-                <Route path="/work-orders/:id" element={<ProtectedRoute><WorkOrderDetailPage /></ProtectedRoute>} />
-                <Route path="/work-orders/:id/edit" element={<ProtectedRoute><WorkOrderEditPage /></ProtectedRoute>} />
-                <Route path="/executor-stats" element={<ProtectedRoute><ExecutorStatsPage /></ProtectedRoute>} />
-                <Route path="/load-chart" element={<ProtectedRoute><LoadChartPage /></ProtectedRoute>} />
-                <Route path="/users" element={<ProtectedRoute requiredRole="ADMIN"><UsersPage /></ProtectedRoute>} />
+                <Route path="/reviews" element={<ProtectedRoute allowedRoles={['ADMIN']}><ReviewsPage /></ProtectedRoute>} />
+                <Route path="/posts" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']}><PostsPage /></ProtectedRoute>} />
+                <Route path="/portfolio" element={<ProtectedRoute allowedRoles={['ADMIN']}><PortfolioPage /></ProtectedRoute>} />
+                <Route path="/requests" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><RequestsPage /></ProtectedRoute>} />
+                <Route path="/requests/:id" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><RequestDetailPage /></ProtectedRoute>} />
+                <Route path="/work-orders" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER', 'EXECUTOR']}><WorkOrdersPage /></ProtectedRoute>} />
+                <Route path="/work-orders/new" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><WorkOrderCreatePage /></ProtectedRoute>} />
+                <Route path="/work-orders/:id" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER', 'EXECUTOR']}><WorkOrderDetailPage /></ProtectedRoute>} />
+                <Route path="/work-orders/:id/edit" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><WorkOrderEditPage /></ProtectedRoute>} />
+                <Route path="/executor-stats" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']}><ExecutorStatsPage /></ProtectedRoute>} />
+                <Route path="/load-chart" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><LoadChartPage /></ProtectedRoute>} />
+                <Route path="/users" element={<ProtectedRoute allowedRoles={['ADMIN']}><UsersPage /></ProtectedRoute>} />
               </Routes>
             </div>
           </Content>

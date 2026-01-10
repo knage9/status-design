@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space, DatePicker, Typography, FloatButton, Grid, Divider } from 'antd';
-import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined, UserOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Table, Button, Tag, Flex, Card, App, Modal, Form, Input, Select, Space, DatePicker, Typography, FloatButton, Grid, Divider, Row, Col } from 'antd';
+import { PlusOutlined, DeleteOutlined, PhoneOutlined, CarOutlined, EyeOutlined, ClockCircleOutlined, EditOutlined, UserOutlined, CalendarOutlined, CheckOutlined, CloseOutlined, FilterOutlined, ClearOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -21,9 +21,10 @@ interface Request {
     source: string;
     status: string;
     createdAt: string;
-    arrivalAt?: string;
+    arrivalDate?: string;
     startedAt?: string;
     completedAt?: string;
+    managerComment?: string;
     manager?: {
         name: string;
     };
@@ -31,22 +32,45 @@ interface Request {
 
 const RequestsPage: React.FC = () => {
     const [requests, setRequests] = useState<Request[]>([]);
+    const [filteredRequests, setFilteredRequests] = useState<Request[]>([]);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRecord, setEditingRecord] = useState<Request | null>(null);
+    const [filterForm] = Form.useForm();
     const [form] = Form.useForm();
     const { notification, modal } = App.useApp();
     const navigate = useNavigate();
-    useAuth();
+    const { user } = useAuth();
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
     const isTablet = screens.md && !screens.lg; // 768px - 992px
+    const isManager = user?.role === 'MANAGER' || user?.role === 'ADMIN';
+    const isMaster = user?.role === 'MASTER';
+    
+    // Фильтры
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
+    const [dateRangeFilter, setDateRangeFilter] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+    const [searchText, setSearchText] = useState<string>('');
+    const [managerFilter, setManagerFilter] = useState<string | null>(null);
+    
+    // Инициализация filteredRequests с requests
+    useEffect(() => {
+        if (requests.length > 0 && filteredRequests.length === 0) {
+            setFilteredRequests(requests);
+        }
+    }, [requests]);
 
-    const fetchRequests = async () => {
+    const fetchRequests = async (searchQueryText?: string) => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/requests/admin');
+            const response = await axios.get('/api/requests/admin', {
+                params: {
+                    searchQuery: searchQueryText !== undefined ? searchQueryText : (searchText || undefined),
+                }
+            });
             setRequests(response.data);
+            // Применяем фильтры к полученным данным сразу
+            applyFilters(response.data);
         } catch (error) {
             console.error('Failed to fetch requests:', error);
             notification.error({
@@ -58,9 +82,71 @@ const RequestsPage: React.FC = () => {
         }
     };
 
+    const applyFilters = (requestsToFilter?: Request[]) => {
+        const sourceData = requestsToFilter || requests;
+        let filtered = [...sourceData];
+
+        // Фильтр по статусу
+        if (statusFilter) {
+            filtered = filtered.filter(r => r.status === statusFilter);
+        }
+
+        // Фильтр по дате создания
+        if (dateRangeFilter && dateRangeFilter[0] && dateRangeFilter[1]) {
+            const startDate = dateRangeFilter[0].startOf('day').toISOString();
+            const endDate = dateRangeFilter[1].endOf('day').toISOString();
+            filtered = filtered.filter(r => {
+                const createdDate = new Date(r.createdAt).toISOString();
+                return createdDate >= startDate && createdDate <= endDate;
+            });
+        }
+
+        // Фильтр по менеджеру
+        if (managerFilter) {
+            filtered = filtered.filter(r => r.manager?.name === managerFilter);
+        }
+
+        // Локальный поиск по имени/телефону/авто/номеру заявки (если не менеджер или для дополнительной фильтрации)
+        // Для менеджера основной поиск уже применен на сервере через API
+        if (searchText && !isManager) {
+            const searchLower = searchText.toLowerCase();
+            filtered = filtered.filter(r => 
+                r.name.toLowerCase().includes(searchLower) ||
+                r.phone.includes(searchText) ||
+                r.carModel.toLowerCase().includes(searchLower) ||
+                r.requestNumber.toLowerCase().includes(searchLower)
+            );
+        }
+
+        setFilteredRequests(filtered);
+    };
+
+    const handleFilterChange = () => {
+        applyFilters();
+    };
+
+    const handleClearFilters = () => {
+        setStatusFilter(null);
+        setDateRangeFilter(null);
+        setManagerFilter(null);
+        const clearedSearch = '';
+        setSearchText(clearedSearch);
+        filterForm.resetFields();
+        fetchRequests(clearedSearch);
+    };
+
     useEffect(() => {
         fetchRequests();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Применяем фильтры при изменении фильтров или заявок
+    useEffect(() => {
+        if (requests.length >= 0) {
+            applyFilters();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [statusFilter, dateRangeFilter, managerFilter, requests]);
 
     const handleCreate = () => {
         setEditingRecord(null);
@@ -72,7 +158,8 @@ const RequestsPage: React.FC = () => {
         setEditingRecord(request);
         form.setFieldsValue({
             ...request,
-            arrivalAt: request.arrivalAt ? dayjs(request.arrivalAt) : null,
+            // Не загружаем arrivalDate и managerComment в форму редактирования
+            // Эти поля заполняются только при изменении статуса
         });
         setIsModalOpen(true);
     };
@@ -81,7 +168,6 @@ const RequestsPage: React.FC = () => {
         try {
             const data = {
                 ...values,
-                arrivalAt: values.arrivalAt ? values.arrivalAt.toISOString() : null,
                 discount: values.discount ? Number(values.discount) : 0,
             };
 
@@ -119,12 +205,21 @@ const RequestsPage: React.FC = () => {
     };
 
     const getStatusColor = (status: string) => {
-        return { NEW: 'orange', IN_PROGRESS: 'blue', COMPLETED: 'green', CANCELLED: 'red' }[status] || 'default';
+        const colors: Record<string, string> = {
+            NOVA: 'orange',
+            SDELKA: 'cyan',
+            OTKLONENO: 'red',
+            ZAVERSHENA: 'green',
+        };
+        return colors[status] || 'default';
     };
 
     const getStatusText = (status: string) => {
         const statusMap: Record<string, string> = {
-            NEW: 'Ожидает', IN_PROGRESS: 'В работе', COMPLETED: 'Завершена', CANCELLED: 'Отменена'
+            NOVA: 'Новая',
+            SDELKA: 'Сделка',
+            OTKLONENO: 'Отклонено',
+            ZAVERSHENA: 'Завершена',
         };
         return statusMap[status] || status;
     };
@@ -195,6 +290,11 @@ const RequestsPage: React.FC = () => {
                     <Text type="secondary" style={{ fontSize: 12 }}>
                         Услуга: {getServiceName(request.mainService)}
                     </Text>
+                    {request.arrivalDate && (
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                            <CalendarOutlined /> Приезд: {dayjs(request.arrivalDate).format('DD.MM.YYYY HH:mm')}
+                        </Text>
+                    )}
                     {request.manager && (
                         <Text type="secondary" style={{ fontSize: 12 }}>
                             Менеджер: {request.manager.name}
@@ -216,29 +316,33 @@ const RequestsPage: React.FC = () => {
                         Открыть
                     </Button>
                     <Flex gap={8}>
-                        <Button
-                            icon={<EditOutlined />}
-                            size="large"
-                            style={{ flex: 1 }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(request);
-                            }}
-                        >
-                            Изменить
-                        </Button>
-                        <Button
-                            danger
-                            icon={<DeleteOutlined />}
-                            size="large"
-                            style={{ flex: 1 }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(request.id);
-                            }}
-                        >
-                            Удалить
-                        </Button>
+                        {(isManager || user?.role === 'ADMIN') && (
+                            <Button
+                                icon={<EditOutlined />}
+                                size="large"
+                                style={{ flex: 1 }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEdit(request);
+                                }}
+                            >
+                                Изменить
+                            </Button>
+                        )}
+                        {user?.role === 'ADMIN' && (
+                            <Button
+                                danger
+                                icon={<DeleteOutlined />}
+                                size="large"
+                                style={{ flex: 1 }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(request.id);
+                                }}
+                            >
+                                Удалить
+                            </Button>
+                        )}
                     </Flex>
                 </Flex>
             </Flex>
@@ -302,11 +406,17 @@ const RequestsPage: React.FC = () => {
             dataIndex: 'status',
             key: 'status',
             width: isTablet ? 100 : 120,
-            filters: [
-                { text: 'Ожидает', value: 'NEW' },
-                { text: 'В работе', value: 'IN_PROGRESS' },
-                { text: 'Завершена', value: 'COMPLETED' },
-                { text: 'Отменена', value: 'CANCELLED' },
+            filters: isManager ? [
+                { text: 'Новая', value: 'NOVA' },
+                { text: 'Сделка', value: 'SDELKA' },
+                { text: 'Отклонено', value: 'OTKLONENO' },
+            ] : isMaster ? [
+                { text: 'Сделка', value: 'SDELKA' },
+            ] : [
+                { text: 'Новая', value: 'NOVA' },
+                { text: 'Сделка', value: 'SDELKA' },
+                { text: 'Отклонено', value: 'OTKLONENO' },
+                { text: 'Завершена', value: 'ZAVERSHENA' },
             ],
             onFilter: (value: any, record: Request) => record.status === value,
             render: (status: string) => (
@@ -340,22 +450,22 @@ const RequestsPage: React.FC = () => {
         },
         {
             title: 'Прибытие',
-            dataIndex: 'arrivalAt',
-            key: 'arrivalAt',
+            dataIndex: 'arrivalDate',
+            key: 'arrivalDate',
             width: isTablet ? 110 : 140,
             sorter: (a: Request, b: Request) => {
-                if (!a.arrivalAt) return 1;
-                if (!b.arrivalAt) return -1;
-                return new Date(a.arrivalAt).getTime() - new Date(b.arrivalAt).getTime();
+                if (!a.arrivalDate) return 1;
+                if (!b.arrivalDate) return -1;
+                return new Date(a.arrivalDate).getTime() - new Date(b.arrivalDate).getTime();
             },
             render: (date: string) => date ? dayjs(date).format('DD.MM.YYYY HH:mm') : '—',
         },
         {
             title: 'Действия',
             key: 'actions',
-            width: isTablet ? 100 : 150,
+            width: isTablet ? 100 : 180,
             render: (_: any, record: Request) => (
-                <Space size="small">
+                <Space size="small" wrap>
                     <Button
                         type="primary"
                         size={isTablet ? 'small' : 'middle'}
@@ -364,17 +474,23 @@ const RequestsPage: React.FC = () => {
                     >
                         {!isTablet && 'Открыть'}
                     </Button>
-                    <Button
-                        size={isTablet ? 'small' : 'middle'}
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(record)}
-                    />
-                    <Button
-                        danger
-                        size={isTablet ? 'small' : 'middle'}
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(record.id)}
-                    />
+                    {(isManager || user?.role === 'ADMIN') && (
+                        <Button
+                            size={isTablet ? 'small' : 'middle'}
+                            icon={<EditOutlined />}
+                            onClick={() => handleEdit(record)}
+                        >
+                            {!isTablet && 'Изменить'}
+                        </Button>
+                    )}
+                    {user?.role === 'ADMIN' && (
+                        <Button
+                            danger
+                            size={isTablet ? 'small' : 'middle'}
+                            icon={<DeleteOutlined />}
+                            onClick={() => handleDelete(record.id)}
+                        />
+                    )}
                 </Space>
             ),
         },
@@ -386,28 +502,135 @@ const RequestsPage: React.FC = () => {
                 title="Заявки"
                 extra={
                     !isMobile && (
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={handleCreate}
-                        >
-                            Создать заявку
-                        </Button>
+                        <Space>
+                            {isManager && (
+                                <Button
+                                    icon={<ClearOutlined />}
+                                    onClick={handleClearFilters}
+                                >
+                                    Сбросить фильтры
+                                </Button>
+                            )}
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={handleCreate}
+                            >
+                                Создать заявку
+                            </Button>
+                        </Space>
                     )
                 }
             >
+                {/* Фильтры для менеджера */}
+                {isManager && (
+                    <Card size="small" style={{ marginBottom: 16 }} title={<><FilterOutlined /> Фильтры</>}>
+                        <Form form={filterForm} layout="vertical">
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12} md={6}>
+                                    <Form.Item label="Поиск">
+                                        <Input.Search
+                                            placeholder="Имя, телефон, авто, № заявки"
+                                            allowClear
+                                            value={searchText}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setSearchText(value);
+                                                // Дебаунс для поиска через API
+                                                clearTimeout((window as any).searchTimeout);
+                                                (window as any).searchTimeout = setTimeout(() => {
+                                                    if (isManager) {
+                                                        fetchRequests(value);
+                                                    } else {
+                                                        applyFilters();
+                                                    }
+                                                }, 500);
+                                            }}
+                                            onSearch={(value) => {
+                                                setSearchText(value);
+                                                fetchRequests(value);
+                                            }}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12} md={6}>
+                                    <Form.Item label="Статус">
+                                        <Select
+                                            placeholder="Все статусы"
+                                            allowClear
+                                            value={statusFilter}
+                                            onChange={(value) => {
+                                                setStatusFilter(value || null);
+                                                handleFilterChange();
+                                            }}
+                                        >
+                                            <Select.Option value="NOVA">Новая</Select.Option>
+                                            <Select.Option value="SDELKA">Сделка</Select.Option>
+                                            <Select.Option value="OTKLONENO">Отклонено</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12} md={6}>
+                                    <Form.Item label="Дата создания">
+                                        <DatePicker.RangePicker
+                                            style={{ width: '100%' }}
+                                            value={dateRangeFilter}
+                                            onChange={(dates) => {
+                                                setDateRangeFilter(dates as any);
+                                                handleFilterChange();
+                                            }}
+                                            format="DD.MM.YYYY"
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12} md={6}>
+                                    <Form.Item label="Ответственный менеджер">
+                                        <Select
+                                            placeholder="Все"
+                                            allowClear
+                                            value={managerFilter}
+                                            onChange={(value) => {
+                                                setManagerFilter(value || null);
+                                                handleFilterChange();
+                                            }}
+                                        >
+                                            {Array.from(new Set(requests.map(r => r.manager?.name).filter(Boolean))).map(name => (
+                                                <Select.Option key={name as string} value={name as string}>
+                                                    {name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Flex justify="space-between" align="center">
+                                <Text type="secondary">
+                                    Найдено: {filteredRequests.length} из {requests.length}
+                                </Text>
+                                <Button
+                                    icon={<ClearOutlined />}
+                                    onClick={handleClearFilters}
+                                    size="small"
+                                >
+                                    Сбросить
+                                </Button>
+                            </Flex>
+                        </Form>
+                    </Card>
+                )}
+
                 {/* Mobile Card List */}
                 {isMobile ? (
                     <div>
                         {loading ? (
                             <Card loading={true} />
-                        ) : requests.length > 0 ? (
-                            requests.map(request => (
+                        ) : filteredRequests.length > 0 ? (
+                            filteredRequests.map(request => (
                                 <MobileRequestCard key={request.id} request={request} />
                             ))
                         ) : (
                             <Card>
-                                <Text type="secondary">Нет заявок</Text>
+                                <Text type="secondary">Нет заявок{statusFilter || dateRangeFilter || searchText ? ' по выбранным фильтрам' : ''}</Text>
                             </Card>
                         )}
                     </div>
@@ -415,7 +638,7 @@ const RequestsPage: React.FC = () => {
                     /* Desktop/Tablet Table */
                     <Table
                         columns={columns}
-                        dataSource={requests}
+                        dataSource={filteredRequests}
                         rowKey="id"
                         loading={loading}
                         pagination={{ pageSize: 20, showSizeChanger: !isTablet }}
@@ -486,15 +709,11 @@ const RequestsPage: React.FC = () => {
 
                     <Form.Item name="status" label="Статус" rules={[{ required: true }]}>
                         <Select>
-                            <Select.Option value="NEW">Ожидает</Select.Option>
-                            <Select.Option value="IN_PROGRESS">В работе</Select.Option>
-                            <Select.Option value="COMPLETED">Завершена</Select.Option>
-                            <Select.Option value="CANCELLED">Отменена</Select.Option>
+                            <Select.Option value="NOVA">Новая</Select.Option>
+                            <Select.Option value="SDELKA">Сделка</Select.Option>
+                            <Select.Option value="OTKLONENO">Отклонено</Select.Option>
+                            <Select.Option value="ZAVERSHENA">Завершена</Select.Option>
                         </Select>
-                    </Form.Item>
-
-                    <Form.Item name="arrivalAt" label="Время прибытия">
-                        <DatePicker showTime format="DD.MM.YYYY HH:mm" style={{ width: '100%' }} />
                     </Form.Item>
 
                     <Form.Item name="additionalServices" label="Дополнительные услуги">
@@ -511,7 +730,7 @@ const RequestsPage: React.FC = () => {
                     </Form.Item>
 
                     <Form.Item name="comment" label="Комментарий">
-                        <Input.TextArea rows={4} />
+                        <Input.TextArea rows={4} placeholder="Общий комментарий к заявке" />
                     </Form.Item>
 
                     <Form.Item name="discount" label="Скидка (%)">
@@ -530,6 +749,7 @@ const RequestsPage: React.FC = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+
         </div>
     );
 };
