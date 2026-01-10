@@ -11,9 +11,9 @@ RUN npm run build
 # Stage 2: Build backend
 FROM node:20-alpine AS backend-builder
 WORKDIR /app
-COPY backend/package*.json ./
+COPY package*.json ./
 RUN npm ci
-COPY backend/ ./
+COPY . ./
 COPY --from=admin-client-builder /app/admin-client/dist ./admin-client/dist
 RUN npm run build
 
@@ -22,7 +22,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Установка зависимостей только для production
-COPY backend/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production
 
 # Копируем собранные файлы
@@ -30,7 +30,7 @@ COPY --from=backend-builder /app/dist ./dist
 COPY --from=admin-client-builder /app/admin-client/dist ./admin-client/dist
 
 # Копируем необходимые файлы
-COPY backend/prisma ./prisma
+COPY prisma ./prisma
 
 # Создаем директорию для загрузок
 RUN mkdir -p uploads
