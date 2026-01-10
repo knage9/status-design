@@ -23,7 +23,7 @@ WORKDIR /app
 
 # Установка зависимостей только для production
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Копируем собранные файлы
 COPY --from=backend-builder /app/dist ./dist
