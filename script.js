@@ -1,5 +1,5 @@
 // Main Page Functionality (index.html)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Reviews slider functionality
     const reviewsContainer = document.querySelector('.reviews__container');
     const prevBtn = document.querySelector('.reviews__nav-btn--prev');
@@ -22,45 +22,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 {
                     text: "Делал антихром — результат превзошёл ожидания. Машина заиграла по-новому...",
                     image: "img/review-3.png",
-                    tags: ["Li9", "Карбон"]
+                    tags: ["Li9", "Антихром"]
                 }
             ]
         },
         {
             main: {
-                text: "Шумоизоляция выполнена на высшем уровне! Теперь в салоне абсолютная тишина, даже на высокой скорости. Рекомендую всем владельцам премиальных авто.",
+                text: "Заказывал детали в карбоне — получилось даже лучше, чем ожидал. Всё аккуратно...",
                 image: "img/review-2.png",
-                tags: ["BMW X7", "Шумоизоляция", "Премиум"]
+                tags: ["GLS Майбах", "Карбон"]
             },
             sides: [
                 {
-                    text: "Карбоновые детали преобразили мою машину полностью. Качество на высоте...",
+                    text: "Делал антихром — результат превзошёл ожидания. Машина заиграла по-новому...",
                     image: "img/review-3.png",
-                    tags: ["Mercedes S-Class", "Карбон"]
+                    tags: ["Li9", "Антихром"]
                 },
                 {
-                    text: "Антихром с покраской сделали идеально. Внимание к деталям поражает...",
+                    text: "Сначала сомневался, как будет смотреться матовый оттенок на моей машине, но ребята сделали просто идеально! Покраска ровная, оттенок глубокий, ощущение премиум-класса сразу заметно.",
                     image: "img/review-1.png",
-                    tags: ["Audi A8", "Антихром"]
+                    tags: ["GAC GS8", "Антихром", "Решётка радиатора"]
                 }
             ]
         },
         {
             main: {
-                text: "Полная шумоизоляция и антихром в комплексе. Машина стала как новая - тише, стильнее, комфортнее. Спасибо за профессиональную работу!",
+                text: "Делал антихром — результат превзошёл ожидания. Машина заиграла по-новому...",
                 image: "img/review-3.png",
-                tags: ["Porsche Cayenne", "Комплекс", "Шумоизоляция"]
+                tags: ["Li9", "Антихром"]
             },
             sides: [
                 {
-                    text: "Детали в карбоне выглядят потрясающе. Монтаж выполнен идеально...",
+                    text: "Сначала сомневался, как будет смотреться матовый оттенок на моей машине, но ребята сделали просто идеально! Покраска ровная, оттенок глубокий, ощущение премиум-класса сразу заметно.",
                     image: "img/review-1.png",
-                    tags: ["Range Rover", "Карбон"]
+                    tags: ["GAC GS8", "Антихром", "Решётка радиатора"]
                 },
                 {
-                    text: "Антихром преобразил внешний вид автомобиля. Теперь он выглядит намного солиднее...",
+                    text: "Заказывал детали в карбоне — получилось даже лучше, чем ожидал. Всё аккуратно...",
                     image: "img/review-2.png",
-                    tags: ["Lexus LX", "Антихром"]
+                    tags: ["GLS Майбах", "Карбон"]
                 }
             ]
         }
@@ -72,13 +72,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateReviews() {
         const data = reviewsData[currentSlide];
 
-        // Add fade-out class to all cards
+        // Add fade-out class to all cards and tag containers
         const allCards = document.querySelectorAll('.review-card');
-        allCards.forEach(card => {
-            card.classList.add('fade-out');
-        });
+        const allTags = document.querySelectorAll('.review-card__tags');
 
-        // Update content after fade-out animation starts
+        allCards.forEach(card => card.classList.add('fade-out'));
+        allTags.forEach(tag => tag.classList.add('fade-out'));
+
+        // Update content after fade-out animation completes (0.4s match)
         setTimeout(() => {
             // Update main card
             const mainCard = document.querySelector('.review-card--main');
@@ -98,6 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Update side cards
             const sideCards = document.querySelectorAll('.review-card--side');
+            const sideTagsGroups = document.querySelectorAll('.review-card__tags--side');
+
             data.sides.forEach((sideData, index) => {
                 if (sideCards[index]) {
                     const sideText = sideCards[index].querySelector('.review-card__text');
@@ -105,46 +108,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (sideText) sideText.textContent = sideData.text;
                     if (sideImage) sideImage.src = sideData.image;
+                }
 
-                    // Update tags for side cards
-                    const sideTagsContainers = document.querySelectorAll('.review-card__tags--side');
-                    if (sideTagsContainers[index]) {
-                        sideTagsContainers[index].innerHTML = sideData.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
-                    }
+                if (sideTagsGroups[index]) {
+                    sideTagsGroups[index].innerHTML = sideData.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
                 }
             });
 
-            // Remove fade-out and add fade-in classes
+            // Remove fade-out and add fade-in
             allCards.forEach(card => {
                 card.classList.remove('fade-out');
                 card.classList.add('fade-in');
             });
+            allTags.forEach(tag => {
+                tag.classList.remove('fade-out');
+                tag.classList.add('fade-in');
+            });
 
-            // Remove fade-in class after animation completes
+            // Clean up animation classes
             setTimeout(() => {
-                allCards.forEach(card => {
-                    card.classList.remove('fade-in');
-                });
+                allCards.forEach(card => card.classList.remove('fade-in'));
+                allTags.forEach(tag => tag.classList.remove('fade-in'));
             }, 400);
 
-        }, 200);
+        }, 400);
 
         // Update button states
         if (prevBtn && nextBtn) {
-            prevBtn.disabled = currentSlide === 0;
-            nextBtn.disabled = currentSlide >= maxSlides;
+            prevBtn.disabled = false; // Allow infinite-like feel if desired, or keep logic
+            nextBtn.disabled = false;
+
+            // If you want standard bounds:
+            // prevBtn.disabled = currentSlide === 0;
+            // nextBtn.disabled = currentSlide >= maxSlides;
         }
     }
 
     if (prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', function() {
+        prevBtn.addEventListener('click', function () {
             if (currentSlide > 0) {
                 currentSlide--;
                 updateReviews();
             }
         });
 
-        nextBtn.addEventListener('click', function() {
+        nextBtn.addEventListener('click', function () {
             if (currentSlide < maxSlides) {
                 currentSlide++;
                 updateReviews();
@@ -160,16 +168,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let endX = 0;
         let endY = 0;
 
-        mainCard.addEventListener('touchstart', function(e) {
+        mainCard.addEventListener('touchstart', function (e) {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
         });
 
-        mainCard.addEventListener('touchmove', function(e) {
+        mainCard.addEventListener('touchmove', function (e) {
             e.preventDefault(); // Prevent scrolling while swiping
         });
 
-        mainCard.addEventListener('touchend', function(e) {
+        mainCard.addEventListener('touchend', function (e) {
             endX = e.changedTouches[0].clientX;
             endY = e.changedTouches[0].clientY;
 
@@ -200,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const description = item.querySelector('.faq-description');
 
             if (header) {
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function () {
                     const isActive = item.classList.contains('active');
 
                     // Close all FAQ items
@@ -255,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle main service selection
     if (mainOptions.length > 0) {
         mainOptions.forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function () {
                 const service = this.getAttribute('data-service');
 
                 // Remove active class from all options
@@ -291,12 +299,12 @@ document.addEventListener('DOMContentLoaded', function() {
 // Popup будет подключаться отдельно для главной страницы
 
 // Back to Top Button Functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const backToTopBtn = document.getElementById('backToTopBtn');
 
     if (backToTopBtn) {
         // Smooth scroll to top when button is clicked
-        backToTopBtn.addEventListener('click', function() {
+        backToTopBtn.addEventListener('click', function () {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'

@@ -53,8 +53,8 @@ export class LoadChartService {
             stages[wo.status].push({
                 id: wo.id,
                 orderNumber: wo.orderNumber,
-                carBrand: wo.carBrand,
-                carModel: wo.carModel,
+                carBrand: wo.carBrand || '',
+                carModel: wo.carModel || '',
                 vin: wo.vin,
                 customerName: wo.customerName,
                 executorName: wo.executor?.name,

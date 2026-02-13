@@ -9,9 +9,38 @@ class MainNewsManager {
     }
 
     async loadMainNews() {
-        // Подключаем данные из общего источника
-        const newsData = getLatestNewsForMain();
-        this.renderMainNews(newsData);
+        try {
+            const response = await fetch('/api/posts');
+            if (!response.ok) throw new Error('Failed to fetch news');
+
+            const data = await response.json();
+
+            // Map and sort news from API
+            const newsData = data.map(item => {
+                const rawDate = item.datePublished || item.dateCreated;
+                return {
+                    id: item.id,
+                    title: item.title,
+                    date: rawDate,
+                    type: item.type === 'NEWS' ? 'news' : 'article',
+                    category: item.category === 'NEWS' ? 'news' : 'articles',
+                    content: item.content,
+                    image: item.image || null,
+                    tags: item.tags || [],
+                    slug: item.slug
+                };
+            })
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 4);
+
+            this.renderMainNews(newsData);
+        } catch (error) {
+            console.error('Error loading main news:', error);
+            const newsGrid = document.querySelector('.news__grid');
+            if (newsGrid) {
+                newsGrid.innerHTML = '<div class="no-news">Не удалось загрузить новости. Пожалуйста, обновите страницу.</div>';
+            }
+        }
     }
 
     renderMainNews(newsData) {
@@ -19,6 +48,11 @@ class MainNewsManager {
         if (!newsGrid) return;
 
         newsGrid.innerHTML = '';
+
+        if (newsData.length === 0) {
+            newsGrid.innerHTML = '<div class="no-news">Новости не найдены</div>';
+            return;
+        }
 
         newsData.forEach(newsItem => {
             const cardElement = this.createMainNewsCard(newsItem);
@@ -33,6 +67,9 @@ class MainNewsManager {
 
         let cardContent = '';
 
+        // Safely use formatDate from news-data.js if available
+        const displayedDate = typeof formatDate === 'function' ? formatDate(newsItem.date) : newsItem.date;
+
         if (newsItem.type === 'news' && newsItem.image) {
             // Карточка новости с изображением
             cardContent = `
@@ -40,7 +77,7 @@ class MainNewsManager {
                     <img src="${newsItem.image}" alt="${newsItem.title}">
                 </div>
                 <div class="news-card__content">
-                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
+                    <div class="news-card__date">${displayedDate}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
                     <div class="news-card__tags">
                         ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
@@ -48,12 +85,14 @@ class MainNewsManager {
                 </div>
             `;
         } else {
-            // Карточка статьи или акции (только текст) - теперь все акции тоже article
+            // Карточка статьи или акции (только текст)
+            const description = newsItem.content.length > 120 ? newsItem.content.substring(0, 120) + '...' : newsItem.content;
+
             cardContent = `
                 <div class="news-card__content">
-                    <div class="news-card__date">${formatDate(newsItem.date)}</div>
+                    <div class="news-card__date">${displayedDate}</div>
                     <h3 class="news-card__title">${newsItem.title}</h3>
-                    <p class="news-card__description">${newsItem.content.length > 120 ? newsItem.content.substring(0, 120) + '...' : newsItem.content}</p>
+                    <p class="news-card__description">${description}</p>
                     <div class="news-card__tags">
                         ${newsItem.tags.map(tag => `<span class="news-tag">${tag}</span>`).join('')}
                     </div>
@@ -65,7 +104,11 @@ class MainNewsManager {
 
         // Добавляем обработчик клика для перехода к полной новости
         cardDiv.addEventListener('click', () => {
-            window.location.href = `news.html#${newsItem.id}`;
+            if (newsItem.slug) {
+                window.location.href = `news-detail.html?slug=${newsItem.slug}`;
+            } else {
+                window.location.href = `news.html#${newsItem.id}`;
+            }
         });
 
         return cardDiv;

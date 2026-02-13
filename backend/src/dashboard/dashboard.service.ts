@@ -111,9 +111,9 @@ export class DashboardService {
             d.setDate(d.getDate() - i);
             const dateStr = d.toISOString().split('T')[0]; // YYYY-MM-DD
 
-            const reviewsCount = reviewsLast7Days.filter(r => r.dateCreated.toISOString().startsWith(dateStr)).length;
-            const postsCount = postsLast7Days.filter(p => p.dateCreated.toISOString().startsWith(dateStr)).length;
-            const portfolioCount = portfolioLast7Days.filter(p => p.date.toISOString().startsWith(dateStr)).length;
+            const reviewsCount = reviewsLast7Days.filter(r => r.dateCreated && r.dateCreated.toISOString().startsWith(dateStr)).length;
+            const postsCount = postsLast7Days.filter(p => p.dateCreated && p.dateCreated.toISOString().startsWith(dateStr)).length;
+            const portfolioCount = portfolioLast7Days.filter(p => p.date && p.date.toISOString().startsWith(dateStr)).length;
 
             activityChart.push({
                 date: dateStr,
@@ -430,7 +430,7 @@ export class DashboardService {
         });
 
         const activeWorkOrdersMap: Record<number, { workOrderId: number; orderNumber: string; customerName: string; car: string; status: string; total: number; done: number; myTimeSeconds: number }> = {};
-        
+
         // Получаем все задачи исполнителя для этих ЗН, чтобы посчитать done/total
         const allMyAssignmentsForActive = await this.prisma.workOrderExecutor.findMany({
             where: {
@@ -451,7 +451,7 @@ export class DashboardService {
             if (!wo) continue;
             if (!activeWorkOrdersMap[wo.id]) {
                 const myTasks = allMyAssignmentsForActive.filter(task => task.workOrderId === wo.id);
-                
+
                 let myTimeSeconds = 0;
                 myTasks.forEach(task => {
                     const meta = (task.metadata as any) || {};
@@ -510,7 +510,7 @@ export class DashboardService {
                 const effectiveStart = start < todayStart ? todayStart : start;
                 const end = meta.finishedAt ? new Date(meta.finishedAt) : new Date();
                 const effectiveEnd = end > todayEnd ? todayEnd : end;
-                
+
                 if (effectiveEnd > effectiveStart) {
                     timeTodaySeconds += Math.max(0, Math.floor((effectiveEnd.getTime() - effectiveStart.getTime()) / 1000));
                 }
@@ -544,7 +544,7 @@ export class DashboardService {
                 };
             }
             historyMap[woId].totalAmount += a.amount || 0;
-            
+
             const meta = (a.metadata as any) || {};
             if (meta.startedAt) {
                 const start = new Date(meta.startedAt);
