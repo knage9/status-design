@@ -225,6 +225,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         alert('Спасибо за заявку! Мы свяжемся с вами в течение 15 минут.');
                     }
 
+                    // Яндекс Метрика - цель "Успешная отправка формы"
+                    if (typeof ym === 'function') {
+                        ym(106816930, 'reachGoal', 'form_success');
+                    }
+
                     // Reset form
                     form.reset();
                     additionalOptions.forEach(opt => opt.classList.remove('additional-option--selected'));

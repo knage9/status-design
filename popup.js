@@ -448,6 +448,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => {
                 if (response.ok) {
                     console.log('Backend save successful');
+                    // Яндекс Метрика - цель "Успешная отправка формы"
+                    if (typeof ym === 'function') {
+                        ym(106816930, 'reachGoal', 'form_success');
+                    }
                 } else {
                     console.error('Backend save failed', response.statusText);
                 }

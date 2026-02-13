@@ -314,6 +314,11 @@ class ReviewsManager {
 
             if (!response.ok) throw new Error('Failed to submit review');
 
+            // Яндекс Метрика - цель "Успешная отправка формы" (отзыв)
+            if (typeof ym === 'function') {
+                ym(106816930, 'reachGoal', 'form_success');
+            }
+
             // Show success message and move to final step
             this.showNotification('Отзыв успешно отправлен на модерацию!');
             // Show success message and move to final step

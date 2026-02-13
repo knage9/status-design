@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,8 +16,13 @@
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
     <script src="services.js" defer></script>
+    <script src="/metrika.js"></script>
 </head>
+
 <body>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/106816930" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
     <!-- Burger Menu Overlay -->
     <div class="burger-menu-overlay" id="burgerOverlay"></div>
 
@@ -39,22 +45,24 @@
                     <!-- Burger Menu -->
                     <div class="burger-menu">
                         <button class="burger-menu__toggle" id="burgerToggle">
-                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                             </svg>
-                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close"
+                                width="24" height="24">
                             <span class="burger-menu__text">Меню</span>
                         </button>
                         <div class="burger-menu__dropdown" id="burgerDropdown">
-                        <div class="burger-menu__content">
-                            <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
-                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
-                            <a href="news.html" class="burger-menu__link">Новости</a>
-                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
-                            <button class="burger-menu__btn">Оставить заявку</button>
-                        </div>
+                            <div class="burger-menu__content">
+                                <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
+                                <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                                <a href="news.html" class="burger-menu__link">Новости</a>
+                                <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                                <button class="burger-menu__btn">Оставить заявку</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -99,7 +107,8 @@
                     <div class="service-card__content">
                         <h3 class="service-card__title">Антихром</h3>
                         <p class="service-card__description">
-                            Полное или частичное удаление хромированных элементов с последующей покраской в цвет кузова или матовый чёрный.
+                            Полное или частичное удаление хромированных элементов с последующей покраской в цвет кузова
+                            или матовый чёрный.
                         </p>
                         <div class="service-card__features">
                             <div class="service-feature">
@@ -166,7 +175,8 @@
                     </div>
                     <div class="additional-service__content">
                         <h3 class="additional-service__title">Антигравийная пленка</h3>
-                        <p class="additional-service__description">Профессиональная оклейка кузова защитной пленкой от сколов и царапин</p>
+                        <p class="additional-service__description">Профессиональная оклейка кузова защитной пленкой от
+                            сколов и царапин</p>
                     </div>
                 </div>
 
@@ -176,7 +186,8 @@
                     </div>
                     <div class="additional-service__content">
                         <h3 class="additional-service__title">Окрас колесных дисков</h3>
-                        <p class="additional-service__description">Покраска дисков в любой цвет с порошковым или жидким покрытием</p>
+                        <p class="additional-service__description">Покраска дисков в любой цвет с порошковым или жидким
+                            покрытием</p>
                     </div>
                 </div>
 
@@ -186,7 +197,8 @@
                     </div>
                     <div class="additional-service__content">
                         <h3 class="additional-service__title">Химчистка салона</h3>
-                        <p class="additional-service__description">Глубокая очистка салона с использованием профессиональной химии</p>
+                        <p class="additional-service__description">Глубокая очистка салона с использованием
+                            профессиональной химии</p>
                     </div>
                 </div>
 
@@ -196,7 +208,8 @@
                     </div>
                     <div class="additional-service__content">
                         <h3 class="additional-service__title">Керамическое покрытие</h3>
-                        <p class="additional-service__description">Нанесение керамического покрытия для защиты ЛКП и блеска</p>
+                        <p class="additional-service__description">Нанесение керамического покрытия для защиты ЛКП и
+                            блеска</p>
                     </div>
                 </div>
 
@@ -206,7 +219,8 @@
                     </div>
                     <div class="additional-service__content">
                         <h3 class="additional-service__title">Полировка кузова</h3>
-                        <p class="additional-service__description">Восстановительная полировка для удаления царапин и блеска</p>
+                        <p class="additional-service__description">Восстановительная полировка для удаления царапин и
+                            блеска</p>
                     </div>
                 </div>
             </div>
@@ -234,7 +248,8 @@
                                 <img src="img/carbon.png" alt="Carbon" class="services__bg-image">
                                 <div class="services__main-options">
                                     <button class="main-option" data-service="carbon" type="button">Карбон</button>
-                                    <button class="main-option" data-service="antichrome" type="button">Антихром с покраской</button>
+                                    <button class="main-option" data-service="antichrome" type="button">Антихром с
+                                        покраской</button>
                                 </div>
                             </div>
                         </div>
@@ -243,9 +258,12 @@
 
                         <div class="services__additional-section">
                             <div class="services__additional-options">
-                                <button class="additional-option" data-option="antigravity-film" type="button">Антигравийная пленка</button>
-                                <button class="additional-option" data-option="disk-painting" type="button">Окрас дисков</button>
-                                <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
+                                <button class="additional-option" data-option="antigravity-film"
+                                    type="button">Антигравийная пленка</button>
+                                <button class="additional-option" data-option="disk-painting" type="button">Окрас
+                                    дисков</button>
+                                <button class="additional-option" data-option="cleaning"
+                                    type="button">Химчистка</button>
                                 <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
                                 <button class="additional-option" data-option="polish" type="button">Полировка</button>
                             </div>
@@ -271,7 +289,8 @@
                     <div class="process-step__number">01</div>
                     <div class="process-step__content">
                         <h3 class="process-step__title">Консультация</h3>
-                        <p class="process-step__description">Обсуждаем ваши пожелания, показываем образцы материалов, рассчитываем стоимость</p>
+                        <p class="process-step__description">Обсуждаем ваши пожелания, показываем образцы материалов,
+                            рассчитываем стоимость</p>
                     </div>
                 </div>
 
@@ -279,7 +298,8 @@
                     <div class="process-step__number">02</div>
                     <div class="process-step__content">
                         <h3 class="process-step__title">Подготовка</h3>
-                        <p class="process-step__description">Демонтаж необходимых элементов, подготовка поверхностей к работе</p>
+                        <p class="process-step__description">Демонтаж необходимых элементов, подготовка поверхностей к
+                            работе</p>
                     </div>
                 </div>
 
@@ -287,7 +307,8 @@
                     <div class="process-step__number">03</div>
                     <div class="process-step__content">
                         <h3 class="process-step__title">Выполнение работ</h3>
-                        <p class="process-step__description">Профессиональное выполнение выбранных услуг с контролем качества</p>
+                        <p class="process-step__description">Профессиональное выполнение выбранных услуг с контролем
+                            качества</p>
                     </div>
                 </div>
 
@@ -295,7 +316,8 @@
                     <div class="process-step__number">04</div>
                     <div class="process-step__content">
                         <h3 class="process-step__title">Сдача автомобиля</h3>
-                        <p class="process-step__description">Финальная проверка, уборка, предоставление гарантии и рекомендаций</p>
+                        <p class="process-step__description">Финальная проверка, уборка, предоставление гарантии и
+                            рекомендаций</p>
                     </div>
                 </div>
             </div>
@@ -314,7 +336,8 @@
                         </div>
                     </div>
                     <div class="services-faq-content">
-                        <p class="services-faq-description">Да, мы можем выполнить комплекс услуг за один визит. Это сэкономит ваше время и позволит получить дополнительную скидку на общую стоимость работ.</p>
+                        <p class="services-faq-description">Да, мы можем выполнить комплекс услуг за один визит. Это
+                            сэкономит ваше время и позволит получить дополнительную скидку на общую стоимость работ.</p>
                     </div>
                 </div>
 
@@ -326,7 +349,9 @@
                         </div>
                     </div>
                     <div class="services-faq-content">
-                        <p class="services-faq-description">Стоимость рассчитывается индивидуально с учетом выбранных услуг, модели автомобиля и объема работ. При комплексном заказе предоставляется дополнительная скидка от 5% до 20%.</p>
+                        <p class="services-faq-description">Стоимость рассчитывается индивидуально с учетом выбранных
+                            услуг, модели автомобиля и объема работ. При комплексном заказе предоставляется
+                            дополнительная скидка от 5% до 20%.</p>
                     </div>
                 </div>
 
@@ -338,7 +363,9 @@
                         </div>
                     </div>
                     <div class="services-faq-content">
-                        <p class="services-faq-description">На все виды работ предоставляется гарантия от 6 месяцев до 2 лет в зависимости от типа услуги. Гарантия распространяется как на материалы, так и на качество выполнения работ.</p>
+                        <p class="services-faq-description">На все виды работ предоставляется гарантия от 6 месяцев до 2
+                            лет в зависимости от типа услуги. Гарантия распространяется как на материалы, так и на
+                            качество выполнения работ.</p>
                     </div>
                 </div>
 
@@ -350,7 +377,9 @@
                         </div>
                     </div>
                     <div class="services-faq-content">
-                        <p class="services-faq-description">Да, в нашем шоуруме представлены образцы всех материалов: карбоновые пленки различных текстур, цвета покраски для антихрома, материалы для шумоизоляции и защитные пленки.</p>
+                        <p class="services-faq-description">Да, в нашем шоуруме представлены образцы всех материалов:
+                            карбоновые пленки различных текстур, цвета покраски для антихрома, материалы для
+                            шумоизоляции и защитные пленки.</p>
                     </div>
                 </div>
             </div>
@@ -367,7 +396,8 @@
                 </div>
                 <div class="footer__cta-block">
                     <h2 class="footer__title">Пора выделиться на дороге</h2>
-                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали
+                        профессионалам и почувствуйте разницу.</p>
                     <button class="footer__button">Оставить заявку</button>
                 </div>
             </div>
@@ -381,7 +411,8 @@
         <div class="footer__back-to-top">
             <button class="footer__back-btn" id="backToTopBtn" title="Вернуться наверх">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
                 <span>Наверх</span>
             </button>
@@ -393,7 +424,8 @@
         <div class="popup">
             <div class="popup__header">
                 <div class="popup__title-bg">
-                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут</h2>
+                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут
+                    </h2>
                 </div>
                 <button class="popup__close" id="popupClose">
                     <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
@@ -412,7 +444,8 @@
                         <div class="popup__error" id="phoneError"></div>
                     </div>
                     <div class="popup__form-group">
-                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто" required>
+                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто"
+                            required>
                         <div class="popup__error" id="carError"></div>
                     </div>
                 </div>
@@ -470,8 +503,10 @@
 
             <div class="popup__footer">
                 <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
-                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить заявку</button>
-                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду ожидать</button>
+                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить
+                    заявку</button>
+                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду
+                    ожидать</button>
             </div>
         </div>
     </div>
@@ -493,15 +528,18 @@
                 <div class="popup__form-section">
                     <div class="popup__form">
                         <div class="popup__form-group">
-                            <input type="text" class="popup__input" id="discountUserName" placeholder="Ваше имя" required>
+                            <input type="text" class="popup__input" id="discountUserName" placeholder="Ваше имя"
+                                required>
                             <div class="popup__error" id="discountNameError"></div>
                         </div>
                         <div class="popup__form-group">
-                            <input type="tel" class="popup__input" id="discountUserPhone" placeholder="Телефон" required>
+                            <input type="tel" class="popup__input" id="discountUserPhone" placeholder="Телефон"
+                                required>
                             <div class="popup__error" id="discountPhoneError"></div>
                         </div>
                         <div class="popup__form-group">
-                            <input type="text" class="popup__input" id="discountCarModel" placeholder="Марка и модель авто" required>
+                            <input type="text" class="popup__input" id="discountCarModel"
+                                placeholder="Марка и модель авто" required>
                             <div class="popup__error" id="discountCarError"></div>
                         </div>
                     </div>
@@ -536,4 +574,5 @@
         </div>
     </div>
 </body>
+
 </html>
