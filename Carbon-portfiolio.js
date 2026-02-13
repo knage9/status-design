@@ -13,18 +13,18 @@ document.addEventListener('DOMContentLoaded', function () {
             id: 0,
             title: 'Bentley',
             images: [
-                'img/Bentley-Карбон/1.jpg',
-                'img/Bentley-Карбон/2.jpg',
-                'img/Bentley-Карбон/3.jpg',
-                'img/Bentley-Карбон/4.jpg',
-                'img/Bentley-Карбон/5.jpg'
+                'img/Bentley-Карбон/1.webp',
+                'img/Bentley-Карбон/2.webp',
+                'img/Bentley-Карбон/3.webp',
+                'img/Bentley-Карбон/4.webp',
+                'img/Bentley-Карбон/5.webp'
             ],
             thumbnails: [
-                'img/Bentley-Карбон/1.jpg',
-                'img/Bentley-Карбон/2.jpg',
-                'img/Bentley-Карбон/3.jpg',
-                'img/Bentley-Карбон/4.jpg',
-                'img/Bentley-Карбон/5.jpg'
+                'img/Bentley-Карбон/1.webp',
+                'img/Bentley-Карбон/2.webp',
+                'img/Bentley-Карбон/3.webp',
+                'img/Bentley-Карбон/4.webp',
+                'img/Bentley-Карбон/5.webp'
             ],
             alt: 'Bentley - Результат карбона',
             services: [
@@ -35,16 +35,16 @@ document.addEventListener('DOMContentLoaded', function () {
             id: 1,
             title: 'Chevrolet Corvette',
             images: [
-                'img/Chevrolet-Corvette-Карбон/1.jpg',
-                'img/Chevrolet-Corvette-Карбон/2.jpg',
-                'img/Chevrolet-Corvette-Карбон/3.jpg',
-                'img/Chevrolet-Corvette-Карбон/4.jpg'
+                'img/Chevrolet-Corvette-Карбон/1.webp',
+                'img/Chevrolet-Corvette-Карбон/2.webp',
+                'img/Chevrolet-Corvette-Карбон/3.webp',
+                'img/Chevrolet-Corvette-Карбон/4.webp'
             ],
             thumbnails: [
-                'img/Chevrolet-Corvette-Карбон/1.jpg',
-                'img/Chevrolet-Corvette-Карбон/2.jpg',
-                'img/Chevrolet-Corvette-Карбон/3.jpg',
-                'img/Chevrolet-Corvette-Карбон/4.jpg'
+                'img/Chevrolet-Corvette-Карбон/1.webp',
+                'img/Chevrolet-Corvette-Карбон/2.webp',
+                'img/Chevrolet-Corvette-Карбон/3.webp',
+                'img/Chevrolet-Corvette-Карбон/4.webp'
             ],
             alt: 'Chevrolet Corvette - Результат карбона',
             services: [
@@ -54,20 +54,20 @@ document.addEventListener('DOMContentLoaded', function () {
             id: 2,
             title: 'Rolls-Royce',
             images: [
-                'img/Rolls-Royce-Карбон/1.jpg',
-                'img/Rolls-Royce-Карбон/2.jpg',
-                'img/Rolls-Royce-Карбон/3.jpg',
-                'img/Rolls-Royce-Карбон/4.jpg',
-                'img/Rolls-Royce-Карбон/5.jpg',
-                'img/Rolls-Royce-Карбон/6.jpg'
+                'img/Rolls-Royce-Карбон/1.webp',
+                'img/Rolls-Royce-Карбон/2.webp',
+                'img/Rolls-Royce-Карбон/3.webp',
+                'img/Rolls-Royce-Карбон/4.webp',
+                'img/Rolls-Royce-Карбон/5.webp',
+                'img/Rolls-Royce-Карбон/6.webp'
             ],
             thumbnails: [
-                'img/Rolls-Royce-Карбон/1.jpg',
-                'img/Rolls-Royce-Карбон/2.jpg',
-                'img/Rolls-Royce-Карбон/3.jpg',
-                'img/Rolls-Royce-Карбон/4.jpg',
-                'img/Rolls-Royce-Карбон/5.jpg',
-                'img/Rolls-Royce-Карбон/6.jpg'
+                'img/Rolls-Royce-Карбон/1.webp',
+                'img/Rolls-Royce-Карбон/2.webp',
+                'img/Rolls-Royce-Карбон/3.webp',
+                'img/Rolls-Royce-Карбон/4.webp',
+                'img/Rolls-Royce-Карбон/5.webp',
+                'img/Rolls-Royce-Карбон/6.webp'
             ],
             alt: 'Rolls-Royce - Результат карбона',
             services: [

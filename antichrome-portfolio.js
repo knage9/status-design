@@ -170,16 +170,16 @@ const projects = [
         id: 0,
         title: 'Mercedes-Benz Maybach GLS',
         images: [
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/1.jpg',
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/2.jpg',
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/3.jpg',
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/4.jpg'
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/1.webp',
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/2.webp',
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/3.webp',
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/4.webp'
         ],
         thumbnails: [
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/1.jpg',
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/2.jpg',
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/3.jpg',
-            'img/Mercedes-Benz-Maybach-GLS-Антихром/4.jpg'
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/1.webp',
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/2.webp',
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/3.webp',
+            'img/Mercedes-Benz-Maybach-GLS-Антихром/4.webp'
         ],
         alt: 'Mercedes-Benz Maybach GLS - Результат антихрома',
         services: [
@@ -197,18 +197,18 @@ const projects = [
         id: 1,
         title: 'GAC GS8',
         images: [
-            'img/GAC-GS8-Антихром/1.jpg',
-            'img/GAC-GS8-Антихром/2.jpg',
-            'img/GAC-GS8-Антихром/3.jpg',
-            'img/GAC-GS8-Антихром/4.jpg',
-            'img/GAC-GS8-Антихром/5.jpg'
+            'img/GAC-GS8-Антихром/1.webp',
+            'img/GAC-GS8-Антихром/2.webp',
+            'img/GAC-GS8-Антихром/3.webp',
+            'img/GAC-GS8-Антихром/4.webp',
+            'img/GAC-GS8-Антихром/5.webp'
         ],
         thumbnails: [
-            'img/GAC-GS8-Антихром/1.jpg',
-            'img/GAC-GS8-Антихром/2.jpg',
-            'img/GAC-GS8-Антихром/3.jpg',
-            'img/GAC-GS8-Антихром/4.jpg',
-            'img/GAC-GS8-Антихром/5.jpg'
+            'img/GAC-GS8-Антихром/1.webp',
+            'img/GAC-GS8-Антихром/2.webp',
+            'img/GAC-GS8-Антихром/3.webp',
+            'img/GAC-GS8-Антихром/4.webp',
+            'img/GAC-GS8-Антихром/5.webp'
         ],
         alt: 'GAC GS8 - Результат антихрома',
         services: [
@@ -226,20 +226,20 @@ const projects = [
         id: 2,
         title: 'BMW X7',
         images: [
-            'img/BMW-X7-Антихром/1.jpg',
-            'img/BMW-X7-Антихром/2.jpg',
-            'img/BMW-X7-Антихром/3.jpg',
-            'img/BMW-X7-Антихром/4.jpg',
-            'img/BMW-X7-Антихром/5.jpg',
-            'img/BMW-X7-Антихром/6.jpg'
+            'img/BMW-X7-Антихром/1.webp',
+            'img/BMW-X7-Антихром/2.webp',
+            'img/BMW-X7-Антихром/3.webp',
+            'img/BMW-X7-Антихром/4.webp',
+            'img/BMW-X7-Антихром/5.webp',
+            'img/BMW-X7-Антихром/6.webp'
         ],
         thumbnails: [
-            'img/BMW-X7-Антихром/1.jpg',
-            'img/BMW-X7-Антихром/2.jpg',
-            'img/BMW-X7-Антихром/3.jpg',
-            'img/BMW-X7-Антихром/4.jpg',
-            'img/BMW-X7-Антихром/5.jpg',
-            'img/BMW-X7-Антихром/6.jpg'
+            'img/BMW-X7-Антихром/1.webp',
+            'img/BMW-X7-Антихром/2.webp',
+            'img/BMW-X7-Антихром/3.webp',
+            'img/BMW-X7-Антихром/4.webp',
+            'img/BMW-X7-Антихром/5.webp',
+            'img/BMW-X7-Антихром/6.webp'
         ],
         alt: 'BMW X7 - Результат антихрома',
         services: [

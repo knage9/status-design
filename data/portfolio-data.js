@@ -260,3 +260,11 @@ function formatPortfolioDate(dateString) {
         });
     }
 }
+
+// Attach to window for global access when loaded as a module
+window.PORTFOLIO_DATA = PORTFOLIO_DATA;
+window.getAllCarBrands = getAllCarBrands;
+window.getAllServices = getAllServices;
+window.getFeaturedPortfolio = getFeaturedPortfolio;
+window.getPortfolioById = getPortfolioById;
+window.formatPortfolioDate = formatPortfolioDate;

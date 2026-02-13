@@ -179,3 +179,9 @@ function formatDate(dateString) {
         });
     }
 }
+
+// Attach to window for global access when loaded as a module
+window.NEWS_DATA = NEWS_DATA;
+window.getLatestNewsForMain = getLatestNewsForMain;
+window.getNewsById = getNewsById;
+window.formatDate = formatDate;
