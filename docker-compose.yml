@@ -30,6 +30,8 @@ services:
       PORT: ${BACKEND_PORT:-3000}
       JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production}
       NODE_ENV: production
+    env_file:
+      - ./backend/.env
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     depends_on:
