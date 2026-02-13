@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Премиум шумоизоляция автомобилей в Москве. Материалы COMFORTMAT. Гарантия 2 года. Полная или частичная обработка.">
+    <title>Шумоизоляция - Премиум шумоизоляция автомобилей в Москве</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        // FAQ Accordion functionality for shum page
+        document.addEventListener('DOMContentLoaded', function () {
+            const faqItems = document.querySelectorAll('.faq-section .faq-item');
+            if (faqItems.length > 0) {
+                faqItems.forEach(item => {
+                    const header = item.querySelector('.faq-header');
+                    const content = item.querySelector('.faq-content');
+
+                    if (header) {
+                        header.addEventListener('click', function () {
+                            const isActive = item.classList.contains('active');
+
+                            // Close all FAQ items
+                            faqItems.forEach(otherItem => {
+                                if (otherItem !== item) {
+                                    otherItem.classList.remove('active');
+                                    const otherContent = otherItem.querySelector('.faq-content');
+                                    if (otherContent) {
+                                        otherContent.classList.remove('active');
+                                    }
+                                }
+                            });
+
+                            // Toggle current item
+                            if (isActive) {
+                                item.classList.remove('active');
+                                if (content) {
+                                    content.classList.remove('active');
+                                }
+                            } else {
+                                item.classList.add('active');
+                                if (content) {
+                                    content.classList.add('active');
+
+                                    // Smooth scroll to expanded item
+                                    setTimeout(() => {
+                                        item.scrollIntoView({
+                                            behavior: 'smooth',
+                                            block: 'center'
+                                        });
+                                    }, 200);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+  <script type="module" crossorigin src="/assets/shum-BUtyf07Z.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/metrika-BY1HYfmI.js">
+  <link rel="modulepreload" crossorigin href="/assets/discount-popup-C8REf4fq.js">
+  <link rel="stylesheet" crossorigin href="/assets/metrika-CHVjfQEO.css">
+  <link rel="stylesheet" crossorigin href="/assets/shum-UasnAxod.css">
+</head>
+
+<body>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/106816930" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__left">
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="/assets/logo-B_kIeoeg.svg" alt="SD Logo">
+                        </a>
+                    </div>
+                    <nav class="nav">
+                        <a href="portfolio.html" class="nav__link">Портфолио</a>
+                        <a href="reviews.html" class="nav__link">Отзывы</a>
+                        <a href="news.html" class="nav__link">Новости</a>
+                        <a href="contacts.html" class="nav__link">Контакты</a>
+                    </nav>
+                    <!-- Burger Menu -->
+                    <div class="burger-menu">
+                        <button class="burger-menu__toggle" id="burgerToggle">
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                            <img src="data:image/svg+xml,%3csvg%20width='24'%20height='25'%20viewBox='0%200%2024%2025'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M7%207.5L17%2017.5M7%2017.5L17%207.5'%20stroke='white'%20style='stroke:white;stroke-opacity:1;'%20stroke-width='2.5'%20stroke-linecap='round'%20stroke-linejoin='round'/%3e%3c/svg%3e" alt="Close" class="burger-menu__icon burger-menu__icon--close"
+                                width="24" height="24">
+                            <span class="burger-menu__text">Меню</span>
+                        </button>
+                        <div class="burger-menu__dropdown" id="burgerDropdown">
+                            <div class="burger-menu__content">
+                                <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
+                                <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                                <a href="news.html" class="burger-menu__link">Новости</a>
+                                <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                                <button class="burger-menu__btn">Оставить заявку</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary">Оставить заявку</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="page-tabs">
+        <div class="tabs">
+            <div class="tabs__wrapper">
+                <a href="antichrome.html" class="tabs__item">Антихром</a>
+                <a href="carbon.html" class="tabs__item">Карбон</a>
+                <a href="services.html" class="tabs__item">Другое</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shum Hero Section -->
+    <section class="shum-hero">
+        <div class="container">
+            <div class="shum-hero__content">
+                <div class="shum-hero__left">
+                    <div class="shum-hero__background"></div>
+                    <h2 class="shum-hero__title">
+                        <span class="shum-hero__title-highlight">Абсолютная</span>
+                        <span class="shum-hero__title-text">Премиум шумоизоляция для вашего автомобиля в Москве</span>
+                    </h2>
+                    <p class="shum-hero__description">
+                        Забудьте о лишнем шуме, вибрациях и дискомфорте — мы делаем ваш автомобиль тихим, уютным и
+                        эксклюзивным. Используем премиальные материалы и даём гарантию на каждый этап.
+                    </p>
+                    <button class="shum-hero__btn btn-primary">Оставить заявку</button>
+                </div>
+                <div class="shum-hero__right">
+                    <div class="shum-hero__image">
+                        <img src="/assets/shum-Ch9VYLc5.webp" alt="Премиум шумоизоляция автомобиля" width="700" height="595">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Cards Section -->
+    <section class="statistics-section">
+        <div class="container">
+            <div class="statistics-cards">
+                <div class="stat-card">
+                    <div class="stat-card__number">1000</div>
+                    <div class="stat-card__subtitle">автомобилей</div>
+                    <div class="stat-card__description">зашумовано в нашей студии</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">30</div>
+                    <div class="stat-card__subtitle">марок авто</div>
+                    <div class="stat-card__description">в нашем портфолио</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">5</div>
+                    <div class="stat-card__subtitle">лет</div>
+                    <div class="stat-card__description">занимаемся шумоизоляцией</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">25</div>
+                    <div class="stat-card__subtitle">лет</div>
+                    <div class="stat-card__description">опыт специалистов</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Feature Section -->
+    <section class="feature-section">
+        <div class="container">
+            <div class="feature-content">
+                <div class="feature-card">
+                    <div class="feature-card__background"></div>
+                    <h3 class="feature-card__title">Ваш автомобиль — вне шума города.</h3>
+                    <div class="feature-card__icon">
+                        <img src="/assets/shum-icon-B_ejiVjh.webp" alt="Шумоизоляция автомобиля" width="300" height="300" loading="lazy">
+                    </div>
+                </div>
+                <div class="feature-backdrop">
+                    <div class="feature-backdrop__background"></div>
+                    <h2 class="feature-backdrop__title">COMFORTMAT — материалы премиум качества</h2>
+                    <p class="feature-backdrop__description">
+                        Мы используем премиальные материалы COMFORTMAT — премиальную шумоизоляцию с 2009 года. Она
+                        экологична, сертифицирована и разработана по стандартам, которые превышают требования рынка. Это
+                        гарантирует комфорт, долговечность и безопасность.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Soundproofing Zones Section -->
+    <section class="soundproofing-zones">
+        <div class="container">
+            <div class="zones-header">
+                <h2 class="zones-title">Шумоизоляция под ваш автомобиль</h2>
+                <p class="zones-subtitle">Полная шумоизоляция или частичная под ключевые зоны.</p>
+            </div>
+
+            <div class="zones-content">
+                <div class="zones-image-container">
+                    <img src="/assets/shum-preview-97LVO6x2.webp" alt="Автомобиль с зонами шумоизоляции" class="zones-main-image"
+                        id="zonesMainImage" width="2688" height="1264" loading="lazy">
+                </div>
+
+                <div class="zones-buttons">
+                    <button class="zone-btn" data-zone="hood" data-image="img/капот-шум.png" data-title="Капот"
+                        data-description="Шумоизоляция капота значительно снижает шум от двигателя и дорожные вибрации, создавая более комфортную атмосферу в салоне.">
+                        <span class="zone-btn__title">Капот</span>
+                        <span class="zone-btn__description">Снижает шум двигателя</span>
+                        <div class="zone-btn__full-description">Шумоизоляция капота значительно снижает шум от двигателя
+                            и дорожные вибрации, создавая более комфортную атмосферу в салоне.</div>
+                    </button>
+                    <button class="zone-btn" data-zone="roof" data-image="img/крыша-шум.png" data-title="Крыша"
+                        data-description="Шумоизоляция крыши эффективно блокирует шум дождя, ветра и внешние звуки, обеспечивая тишину даже в плохую погоду.">
+                        <span class="zone-btn__title">Крыша</span>
+                        <span class="zone-btn__description">Блокирует шум дождя</span>
+                        <div class="zone-btn__full-description">Шумоизоляция крыши эффективно блокирует шум дождя, ветра
+                            и внешние звуки, обеспечивая тишину даже в плохую погоду.</div>
+                    </button>
+                    <button class="zone-btn" data-zone="trunk" data-image="img/багажгик-шум.png" data-title="Багажник"
+                        data-description="Обработка багажного отделения устраняет шум от колес и дорожного покрытия, а также улучшает акустику музыки в автомобиле.">
+                        <span class="zone-btn__title">Багажник</span>
+                        <span class="zone-btn__description">Устраняет шум колес</span>
+                        <div class="zone-btn__full-description">Обработка багажного отделения устраняет шум от колес и
+                            дорожного покрытия, а также улучшает акустику музыки в автомобиле.</div>
+                    </button>
+                    <button class="zone-btn" data-zone="floor" data-image="img/дно-шум.png" data-title="Дно"
+                        data-description="Шумоизоляция пола салона и багажника максимально снижает шум от дорожного покрытия, вибрации и улучшает теплоизоляцию.">
+                        <span class="zone-btn__title">Дно</span>
+                        <span class="zone-btn__description">Максимальная шумоизоляция</span>
+                        <div class="zone-btn__full-description">Шумоизоляция пола салона и багажника максимально снижает
+                            шум от дорожного покрытия, вибрации и улучшает теплоизоляцию.</div>
+                    </button>
+                    <button class="zone-btn" data-zone="doors" data-image="img/двери-шум.png" data-title="Двери"
+                        data-description="Комплексная обработка дверей обеспечивает отличную звукоизоляцию от внешнего шума, улучшает качество музыки и снижает вибрации.">
+                        <span class="zone-btn__title">Двери</span>
+                        <span class="zone-btn__description">Звукоизоляция от внешнего шума</span>
+                        <div class="zone-btn__full-description">Комплексная обработка дверей обеспечивает отличную
+                            звукоизоляцию от внешнего шума, улучшает качество музыки и снижает вибрации.</div>
+                    </button>
+                    <button class="zone-btn" data-zone="arches" data-image="img/арки-шум.png" data-title="Арки снаружи"
+                        data-description="Обработка колесных арок снаружи эффективно блокирует шум от шин и дорожного покрытия, значительно повышая комфорт вождения.">
+                        <span class="zone-btn__title">Арки снаружи</span>
+                        <span class="zone-btn__description">Блокировка шума шин</span>
+                        <div class="zone-btn__full-description">Обработка колесных арок снаружи эффективно блокирует шум
+                            от шин и дорожного покрытия, значительно повышая комфорт вождения.</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shum Form Section -->
+    <section class="shum-form-section">
+        <div class="container">
+            <div class="shum-form__content">
+                <!-- Left Side -->
+                <div class="shum-form__left">
+                    <h3 class="shum-form__title">Хотите узнать цену на шумоизоляцию? Заполните заявку</h3>
+                    <p class="shum-form__description">
+                        Оставьте контакт — проконсультируем по цене, расскажем подробности и предоставим индивидуальную
+                        скидку специально для вас.
+                    </p>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="shum-form__right">
+                    <form class="shum-form__form">
+                        <!-- Hidden field for service type -->
+                        <input type="hidden" name="mainService" value="shum">
+
+                        <div class="shum-form__additional-services">
+                            <div class="shum-form__additional-label">Добавьте дополнительные услуги</div>
+
+                            <!-- Discount Section -->
+                            <div class="shum-form__discount" id="shumDiscountSection" style="display: none;">
+                                <div class="shum-form__discount-wrapper">
+                                    <div class="shum-form__discount-badge">
+                                        <span class="shum-form__discount-percent" id="shumDiscountPercent">-10%</span>
+                                    </div>
+                                    <div class="shum-form__discount-text">
+                                        <span class="shum-form__discount-label">Ваша персональная скидка</span>
+                                    </div>
+                                </div>
+                                <div class="shum-form__discount-info">
+                                    <span class="shum-form__discount-description">Скидка рассчитывается от количества и
+                                        стоимости выбранных услуг</span>
+                                </div>
+                            </div>
+
+                            <div class="shum-form__additional-section">
+                                <div class="shum-form__additional-options">
+                                    <button class="additional-option" data-option="antigravity-film"
+                                        type="button">Оклейка антигравийной пленкой</button>
+                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас
+                                        колесных дисков</button>
+                                    <button class="additional-option" data-option="cleaning"
+                                        type="button">Химчистка</button>
+                                    <button class="additional-option" data-option="ceramic"
+                                        type="button">Керамика</button>
+                                    <button class="additional-option" data-option="polish"
+                                        type="button">Полировка</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="shum-form__contact-info">
+                            <div class="shum-form__form-group">
+                                <input type="text" class="shum-form__input" id="shumFormName" placeholder="Ваше имя"
+                                    required>
+                                <div class="shum-form__error" id="shumFormNameError"></div>
+                            </div>
+                            <div class="shum-form__form-group">
+                                <input type="tel" class="shum-form__input" id="shumFormPhone" placeholder="Телефон"
+                                    required>
+                                <div class="shum-form__error" id="shumFormPhoneError"></div>
+                            </div>
+                            <div class="shum-form__form-group">
+                                <input type="text" class="shum-form__input" id="shumFormCar"
+                                    placeholder="Марка и модель авто" required>
+                                <div class="shum-form__error" id="shumFormCarError"></div>
+                            </div>
+                        </div>
+
+                        <button class="shum-form__submit" disabled type="submit">Отправить заявку</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shum Results Section -->
+    <section class="shum-results-section">
+        <div class="container">
+            <div class="shum-results">
+                <div class="shum-results__content">
+                    <h2 class="shum-results__title">Результат, который говорит сам за себя.</h2>
+                    <p class="shum-results__description">
+                        Мы занимаемся шумоизоляцией автомобилей уже более 5 лет. За это время у нас накопился
+                        существенный опыт и у вас есть возможность ознакомиться с нашими работами
+                    </p>
+                </div>
+
+                <div class="shum-results__gallery">
+                    <div class="shum-results__navigation">
+                        <button class="shum-results__nav-btn shum-results__nav-btn--prev">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M5.25875%209.37506H16.875C17.0408%209.37506%2017.1997%209.44091%2017.3169%209.55812C17.4342%209.67533%2017.5%209.8343%2017.5%2010.0001C17.5%2010.1658%2017.4342%2010.3248%2017.3169%2010.442C17.1997%2010.5592%2017.0408%2010.6251%2016.875%2010.6251H5.25875L9.8175%2015.1826C9.93486%2015.2999%2010.0008%2015.4591%2010.0008%2015.6251C10.0008%2015.791%209.93486%2015.9502%209.8175%2016.0676C9.70014%2016.1849%209.54097%2016.2508%209.375%2016.2508C9.20903%2016.2508%209.04986%2016.1849%208.9325%2016.0676L3.3075%2010.4426C3.24929%2010.3845%203.20312%2010.3155%203.17161%2010.2396C3.1401%2010.1637%203.12388%2010.0823%203.12388%2010.0001C3.12388%209.91785%203.1401%209.83645%203.17161%209.76052C3.20312%209.68458%203.24929%209.61561%203.3075%209.55756L8.9325%203.93256C9.04986%203.8152%209.20903%203.74927%209.375%203.74927C9.54097%203.74927%209.70014%203.8152%209.8175%203.93256C9.93486%204.04992%2010.0008%204.20909%2010.0008%204.37506C10.0008%204.54103%209.93486%204.7002%209.8175%204.81756L5.25875%209.37506Z'%20fill='%230B0D10'%20style='fill:%230B0D10;fill:color(display-p3%200.0431%200.0510%200.0627);fill-opacity:1;'/%3e%3cpath%20d='M5.25875%209.37506H16.875C17.0408%209.37506%2017.1997%209.44091%2017.3169%209.55812C17.4342%209.67533%2017.5%209.8343%2017.5%2010.0001C17.5%2010.1658%2017.4342%2010.3248%2017.3169%2010.442C17.1997%2010.5592%2017.0408%2010.6251%2016.875%2010.6251H5.25875L9.8175%2015.1826C9.93486%2015.2999%2010.0008%2015.4591%2010.0008%2015.6251C10.0008%2015.791%209.93486%2015.9502%209.8175%2016.0676C9.70014%2016.1849%209.54097%2016.2508%209.375%2016.2508C9.20903%2016.2508%209.04986%2016.1849%208.9325%2016.0676L3.3075%2010.4426C3.24929%2010.3845%203.20312%2010.3155%203.17161%2010.2396C3.1401%2010.1637%203.12388%2010.0823%203.12388%2010.0001C3.12388%209.91785%203.1401%209.83645%203.17161%209.76052C3.20312%209.68458%203.24929%209.61561%203.3075%209.55756L8.9325%203.93256C9.04986%203.8152%209.20903%203.74927%209.375%203.74927C9.54097%203.74927%209.70014%203.8152%209.8175%203.93256C9.93486%204.04992%2010.0008%204.20909%2010.0008%204.37506C10.0008%204.54103%209.93486%204.7002%209.8175%204.81756L5.25875%209.37506Z'%20fill='black'%20fill-opacity='0.2'%20style='fill:black;fill-opacity:0.2;'/%3e%3c/svg%3e" alt="Предыдущий">
+                        </button>
+                        <button class="shum-results__nav-btn shum-results__nav-btn--next">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M14.7413%209.37506H3.125C2.95924%209.37506%202.80027%209.44091%202.68306%209.55812C2.56585%209.67533%202.5%209.8343%202.5%2010.0001C2.5%2010.1658%202.56585%2010.3248%202.68306%2010.442C2.80027%2010.5592%202.95924%2010.6251%203.125%2010.6251H14.7413L10.1825%2015.1826C10.0651%2015.2999%209.99921%2015.4591%209.99921%2015.6251C9.99921%2015.791%2010.0651%2015.9502%2010.1825%2016.0676C10.2999%2016.1849%2010.459%2016.2508%2010.625%2016.2508C10.791%2016.2508%2010.9501%2016.1849%2011.0675%2016.0676L16.6925%2010.4426C16.7507%2010.3845%2016.7969%2010.3155%2016.8284%2010.2396C16.8599%2010.1637%2016.8761%2010.0823%2016.8761%2010.0001C16.8761%209.91785%2016.8599%209.83645%2016.8284%209.76052C16.7969%209.68458%2016.7507%209.61561%2016.6925%209.55756L11.0675%203.93256C10.9501%203.8152%2010.791%203.74927%2010.625%203.74927C10.459%203.74927%2010.2999%203.8152%2010.1825%203.93256C10.0651%204.04992%209.99921%204.20909%209.99921%204.37506C9.99921%204.54103%2010.0651%204.7002%2010.1825%204.81756L14.7413%209.37506Z'%20fill='%230B0D10'%20style='fill:%230B0D10;fill:color(display-p3%200.0431%200.0510%200.0627);fill-opacity:1;'/%3e%3cpath%20d='M14.7413%209.37506H3.125C2.95924%209.37506%202.80027%209.44091%202.68306%209.55812C2.56585%209.67533%202.5%209.8343%202.5%2010.0001C2.5%2010.1658%202.56585%2010.3248%202.68306%2010.442C2.80027%2010.5592%202.95924%2010.6251%203.125%2010.6251H14.7413L10.1825%2015.1826C10.0651%2015.2999%209.99921%2015.4591%209.99921%2015.6251C9.99921%2015.791%2010.0651%2015.9502%2010.1825%2016.0676C10.2999%2016.1849%2010.459%2016.2508%2010.625%2016.2508C10.791%2016.2508%2010.9501%2016.1849%2011.0675%2016.0676L16.6925%2010.4426C16.7507%2010.3845%2016.7969%2010.3155%2016.8284%2010.2396C16.8599%2010.1637%2016.8761%2010.0823%2016.8761%2010.0001C16.8761%209.91785%2016.8599%209.83645%2016.8284%209.76052C16.7969%209.68458%2016.7507%209.61561%2016.6925%209.55756L11.0675%203.93256C10.9501%203.8152%2010.791%203.74927%2010.625%203.74927C10.459%203.74927%2010.2999%203.8152%2010.1825%203.93256C10.0651%204.04992%209.99921%204.20909%209.99921%204.37506C9.99921%204.54103%2010.0651%204.7002%2010.1825%204.81756L14.7413%209.37506Z'%20fill='black'%20fill-opacity='0.2'%20style='fill:black;fill-opacity:0.2;'/%3e%3c/svg%3e" alt="Следующий">
+                        </button>
+                    </div>
+                    <div class="shum-results__main">
+                        <div class="shum-results__content-wrapper">
+                            <div class="img-block-portfikio">
+                                <div class="shum-results__image">
+                                    <img src="/assets/Gallery-1-5iYX8hF1.webp" alt="Mercedes GLC - Шумоизоляция с арками"
+                                        id="mainShumImage" width="580" height="760" loading="lazy">
+                                </div>
+                                <div class="shum-results__thumbnails" id="shumThumbnails">
+                                    <!-- Миниатюры будут генерироваться динамически через JavaScript -->
+                                </div>
+                            </div>
+                            <div class="shum-results__info">
+                                <h3 class="shum-results__car-title" id="mainShumTitle">Mercedes GLC</h3>
+                                <div class="shum-results__services" id="mainShumServices">
+                                    <div class="shum-results__service-item">
+                                        <div class="shum-results__service-badge">12 часов</div>
+                                        <div class="shum-results__service-text">Время на работу</div>
+                                    </div>
+                                    <div class="shum-results__service-item">
+                                        <div class="shum-results__service-badge">2 года</div>
+                                        <div class="shum-results__service-text">Гарантия</div>
+                                    </div>
+                                    <div class="shum-results__service-item">
+                                        <div class="shum-results__service-badge">88 000₽</div>
+                                        <div class="shum-results__service-text">Стоимость</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Steps Section -->
+    <section class="process-steps-section">
+        <div class="container">
+            <div class="process-steps">
+                <div class="process-steps__content">
+                    <h2 class="process-steps__title">Прозрачный процесс от начала до результата.</h2>
+
+                    <div class="process-steps__grid">
+                        <div class="process-step" data-step="01">
+                            <div class="process-step__number">01</div>
+                            <div class="process-step__title">Приём автомобиля</div>
+                            <div class="process-step__details">
+                                <div class="process-step__details-item">Диагностика текущего состояния</div>
+                                <div class="process-step__details-item">Фотофиксация</div>
+                                <div class="process-step__details-item">Оценка объема работ</div>
+                            </div>
+                        </div>
+
+                        <div class="process-step" data-step="02">
+                            <div class="process-step__number">02</div>
+                            <div class="process-step__title">Шумоизоляция</div>
+                            <div class="process-step__details">
+                                <div class="process-step__details-item">Премиальные материалы COMFORTMAT</div>
+                                <div class="process-step__details-item">Многослойная обработка</div>
+                                <div class="process-step__details-item">Обработка всех зон</div>
+                            </div>
+                        </div>
+
+                        <div class="process-step" data-step="03">
+                            <div class="process-step__number">03</div>
+                            <div class="process-step__title">Сборка автомобиля</div>
+                            <div class="process-step__details">
+                                <div class="process-step__details-item">Контроль качества</div>
+                                <div class="process-step__details-item">Финальная проверка</div>
+                                <div class="process-step__details-item">Подготовка документации</div>
+                            </div>
+                        </div>
+
+                        <div class="process-step" data-step="04">
+                            <div class="process-step__number">04</div>
+                            <div class="process-step__title">Сдача владельцу</div>
+                            <div class="process-step__details">
+                                <div class="process-step__details-item">Отчет о проведенных работах</div>
+                                <div class="process-step__details-item">Выдача акта о предоставлении услуг</div>
+                                <div class="process-step__details-item">Гарантия на проделанную работу</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Как долго длится процедура шумоизоляции автомобиля?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='9'%20y='4'%20width='2'%20height='12'%20rx='1'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3crect%20x='4'%20y='11'%20width='2'%20height='12'%20rx='1'%20transform='rotate(-90%204%2011)'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3c/svg%3e" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Время процедуры зависит от выбранных зон шумоизоляции. Полная
+                            шумоизоляция автомобиля занимает обычно 2-3 дня, частичная обработка ключевых зон может быть
+                            выполнена за 1 день. Мы всегда согласовываем точные сроки заранее.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Безопасны ли материалы, останется ли запах в салоне?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='9'%20y='4'%20width='2'%20height='12'%20rx='1'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3crect%20x='4'%20y='11'%20width='2'%20height='12'%20rx='1'%20transform='rotate(-90%204%2011)'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3c/svg%3e" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Мы используем сертифицированные, экологичные материалы — они
+                            полностью безопасны и не оставляют запаха в салоне. Материалы COMFORTMAT соответствуют всем
+                            стандартам качества и безопасности.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Сохраняется ли заводская гарантия на автомобиль?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='9'%20y='4'%20width='2'%20height='12'%20rx='1'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3crect%20x='4'%20y='11'%20width='2'%20height='12'%20rx='1'%20transform='rotate(-90%204%2011)'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3c/svg%3e" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Шумоизоляция не влияет на заводскую гарантию автомобиля, поскольку мы
+                            не затрагиваем основные узлы и агрегаты. Мы работаем только с элементами интерьера и
+                            кузовными панелями, не нарушая целостность основных систем.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Останутся ли следы разборки или вмешательства?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='9'%20y='4'%20width='2'%20height='12'%20rx='1'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3crect%20x='4'%20y='11'%20width='2'%20height='12'%20rx='1'%20transform='rotate(-90%204%2011)'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3c/svg%3e" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">После шумоизоляции не остается никаких видимых следов вмешательства.
+                            Мы выполняем разборку и сборку максимально аккуратно, все элементы интерьера возвращаются на
+                            свои места без повреждений. Автомобиль выглядит как новый.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Даете ли вы подменный автомобиль на время работ?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='9'%20y='4'%20width='2'%20height='12'%20rx='1'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3crect%20x='4'%20y='11'%20width='2'%20height='12'%20rx='1'%20transform='rotate(-90%204%2011)'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3c/svg%3e" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Да, мы предоставляем подменный автомобиль на время проведения работ
+                            по шумоизоляции. Это позволяет нашим клиентам не менять свои планы и оставаться мобильными
+                            во время обслуживания их основного автомобиля.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3 class="faq-title">Есть ли гарантия на результаты работ?</h3>
+                        <div class="faq-icon-wrapper">
+                            <img src="data:image/svg+xml,%3csvg%20width='20'%20height='20'%20viewBox='0%200%2020%2020'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3crect%20x='9'%20y='4'%20width='2'%20height='12'%20rx='1'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3crect%20x='4'%20y='11'%20width='2'%20height='12'%20rx='1'%20transform='rotate(-90%204%2011)'%20fill='%23D9D9D9'%20style='fill:%23D9D9D9;fill:color(display-p3%200.8510%200.8510%200.8510);fill-opacity:1;'/%3e%3c/svg%3e" alt="Plus" class="faq-icon">
+                        </div>
+                    </div>
+                    <div class="faq-content">
+                        <p class="faq-description">Мы предоставляем гарантию на все выполненные работы по шумоизоляции.
+                            Гарантийный срок составляет 2 года с момента сдачи автомобиля. В течение этого периода мы
+                            устраняем любые возможные дефекты за свой счет.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__content">
+                <div class="footer__image">
+                    <img src="/assets/footer-img-C6jXrb2M.webp" alt="Footer image" width="520" height="370" loading="lazy">
+                </div>
+                <div class="footer__cta-block">
+                    <h2 class="footer__title">Пора выделиться на дороге</h2>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали
+                        профессионалам и почувствуйте разницу.</p>
+                    <button class="footer__button">Оставить заявку</button>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <div class="footer__copyright">2025 © Статус-Дизайн Все права защищены</div>
+                <a href="privacy.html" class="footer__privacy">Политика конфиденциальности</a>
+            </div>
+        </div>
+
+        <!-- Back to Top Button in Footer -->
+        <div class="footer__back-to-top">
+            <button class="footer__back-btn" id="backToTopBtn" title="Вернуться наверх">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <span>Наверх</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Success Popup Modal -->
+    <div class="popup-overlay popup-overlay--success" id="successPopupOverlay">
+        <div class="popup popup--success">
+            <div class="popup__header">
+                <div class="popup__title-bg">
+                    <h2 class="popup__title" id="successTitle">Ваш запрос в работе. Перезвоним в течение 15 минут.</h2>
+                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.
+                    </p>
+                </div>
+                <button class="popup__close" id="successPopupClose">
+                    <img src="data:image/svg+xml,%3csvg%20width='30'%20height='30'%20viewBox='0%200%2030%2030'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M8.49098%208.4912C8.72539%208.25686%209.04328%208.12522%209.37473%208.12522C9.70619%208.12522%2010.0241%208.25686%2010.2585%208.4912L14.9997%2013.2324L19.741%208.4912C19.8563%208.37181%2019.9942%208.27658%2020.1467%208.21107C20.2992%208.14556%2020.4633%208.11108%2020.6292%208.10964C20.7952%208.10819%2020.9598%208.13982%2021.1134%208.20267C21.267%208.26552%2021.4066%208.35834%2021.524%208.4757C21.6413%208.59307%2021.7342%208.73264%2021.797%208.88626C21.8599%209.03988%2021.8915%209.20448%2021.89%209.37045C21.8886%209.53642%2021.8541%209.70045%2021.7886%209.85295C21.7231%2010.0055%2021.6279%2010.1434%2021.5085%2010.2587L16.7672%2014.9999L21.5085%2019.7412C21.7362%2019.977%2021.8622%2020.2927%2021.8593%2020.6205C21.8565%2020.9482%2021.725%2021.2617%2021.4933%2021.4935C21.2615%2021.7252%2020.948%2021.8567%2020.6202%2021.8595C20.2925%2021.8624%2019.9767%2021.7364%2019.741%2021.5087L14.9997%2016.7674L10.2585%2021.5087C10.0227%2021.7364%209.70698%2021.8624%209.37923%2021.8595C9.05149%2021.8567%208.73797%2021.7252%208.50621%2021.4935C8.27445%2021.2617%208.14299%2020.9482%208.14014%2020.6205C8.13729%2020.2927%208.26329%2019.977%208.49098%2019.7412L13.2322%2014.9999L8.49098%2010.2587C8.25664%2010.0243%208.125%209.7064%208.125%209.37495C8.125%209.04349%208.25664%208.72561%208.49098%208.4912Z'%20fill='%230B0D10'%20style='fill:%230B0D10;fill:color(display-p3%200.0431%200.0510%200.0627);fill-opacity:1;'/%3e%3cpath%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M8.49098%208.4912C8.72539%208.25686%209.04328%208.12522%209.37473%208.12522C9.70619%208.12522%2010.0241%208.25686%2010.2585%208.4912L14.9997%2013.2324L19.741%208.4912C19.8563%208.37181%2019.9942%208.27658%2020.1467%208.21107C20.2992%208.14556%2020.4633%208.11108%2020.6292%208.10964C20.7952%208.10819%2020.9598%208.13982%2021.1134%208.20267C21.267%208.26552%2021.4066%208.35834%2021.524%208.4757C21.6413%208.59307%2021.7342%208.73264%2021.797%208.88626C21.8599%209.03988%2021.8915%209.20448%2021.89%209.37045C21.8886%209.53642%2021.8541%209.70045%2021.7886%209.85295C21.7231%2010.0055%2021.6279%2010.1434%2021.5085%2010.2587L16.7672%2014.9999L21.5085%2019.7412C21.7362%2019.977%2021.8622%2020.2927%2021.8593%2020.6205C21.8565%2020.9482%2021.725%2021.2617%2021.4933%2021.4935C21.2615%2021.7252%2020.948%2021.8567%2020.6202%2021.8595C20.2925%2021.8624%2019.9767%2021.7364%2019.741%2021.5087L14.9997%2016.7674L10.2585%2021.5087C10.0227%2021.7364%209.70698%2021.8624%209.37923%2021.8595C9.05149%2021.8567%208.73797%2021.7252%208.50621%2021.4935C8.27445%2021.2617%208.14299%2020.9482%208.14014%2020.6205C8.13729%2020.2927%208.26329%2019.977%208.49098%2019.7412L13.2322%2014.9999L8.49098%2010.2587C8.25664%2010.0243%208.125%209.7064%208.125%209.37495C8.125%209.04349%208.25664%208.72561%208.49098%208.4912Z'%20fill='black'%20fill-opacity='0.2'%20style='fill:black;fill-opacity:0.2;'/%3e%3c/svg%3e" alt="Close" class="popup__close-icon">
+                </button>
+            </div>
+
+            <div class="popup__content">
+            </div>
+
+            <div class="popup__footer" style="padding: 20px;">
+                <button class="popup__btn popup__btn--success" id="discountSuccessBtn">Буду ожидать</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,8 +1,6 @@
 node_modules
-dist
 .idea
 .vscode
 .env
 backend/node_modules
-backend/dist
 error.log
