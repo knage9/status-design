@@ -18,6 +18,7 @@
     <script src="discount-popup.js" type="module" defer></script>
     <script src="data/news-data.js" type="module" defer></script>
     <script src="main-news.js" type="module" defer></script>
+    <script src="map-lazy-load.js" type="module" defer></script>
     <script src="/metrika.js" type="module"></script>
 </head>
 
@@ -157,7 +158,8 @@
 
                         <div class="services__main-section">
                             <div class="services__image-block">
-                                <img src="img/carbon.webp" alt="Carbon" class="services__bg-image" loading="lazy" width="1608" height="1068">
+                                <img src="img/carbon.webp" alt="Carbon" class="services__bg-image" loading="lazy"
+                                    width="1608" height="1068">
                                 <div class="services__main-options">
                                     <button class="main-option" data-service="carbon" type="button">Карбон</button>
                                     <button class="main-option" data-service="antichrome" type="button">Антихром
@@ -373,9 +375,13 @@
 
                         </div>
                         <div class="map-container">
+                            <div class="map-placeholder">
+                                <button class="show-map-btn">Показать карту</button>
+                            </div>
                             <iframe
-                                src="https://yandex.ru/map-widget/v1/?ll=37.442624,55.566635&z=16&pt=37.442624,55.566635,pm2rdm"
-                                width="940" height="550" frameborder="0" allowfullscreen></iframe>
+                                data-src="https://yandex.ru/map-widget/v1/?ll=37.442624,55.566635&z=16&pt=37.442624,55.566635,pm2rdm"
+                                width="940" height="550" frameborder="0" allowfullscreen
+                                style="display: none;"></iframe>
                         </div>
                     </div>
                 </div>

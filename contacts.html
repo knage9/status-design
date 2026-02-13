@@ -17,6 +17,7 @@
     <script src="popup.js" type="module" defer></script>
     <script src="discount-popup.js" type="module" defer></script>
     <script src="contacts.js" type="module" defer></script>
+    <script src="map-lazy-load.js" type="module" defer></script>
     <script src="/metrika.js" type="module"></script>
 </head>
 
@@ -193,9 +194,13 @@
                         Старопрокшинское шоссе — и сразу рядом с «Азбукой вкуса» вы уже у StatusDesign</p>
                 </div>
                 <div class="map-container">
+                    <div class="map-placeholder">
+                        <button class="show-map-btn">Показать карту</button>
+                    </div>
                     <iframe
-                        src="https://yandex.ru/map-widget/v1/?ll=37.442624,55.566635&z=16&pt=37.442624,55.566635,pm2rdm"
-                        width="940" height="550" frameborder="0" allowfullscreen style="border-radius: 10px;">
+                        data-src="https://yandex.ru/map-widget/v1/?ll=37.442624,55.566635&z=16&pt=37.442624,55.566635,pm2rdm"
+                        width="940" height="550" frameborder="0" allowfullscreen
+                        style="border-radius: 10px; display: none;">
                     </iframe>
                 </div>
             </div>
