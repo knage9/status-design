@@ -1,0 +1,104 @@
+import { ReviewsService } from './reviews.service';
+import { Prisma } from '@prisma/client';
+export declare class ReviewsController {
+    private readonly reviewsService;
+    constructor(reviewsService: ReviewsService);
+    findAll(): Prisma.PrismaPromise<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    }[]>;
+    findAllAdmin(): Prisma.PrismaPromise<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    }[]>;
+    createPublic(createReviewDto: Prisma.ReviewCreateInput): Prisma.Prisma__ReviewClient<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    create(createReviewDto: Prisma.ReviewCreateInput): Prisma.Prisma__ReviewClient<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    findOne(id: string): Prisma.Prisma__ReviewClient<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
+    update(id: string, updateReviewDto: Prisma.ReviewUpdateInput): Promise<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    }>;
+    remove(id: string): Prisma.Prisma__ReviewClient<{
+        rating: number;
+        service: string;
+        carBrand: string;
+        carModel: string;
+        text: string;
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.ReviewStatus;
+        images: string[];
+        servicesSelected: string[];
+        tags: string[];
+        id: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+}

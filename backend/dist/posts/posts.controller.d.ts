@@ -1,0 +1,143 @@
+import { PostsService } from './posts.service';
+import { Prisma } from '@prisma/client';
+export declare class PostsController {
+    private readonly postsService;
+    constructor(postsService: PostsService);
+    findAll(): Prisma.PrismaPromise<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    }[]>;
+    findAllAdmin(req: any): Prisma.PrismaPromise<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    }[]>;
+    create(createPostDto: Prisma.PostCreateInput, req: any): Prisma.Prisma__PostClient<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    findOne(slug: string): Promise<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    } | null>;
+    incrementViews(slug: string): Promise<{
+        success: boolean;
+        views: number;
+    } | {
+        success: boolean;
+        views?: undefined;
+    }>;
+    findOneAdmin(id: string): Prisma.Prisma__PostClient<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    } | null, null, import("@prisma/client/runtime/library").DefaultArgs>;
+    update(id: string, updatePostDto: Prisma.PostUpdateInput, req: any): Promise<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    }>;
+    updateStatus(id: string, body: {
+        status: string;
+    }, req: any): Promise<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    }>;
+    remove(id: string): Prisma.Prisma__PostClient<{
+        dateCreated: Date;
+        datePublished: Date | null;
+        status: import(".prisma/client").$Enums.PostStatus;
+        tags: string[];
+        id: number;
+        type: import(".prisma/client").$Enums.PostType;
+        slug: string;
+        title: string;
+        image: string | null;
+        category: import(".prisma/client").$Enums.PostCategory;
+        views: number;
+        excerpt: string;
+        content: string;
+        priority: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+}
