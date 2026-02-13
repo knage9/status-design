@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,249 +16,9 @@
     <script src="popup.js" defer></script>
     <script src="discount-popup.js" defer></script>
     <script src="antichrome-form.js" defer></script>
-    <script>
-        // Portfolio Gallery Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const thumbnails = document.querySelectorAll('.portfolio-result__thumbnail');
-            const mainImage = document.getElementById('mainPortfolioImage');
-            const mainTitle = document.getElementById('mainPortfolioTitle');
-            const mainServices = document.getElementById('mainPortfolioServices');
-            const prevBtn = document.querySelector('.portfolio-result__nav-btn--prev');
-            const nextBtn = document.querySelector('.portfolio-result__nav-btn--next');
-
-            // Portfolio projects data
-            const projects = [
-                {
-                    id: 0,
-                    title: 'Chevrolet Corvette',
-                    images: [
-                        'img/Gallery-1.png',
-                        'img/Gallery-2.png',
-                        'img/Gallery-3.png'
-                    ],
-                    thumbnails: [
-                        'img/Gallery-1.png',
-                        'img/Gallery-2.png',
-                        'img/Gallery-3.png'
-                    ],
-                    alt: 'Chevrolet Corvette - Результат антихрома',
-                    services: [
-                        'Оконные молдинги',
-                        'Молдинг крыши багажника',
-                        'Надписи и значки',
-                        'Решетка радиатора',
-                        'Молдинг заднего бампера',
-                        'Вставки глушителей',
-                        'Вставки переднего бампера',
-                        'Юбка заднего бампера'
-                    ]
-                },
-                {
-                    id: 1,
-                    title: 'Mercedes-Benz S-Class',
-                    images: [
-                        'img/Gallery-2.png',
-                        'img/Gallery-3.png',
-                        'img/Gallery-1.png'
-                    ],
-                    thumbnails: [
-                        'img/Gallery-2.png',
-                        'img/Gallery-3.png',
-                        'img/Gallery-1.png'
-                    ],
-                    alt: 'Mercedes-Benz S-Class - Полный антихром',
-                    services: [
-                        'Полный антихром кузова',
-                        'Решетка радиатора',
-                        'Оконные молдинги',
-                        'Дверные ручки',
-                        'Зеркала заднего вида',
-                        'Логотипы и эмблемы',
-                        'Патрубки выхлопной системы'
-                    ]
-                },
-                {
-                    id: 2,
-                    title: 'BMW X7',
-                    images: [
-                        'img/Gallery-3.png',
-                        'img/Gallery-1.png',
-                        'img/Gallery-2.png'
-                    ],
-                    thumbnails: [
-                        'img/Gallery-3.png',
-                        'img/Gallery-1.png',
-                        'img/Gallery-2.png'
-                    ],
-                    alt: 'BMW X7 - Спортивный антихром',
-                    services: [
-                        'Решетка радиатора M-Performance',
-                        'Оконные молдинги Shadow Line',
-                        'Дверные ручки',
-                        'Задние фонари',
-                        'Выхлопная система',
-                        'Логотипы BMW'
-                    ]
-                }
-            ];
-
-            let currentProjectIndex = 0;
-            let currentImageIndex = 0;
-
-            // Generate thumbnails for a project
-            function generateThumbnails(project) {
-                const thumbnailsContainer = document.getElementById('portfolioThumbnails');
-                thumbnailsContainer.innerHTML = '';
-
-                project.thumbnails.forEach((thumbnailSrc, index) => {
-                    const thumbnail = document.createElement('div');
-                    thumbnail.className = 'portfolio-result__thumbnail';
-                    thumbnail.dataset.image = index;
-
-                    const img = document.createElement('img');
-                    img.src = thumbnailSrc;
-                    img.alt = `${project.title} - вид ${index + 1}`;
-
-                    thumbnail.appendChild(img);
-                    thumbnailsContainer.appendChild(thumbnail);
-
-                    // Add click handler
-                    thumbnail.addEventListener('click', () => {
-                        updateImage(index);
-                    });
-                });
-
-                // Update thumbnails variable to include newly created thumbnails
-                const newThumbnails = document.querySelectorAll('.portfolio-result__thumbnail');
-                return newThumbnails;
-            }
-
-            // Update portfolio display
-            function updatePortfolio(projectIndex) {
-                const project = projects[projectIndex];
-
-                // Update main content
-                mainImage.src = project.images[currentImageIndex];
-                mainImage.alt = project.alt;
-                mainTitle.textContent = project.title;
-
-                // Update services list
-                mainServices.innerHTML = '';
-                project.services.forEach(service => {
-                    const serviceItem = document.createElement('div');
-                    serviceItem.className = 'portfolio-result__service-item';
-                    serviceItem.textContent = service;
-                    mainServices.appendChild(serviceItem);
-                });
-
-                // Generate and update thumbnails for current project
-                const newThumbnails = generateThumbnails(project);
-
-                // Update active thumbnail based on current image
-                newThumbnails.forEach((thumb, i) => {
-                    if (i === currentImageIndex) {
-                        thumb.classList.add('active');
-                    } else {
-                        thumb.classList.remove('active');
-                    }
-                });
-
-                currentProjectIndex = projectIndex;
-            }
-
-            // Update current image within project
-            function updateImage(imageIndex) {
-                currentImageIndex = imageIndex;
-
-                // Update main image
-                mainImage.src = projects[currentProjectIndex].images[currentImageIndex];
-
-                // Update active thumbnail - get current thumbnails and update their active state
-                const currentThumbnails = document.querySelectorAll('.portfolio-result__thumbnail');
-                currentThumbnails.forEach((thumb, i) => {
-                    if (i === currentImageIndex) {
-                        thumb.classList.add('active');
-                    } else {
-                        thumb.classList.remove('active');
-                    }
-                });
-            }
-
-            // Navigation button handlers - switch between projects
-            if (prevBtn && nextBtn) {
-                prevBtn.addEventListener('click', () => {
-                    const newProjectIndex = currentProjectIndex === 0 ? projects.length - 1 : currentProjectIndex - 1;
-                    currentImageIndex = 0; // Reset to first image of new project
-                    updatePortfolio(newProjectIndex);
-                });
-
-                nextBtn.addEventListener('click', () => {
-                    const newProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
-                    currentImageIndex = 0; // Reset to first image of new project
-                    updatePortfolio(newProjectIndex);
-                });
-            }
-
-            // Auto-rotate gallery - switch between projects
-            setInterval(() => {
-                const nextProjectIndex = currentProjectIndex === projects.length - 1 ? 0 : currentProjectIndex + 1;
-                currentImageIndex = 0; // Reset to first image of new project
-                updatePortfolio(nextProjectIndex);
-            }, 6000); // Change project every 6 seconds
-
-    // Initialize first project
-    updatePortfolio(0);
-
-    // FAQ Accordion functionality for antichrome page
-    const faqItems = document.querySelectorAll('.faq-section .faq-item');
-    if (faqItems.length > 0) {
-        faqItems.forEach(item => {
-            const header = item.querySelector('.faq-header');
-            const content = item.querySelector('.faq-content');
-            const description = item.querySelector('.faq-description');
-
-            if (header) {
-                header.addEventListener('click', function() {
-                    const isActive = item.classList.contains('active');
-
-                    // Close all FAQ items
-                    faqItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.classList.remove('active');
-                            const otherContent = otherItem.querySelector('.faq-content');
-                            if (otherContent) {
-                                otherContent.classList.remove('active');
-                            }
-                        }
-                    });
-
-                    // Toggle current item
-                    if (isActive) {
-                        item.classList.remove('active');
-                        if (content) {
-                            content.classList.remove('active');
-                        }
-                    } else {
-                        item.classList.add('active');
-                        if (content) {
-                            content.classList.add('active');
-
-                            // Smooth scroll to expanded item
-                            setTimeout(() => {
-                                item.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'center'
-                                });
-                            }, 200);
-                        }
-                    }
-                });
-            }
-        });
-    }
-    });
-    </script>
+    <script src="antichrome-portfolio.js" defer></script>
 </head>
+
 <body>
     <!-- Burger Menu Overlay -->
     <div class="burger-menu-overlay" id="burgerOverlay"></div>
@@ -281,22 +42,24 @@
                     <!-- Burger Menu -->
                     <div class="burger-menu">
                         <button class="burger-menu__toggle" id="burgerToggle">
-                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <svg class="burger-menu__icon burger-menu__icon--burger" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none">
+                                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                             </svg>
-                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close" width="24" height="24">
+                            <img src="img/close.svg" alt="Close" class="burger-menu__icon burger-menu__icon--close"
+                                width="24" height="24">
                             <span class="burger-menu__text">Меню</span>
                         </button>
                         <div class="burger-menu__dropdown" id="burgerDropdown">
-                        <div class="burger-menu__content">
-                            <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
-                            <a href="reviews.html" class="burger-menu__link">Отзывы</a>
-                            <a href="news.html" class="burger-menu__link">Новости</a>
-                            <a href="contacts.html" class="burger-menu__link">Контакты</a>
-                            <button class="burger-menu__btn">Оставить заявку</button>
-                        </div>
+                            <div class="burger-menu__content">
+                                <a href="portfolio.html" class="burger-menu__link">Портфолио</a>
+                                <a href="reviews.html" class="burger-menu__link">Отзывы</a>
+                                <a href="news.html" class="burger-menu__link">Новости</a>
+                                <a href="contacts.html" class="burger-menu__link">Контакты</a>
+                                <button class="burger-menu__btn">Оставить заявку</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -316,7 +79,8 @@
                         <span class="antichrome-hero__title-text">Новый характер вашего авто.</span>
                     </h2>
                     <p class="antichrome-hero__description">
-                        Мы убираем лишний блеск и создаём строгий, премиальный образ автомобиля. Детали становятся выразительнее, линии — чётче, а характер машины приобретает глубину и индивидуальность.
+                        Мы убираем лишний блеск и создаём строгий, премиальный образ автомобиля. Детали становятся
+                        выразительнее, линии — чётче, а характер машины приобретает глубину и индивидуальность.
                     </p>
                     <button class="antichrome-hero__btn btn-primary">Оставить заявку</button>
                 </div>
@@ -411,26 +175,37 @@
                             <img src="img/exeed.png" alt="EXEED" class="brand-card__logo">
                         </div>
                         <div class="brand-card">
-                            <img src="img/zekr.png" alt="ZEEKR" class="brand-card__logo">
+                            <img src="img/Zeekr.svg" alt="ZEEKR" class="brand-card__logo">
                         </div>
                         <div class="brand-card">
-                            <img src="img/haval.png" alt="HAVAL" class="brand-card__logo">
+                            <img src="img/Haval.svg" alt="HAVAL" class="brand-card__logo">
                         </div>
                         <div class="brand-card">
-                            <img src="img/geely.png" alt="GEELY" class="brand-card__logo">
+                            <img src="img/Li.svg" alt="Li" class="brand-card__logo">
                         </div>
-                        <!-- Дублируем для бесконечной прокрутки -->
+                        <div class="brand-card">
+                            <img src="img/Omoda.svg" alt="Omoda" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/Jaecoo.svg" alt="Jaecoo" class="brand-card__logo">
+                        </div>
                         <div class="brand-card">
                             <img src="img/exeed.png" alt="EXEED" class="brand-card__logo">
                         </div>
                         <div class="brand-card">
-                            <img src="img/zekr.png" alt="ZEEKR" class="brand-card__logo">
+                            <img src="img/Zeekr.svg" alt="ZEEKR" class="brand-card__logo">
                         </div>
                         <div class="brand-card">
-                            <img src="img/haval.png" alt="HAVAL" class="brand-card__logo">
+                            <img src="img/Haval.svg" alt="HAVAL" class="brand-card__logo">
                         </div>
                         <div class="brand-card">
-                            <img src="img/geely.png" alt="GEELY" class="brand-card__logo">
+                            <img src="img/Li.svg" alt="Li" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/Omoda.svg" alt="Omoda" class="brand-card__logo">
+                        </div>
+                        <div class="brand-card">
+                            <img src="img/Jaecoo.svg" alt="Jaecoo" class="brand-card__logo">
                         </div>
                     </div>
                 </div>
@@ -446,7 +221,8 @@
                 <div class="antichrome-form__left">
                     <h3 class="antichrome-form__title">Хотите узнать цену? Заполните заявку</h3>
                     <p class="antichrome-form__description">
-                        Оставьте контакт — проконсультируем по цене, расскажем подробности и предоставим индивидуальную скидку специально для вас.
+                        Оставьте контакт — проконсультируем по цене, расскажем подробности и предоставим индивидуальную
+                        скидку специально для вас.
                     </p>
                 </div>
 
@@ -460,27 +236,35 @@
                             <div class="antichrome-form__additional-label">Добавьте дополнительные услуги</div>
 
                             <!-- Discount Section -->
-                            <div class="antichrome-form__discount" id="antichromeDiscountSection" style="display: none;">
+                            <div class="antichrome-form__discount" id="antichromeDiscountSection"
+                                style="display: none;">
                                 <div class="antichrome-form__discount-wrapper">
                                     <div class="antichrome-form__discount-badge">
-                                        <span class="antichrome-form__discount-percent" id="antichromeDiscountPercent">-10%</span>
+                                        <span class="antichrome-form__discount-percent"
+                                            id="antichromeDiscountPercent">-10%</span>
                                     </div>
                                     <div class="antichrome-form__discount-text">
                                         <span class="antichrome-form__discount-label">Ваша персональная скидка</span>
                                     </div>
                                 </div>
                                 <div class="antichrome-form__discount-info">
-                                    <span class="antichrome-form__discount-description">Скидка рассчитывается от количества и стоимости выбранных услуг</span>
+                                    <span class="antichrome-form__discount-description">Скидка рассчитывается от
+                                        количества и стоимости выбранных услуг</span>
                                 </div>
                             </div>
 
                             <div class="antichrome-form__additional-section">
                                 <div class="antichrome-form__additional-options">
-                                    <button class="additional-option" data-option="antigravity-film" type="button">Оклейка антигравийной пленкой</button>
-                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас колесных дисков</button>
-                                    <button class="additional-option" data-option="cleaning" type="button">Химчистка</button>
-                                    <button class="additional-option" data-option="ceramic" type="button">Керамика</button>
-                                    <button class="additional-option" data-option="polish" type="button">Полировка</button>
+                                    <button class="additional-option" data-option="antigravity-film"
+                                        type="button">Оклейка антигравийной пленкой</button>
+                                    <button class="additional-option" data-option="disk-painting" type="button">Окрас
+                                        колесных дисков</button>
+                                    <button class="additional-option" data-option="cleaning"
+                                        type="button">Химчистка</button>
+                                    <button class="additional-option" data-option="ceramic"
+                                        type="button">Керамика</button>
+                                    <button class="additional-option" data-option="polish"
+                                        type="button">Полировка</button>
                                 </div>
                             </div>
                         </div>
@@ -488,15 +272,18 @@
                         <!-- Contact Information -->
                         <div class="antichrome-form__contact-info">
                             <div class="antichrome-form__form-group">
-                                <input type="text" class="antichrome-form__input" id="antichromeFormName" placeholder="Ваше имя" required>
+                                <input type="text" class="antichrome-form__input" id="antichromeFormName"
+                                    placeholder="Ваше имя" required>
                                 <div class="antichrome-form__error" id="antichromeFormNameError"></div>
                             </div>
                             <div class="antichrome-form__form-group">
-                                <input type="tel" class="antichrome-form__input" id="antichromeFormPhone" placeholder="Телефон" required>
+                                <input type="tel" class="antichrome-form__input" id="antichromeFormPhone"
+                                    placeholder="Телефон" required>
                                 <div class="antichrome-form__error" id="antichromeFormPhoneError"></div>
                             </div>
                             <div class="antichrome-form__form-group">
-                                <input type="text" class="antichrome-form__input" id="antichromeFormCar" placeholder="Марка и модель авто" required>
+                                <input type="text" class="antichrome-form__input" id="antichromeFormCar"
+                                    placeholder="Марка и модель авто" required>
                                 <div class="antichrome-form__error" id="antichromeFormCarError"></div>
                             </div>
                         </div>
@@ -513,7 +300,8 @@
         <div class="popup">
             <div class="popup__header">
                 <div class="popup__title-bg">
-                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут</h2>
+                    <h2 class="popup__title" id="popupTitle">Мы перезвоним и ответим на все вопросы в течение 15 минут
+                    </h2>
                 </div>
                 <button class="popup__close" id="popupClose">
                     <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
@@ -532,7 +320,8 @@
                         <div class="popup__error" id="phoneError"></div>
                     </div>
                     <div class="popup__form-group">
-                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто" required>
+                        <input type="text" class="popup__input" id="carModel" placeholder="Марка и модель авто"
+                            required>
                         <div class="popup__error" id="carError"></div>
                     </div>
                 </div>
@@ -590,8 +379,10 @@
 
             <div class="popup__footer">
                 <button class="popup__btn popup__btn--continue" id="continueBtn">Продолжить</button>
-                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить заявку</button>
-                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду ожидать</button>
+                <button class="popup__btn popup__btn--submit" id="submitBtn" style="display: none;">Отправить
+                    заявку</button>
+                <button class="popup__btn popup__btn--success" id="successBtn" style="display: none;">Буду
+                    ожидать</button>
             </div>
         </div>
     </div>
@@ -613,15 +404,18 @@
                 <div class="popup__form-section">
                     <div class="popup__form">
                         <div class="popup__form-group">
-                            <input type="text" class="popup__input" id="discountUserName" placeholder="Ваше имя" required>
+                            <input type="text" class="popup__input" id="discountUserName" placeholder="Ваше имя"
+                                required>
                             <div class="popup__error" id="discountNameError"></div>
                         </div>
                         <div class="popup__form-group">
-                            <input type="tel" class="popup__input" id="discountUserPhone" placeholder="Телефон" required>
+                            <input type="tel" class="popup__input" id="discountUserPhone" placeholder="Телефон"
+                                required>
                             <div class="popup__error" id="discountPhoneError"></div>
                         </div>
                         <div class="popup__form-group">
-                            <input type="text" class="popup__input" id="discountCarModel" placeholder="Марка и модель авто" required>
+                            <input type="text" class="popup__input" id="discountCarModel"
+                                placeholder="Марка и модель авто" required>
                             <div class="popup__error" id="discountCarError"></div>
                         </div>
                     </div>
@@ -640,7 +434,8 @@
             <div class="popup__header">
                 <div class="popup__title-bg">
                     <h2 class="popup__title" id="successTitle">Ваш запрос в работе. Перезвоним в течение 15 минут.</h2>
-                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.</p>
+                    <p class="popup__success-description">Скидка закреплена за вами. Осталось только уточнить детали.
+                    </p>
                 </div>
                 <button class="popup__close" id="successPopupClose">
                     <img src="img/close-popup.svg" alt="Close" class="popup__close-icon">
@@ -669,51 +464,59 @@
                     <div class="paint-film__items">
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper">
-                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor"/>
+                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor" />
                                 </svg>
                             </div>
-                            <div class="paint-film__text">Обеспечивает заводской глянец без шагрени — детали выглядят дорого и презентабельно.</div>
+                            <div class="paint-film__text">Обеспечивает заводской глянец без шагрени — детали выглядят
+                                дорого и презентабельно.</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper">
-                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor"/>
+                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor" />
                                 </svg>
                             </div>
                             <div class="paint-film__text">Срок службы не ограничен от 30 лет</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper">
-                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor"/>
+                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor" />
                                 </svg>
                             </div>
                             <div class="paint-film__text">Можно наносить на любые элементы, включая сложные формы</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper">
-                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor"/>
+                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor" />
                                 </svg>
                             </div>
                             <div class="paint-film__text">Окрашенные детали можно полировать</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper">
-                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor"/>
+                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor" />
                                 </svg>
                             </div>
                             <div class="paint-film__text">Нет риска вздутия, коррозии и отслоения покрытия</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper">
-                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor"/>
+                                <svg class="paint-film__check-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M20 6L9 17L4 12L5.41 10.59L9 14.17L18.59 4.58L20 6Z" fill="currentColor" />
                                 </svg>
                             </div>
-                            <div class="paint-film__text">Стоимость выше, но это инвестиция в эстетичность и надежность.</div>
+                            <div class="paint-film__text">Стоимость выше, но это инвестиция в эстетичность и надежность.
+                            </div>
                         </div>
                     </div>
                     <div class="paint-film__scale">
@@ -729,51 +532,67 @@
                     <div class="paint-film__items">
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper paint-film__icon-wrapper--cross">
-                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <div class="paint-film__text">Пленка часто выглядит менее презентабельно: шагрень, отсутствие глубины цвета.</div>
+                            <div class="paint-film__text">Пленка часто выглядит менее презентабельно: шагрень,
+                                отсутствие глубины цвета.</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper paint-film__icon-wrapper--cross">
-                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
                                 </svg>
                             </div>
                             <div class="paint-film__text">Срок службы обычно 5-7 лет</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper paint-film__icon-wrapper--cross">
-                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <div class="paint-film__text">Критична к форме детали: сложные элементы оклеить аккуратно сложно или невозможно.</div>
+                            <div class="paint-film__text">Критична к форме детали: сложные элементы оклеить аккуратно
+                                сложно или невозможно.</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper paint-film__icon-wrapper--cross">
-                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
                                 </svg>
                             </div>
                             <div class="paint-film__text">Пленку невозможно полировать</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper paint-film__icon-wrapper--cross">
-                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <div class="paint-film__text">Со временем повышается риск появления пузырей, отслаивания и дефектов</div>
+                            <div class="paint-film__text">Со временем повышается риск появления пузырей, отслаивания и
+                                дефектов</div>
                         </div>
                         <div class="paint-film__item">
                             <div class="paint-film__icon-wrapper paint-film__icon-wrapper--cross">
-                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <svg class="paint-film__cross-icon" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
+                                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" />
                                 </svg>
                             </div>
-                            <div class="paint-film__text">Меньшие затраты на старте, но частые обновления и риски потери внешнего качества.</div>
+                            <div class="paint-film__text">Меньшие затраты на старте, но частые обновления и риски потери
+                                внешнего качества.</div>
                         </div>
                     </div>
                     <div class="paint-film__scale">
@@ -788,7 +607,8 @@
     <section class="quote-section">
         <div class="container">
             <blockquote class="quote">
-                <p class="quote__text">«Плёнки это всегда временное решение. По своему опыту скажу, чтобы забыть и закрыть этот вопрос раз и навсегда нужно именно красить, никаких плёнок»</p>
+                <p class="quote__text">«Плёнки это всегда временное решение. По своему опыту скажу, чтобы забыть и
+                    закрыть этот вопрос раз и навсегда нужно именно красить, никаких плёнок»</p>
                 <cite class="quote__author">Алексей Клешнев. Основатель Status Design.</cite>
             </blockquote>
         </div>
@@ -801,7 +621,8 @@
                 <div class="portfolio-result__content">
                     <h2 class="portfolio-result__title">Результат, который говорит сам за себя.</h2>
                     <p class="portfolio-result__description">
-                        Мы занимаемся дехромированием элементов автомобиля уже более 20 лет. За это время у нас накопился существенный опыт и у вас есть возможность ознакомиться с нашими работами
+                        Мы занимаемся дехромированием элементов автомобиля уже более 20 лет. За это время у нас
+                        накопился существенный опыт и у вас есть возможность ознакомиться с нашими работами
                     </p>
                 </div>
 
@@ -818,7 +639,8 @@
                         <div class="portfolio-result__content-wrapper">
                             <div class="img-block-portfikio">
                                 <div class="portfolio-result__image">
-                                    <img src="img/Gallery-1.png" alt="Chevrolet Corvette - Результат антихрома" id="mainPortfolioImage">
+                                    <img src="img/Gallery-1.png" alt="Chevrolet Corvette - Результат антихрома"
+                                        id="mainPortfolioImage">
                                 </div>
                                 <div class="portfolio-result__thumbnails" id="portfolioThumbnails">
                                     <!-- Миниатюры будут генерироваться динамически через JavaScript -->
@@ -856,7 +678,10 @@
                         </div>
                     </div>
                     <div class="faq-content">
-                        <p class="faq-description">Особого ухода не требуется. Покрашенные детали можно мыть обычной водой с автошампунем, как и остальные части кузова. Мы рекомендуем избегать агрессивных химических средств в первые 2 недели после покраски, пока покрытие полностью полимеризуется.</p>
+                        <p class="faq-description">Особого ухода не требуется. Покрашенные детали можно мыть обычной
+                            водой с автошампунем, как и остальные части кузова. Мы рекомендуем избегать агрессивных
+                            химических средств в первые 2 недели после покраски, пока покрытие полностью полимеризуется.
+                        </p>
                     </div>
                 </div>
 
@@ -868,7 +693,9 @@
                         </div>
                     </div>
                     <div class="faq-content">
-                        <p class="faq-description">Мы используем только профессиональную матовую покраску с многослойным покрытием, которое обеспечивает долговечность и премиальный внешний вид. В отличие от пленки, наша покраска не отслаивается и не вздувается со временем.</p>
+                        <p class="faq-description">Мы используем только профессиональную матовую покраску с многослойным
+                            покрытием, которое обеспечивает долговечность и премиальный внешний вид. В отличие от
+                            пленки, наша покраска не отслаивается и не вздувается со временем.</p>
                     </div>
                 </div>
 
@@ -880,7 +707,9 @@
                         </div>
                     </div>
                     <div class="faq-content">
-                        <p class="faq-description">Разница заметна только при ближайшем рассмотрении. Мы используем профессиональное оборудование и материалы, соответствующие заводским стандартам. Цвет подбирается с помощью спектрофотометра для идеального совпадения с оригиналом.</p>
+                        <p class="faq-description">Разница заметна только при ближайшем рассмотрении. Мы используем
+                            профессиональное оборудование и материалы, соответствующие заводским стандартам. Цвет
+                            подбирается с помощью спектрофотометра для идеального совпадения с оригиналом.</p>
                     </div>
                 </div>
 
@@ -892,7 +721,9 @@
                         </div>
                     </div>
                     <div class="faq-content">
-                        <p class="faq-description">Мы предоставляем гарантию 3 года на все выполненные работы по дехромированию. Гарантия покрывает отслоение краски, вздутие покрытия и потерю цвета. В случае обнаружения дефектов мы устраним их за свой счет в кратчайшие сроки.</p>
+                        <p class="faq-description">Мы предоставляем гарантию 3 года на все выполненные работы по
+                            дехромированию. Гарантия покрывает отслоение краски, вздутие покрытия и потерю цвета. В
+                            случае обнаружения дефектов мы устраним их за свой счет в кратчайшие сроки.</p>
                     </div>
                 </div>
 
@@ -904,7 +735,10 @@
                         </div>
                     </div>
                     <div class="faq-content">
-                        <p class="faq-description">Разборка автомобиля не всегда требуется. В большинстве случаев мы можем выполнить дехромирование без полной разборки, используя профессиональное оборудование и опыт мастеров. Если разборка необходима, мы выполняем ее максимально аккуратно и берем ответственность за сохранность всех элементов.</p>
+                        <p class="faq-description">Разборка автомобиля не всегда требуется. В большинстве случаев мы
+                            можем выполнить дехромирование без полной разборки, используя профессиональное оборудование
+                            и опыт мастеров. Если разборка необходима, мы выполняем ее максимально аккуратно и берем
+                            ответственность за сохранность всех элементов.</p>
                     </div>
                 </div>
 
@@ -916,7 +750,9 @@
                         </div>
                     </div>
                     <div class="faq-content">
-                        <p class="faq-description">Время выполнения зависит от количества элементов и сложности работ. Обычно дехромирование полного комплекта хромированных элементов занимает 2-3 дня. Мы всегда согласовываем сроки заранее и укладываемся в оговоренные временные рамки.</p>
+                        <p class="faq-description">Время выполнения зависит от количества элементов и сложности работ.
+                            Обычно дехромирование полного комплекта хромированных элементов занимает 2-3 дня. Мы всегда
+                            согласовываем сроки заранее и укладываемся в оговоренные временные рамки.</p>
                     </div>
                 </div>
             </div>
@@ -932,7 +768,8 @@
                 </div>
                 <div class="footer__cta-block">
                     <h2 class="footer__title">Пора выделиться на дороге</h2>
-                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали профессионалам и почувствуйте разницу.</p>
+                    <p class="footer__description">Сделайте свой автомобиль отражением вашего стиля. Доверьте детали
+                        профессионалам и почувствуйте разницу.</p>
                     <button class="footer__button">Оставить заявку</button>
                 </div>
             </div>
@@ -946,11 +783,13 @@
         <div class="footer__back-to-top">
             <button class="footer__back-btn" id="backToTopBtn" title="Вернуться наверх">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
                 <span>Наверх</span>
             </button>
         </div>
     </footer>
 </body>
+
 </html>

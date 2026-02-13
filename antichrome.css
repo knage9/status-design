@@ -122,6 +122,7 @@
         opacity: 0;
         transform: translateX(-50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -133,6 +134,7 @@
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -425,7 +427,7 @@
 
 .brand-card__logo {
     max-width: 300px;
-    max-height: 50px;
+    max-height: 18px;
     object-fit: contain;
     filter: brightness(0) invert(1);
 }
@@ -741,6 +743,7 @@
     0% {
         transform: translateX(0);
     }
+
     100% {
         transform: translateX(calc(-340px * 4 - 40px * 4));
     }
@@ -751,6 +754,7 @@
         opacity: 0;
         transform: translateX(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -762,6 +766,7 @@
         opacity: 0;
         transform: translateX(30px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -790,9 +795,9 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent);
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
     transition: left 0.5s ease;
 }
 
@@ -1263,9 +1268,9 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent);
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
     transition: left 0.5s ease;
 }
 
@@ -1528,6 +1533,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1539,6 +1545,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1831,6 +1838,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2051,6 +2059,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2258,6 +2267,7 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2269,6 +2279,7 @@
         opacity: 0;
         transform: scale(0.8);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -2432,6 +2443,7 @@
     }
 
 }
+
 @media (max-width: 600px) {
     .portfolio-result__image {
         width: 340px;
@@ -2697,6 +2709,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -2842,85 +2855,103 @@
 }
 
 @media (max-width: 992px) {
-    .brands-section{
+    .brands-section {
         padding-top: 100px;
     }
-    
-    .anti-section{
+
+    .anti-section {
         padding-top: 100px;
     }
-    .statistics-section{
+
+    .statistics-section {
         padding-top: 100px;
     }
-    .antichrome-form-section{
+
+    .antichrome-form-section {
         padding-top: 100px;
     }
-    .paint-film-section{
-        padding-top: 100px;
-        padding-bottom: 0px;
-    }
-    .quote-section{
-        padding-top: 100px;
-    }
-    .portfolio-result-section{
+
+    .paint-film-section {
         padding-top: 100px;
         padding-bottom: 0px;
     }
-    .faq-section{
+
+    .quote-section {
+        padding-top: 100px;
+    }
+
+    .portfolio-result-section {
+        padding-top: 100px;
+        padding-bottom: 0px;
+    }
+
+    .faq-section {
         padding-top: 100px;
         padding-bottom: 100px;
     }
 }
 
 @media (max-width: 768px) {
-    .antichrome-hero{
+    .antichrome-hero {
         padding-bottom: 0px;
     }
-    .antichrome-hero__left{
+
+    .antichrome-hero__left {
         width: 100%;
     }
-    .brands-section{
+
+    .brands-section {
         padding-top: 100px;
     }
 
-    .brands-section__title{
+    .brands-section__title {
         font-size: 28px;
         max-width: 400px;
     }
-    .brands-section__title{
+
+    .brands-section__title {
         margin-bottom: 50px;
     }
-    .anti-section{
+
+    .anti-section {
         padding-top: 100px;
     }
-    .statistics-section{
+
+    .statistics-section {
         padding-top: 100px;
     }
-    .antichrome-form-section{
+
+    .antichrome-form-section {
         padding-top: 100px;
         padding-bottom: 0px;
     }
-    .paint-film-section{
+
+    .paint-film-section {
         padding-top: 100px;
         padding-bottom: 0px;
     }
-    .quote-section{
+
+    .quote-section {
         padding-top: 100px;
         padding-left: 20px;
         padding-right: 20px;
     }
-    .quote__text{
+
+    .quote__text {
         font-size: 22px;
     }
-    .portfolio-result-section{
+
+    .portfolio-result-section {
         padding-top: 100px;
         padding-bottom: 0px;
     }
-    .portfolio-result__title{
+
+    .portfolio-result__title {
         font-size: 28px;
         max-width: 400px;
     }
-    .faq-section{
+
+    .faq-section {
         padding-top: 100px;
         padding-bottom: 100px;
     }
@@ -2928,19 +2959,23 @@
 
 
 @media (max-width: 468px) {
-    .brands-section__title{
+    .brands-section__title {
         font-size: 24px;
     }
-    .quote__text{
+
+    .quote__text {
         font-size: 18px;
     }
-    .quote__author{
+
+    .quote__author {
         font-size: 16px;
     }
-    .portfolio-result__title{
+
+    .portfolio-result__title {
         font-size: 24px;
     }
-    .paint-film__title{
+
+    .paint-film__title {
         font-size: 24px;
     }
 }

@@ -3,18 +3,20 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, RequestStatus } from '@prisma/client';
 import { RequestNumberService } from './request-number.service';
 import { CurrentUser, hasPermission } from '../auth/permissions';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class RequestsService {
     constructor(
         private prisma: PrismaService,
         private requestNumberService: RequestNumberService,
+        private telegramService: TelegramService,
     ) { }
 
     async create(data: Prisma.RequestCreateInput) {
         const requestNumber = await this.requestNumberService.generateRequestNumber();
 
-        return this.prisma.request.create({
+        const request = await this.prisma.request.create({
             data: {
                 ...data,
                 requestNumber,
@@ -31,11 +33,18 @@ export class RequestsService {
                 },
             },
         });
+
+        // Отправка уведомления в Telegram (не дожидаемся завершения, чтобы не тормозить ответ)
+        this.telegramService.sendNewRequestNotification(request).catch(err => {
+            console.error('Ошибка при отправке уведомления в Telegram:', err);
+        });
+
+        return request;
     }
 
     async findAll(
         currentUser: CurrentUser,
-        searchQuery?: string, 
+        searchQuery?: string,
         statusFilter?: string,
         dateFrom?: string,
         dateTo?: string
@@ -189,7 +198,7 @@ export class RequestsService {
 
         // Проверка валидации
         const statusEnum = status === 'SDELKA' ? RequestStatus.SDELKA : RequestStatus.OTKLONENO;
-        
+
         if (status === 'SDELKA') {
             if (!data.managerComment || data.managerComment.trim() === '') {
                 throw new BadRequestException('Комментарий менеджера обязателен при переводе в статус "Сделка"');

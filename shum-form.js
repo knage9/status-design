@@ -1,5 +1,5 @@
 // Shum Form Functionality (адаптировано из antichrome-form.js)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Form elements
     const form = document.querySelector('.shum-form__form');
     const submitBtn = document.querySelector('.shum-form__submit');
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listeners for inputs
     if (nameInput) {
-        nameInput.addEventListener('input', function() {
+        nameInput.addEventListener('input', function () {
             validateName();
             updateSubmitButton();
         });
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (phoneInput) {
-        phoneInput.addEventListener('input', function(e) {
+        phoneInput.addEventListener('input', function (e) {
             // Format phone number
             let value = e.target.value.replace(/\D/g, '');
 
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (carInput) {
-        carInput.addEventListener('input', function() {
+        carInput.addEventListener('input', function () {
             validateCar();
             updateSubmitButton();
         });
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Additional services selection
     additionalOptions.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const service = this.dataset.option;
 
             if (selectedAdditionalServices.includes(service)) {
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form submission
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
 
             // Validate all fields
@@ -192,31 +192,63 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.textContent = 'Отправляем...';
                 submitBtn.disabled = true;
 
-                // Simulate form submission
-                setTimeout(() => {
-                    // Here you would typically send data to server
-                    console.log('Form submitted:', {
-                        name: nameInput.value,
-                        phone: phoneInput.value,
-                        car: carInput.value,
-                        mainService: selectedMainService,
-                        additionalServices: selectedAdditionalServices,
-                        discount: discount
+                const payload = {
+                    name: nameInput.value,
+                    phone: phoneInput.value,
+                    carModel: carInput.value,
+                    mainService: selectedMainService,
+                    additionalServices: selectedAdditionalServices,
+                    discount: Math.round(discount),
+                    source: 'WEBSITE'
+                };
+
+                fetch('/api/requests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Success! Show popup
+                            const successPopup = document.getElementById('successPopupOverlay');
+                            if (successPopup) {
+                                successPopup.classList.add('active');
+                            } else {
+                                alert('Спасибо за заявку! Мы свяжемся с вами в течение 15 минут.');
+                            }
+
+                            // Close handlers for success popup
+                            const closeBtn = document.getElementById('successPopupClose');
+                            const successBtn = document.getElementById('discountSuccessBtn');
+
+                            const closePopup = () => {
+                                if (successPopup) successPopup.classList.remove('active');
+                            };
+
+                            if (closeBtn) closeBtn.onclick = closePopup;
+                            if (successBtn) successBtn.onclick = closePopup;
+
+                            // Reset form
+                            form.reset();
+                            additionalOptions.forEach(opt => opt.classList.remove('additional-option--selected'));
+                            selectedMainService = 'shum';
+                            selectedAdditionalServices = [];
+                            discount = 0;
+                            if (discountSection) discountSection.style.display = 'none';
+                        } else {
+                            throw new Error('Server error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Submission error:', error);
+                        alert('Произошла ошибка при отправке. Пожалуйста, попробуйте позже или позвоните нам.');
+                    })
+                    .finally(() => {
+                        submitBtn.textContent = 'Отправить заявку';
+                        updateSubmitButton();
                     });
-
-                    // Show success message
-                    alert('Спасибо за заявку! Мы свяжемся с вами в течение 15 минут.');
-
-                    // Reset form
-                    form.reset();
-                    additionalOptions.forEach(opt => opt.classList.remove('additional-option--selected'));
-                    selectedMainService = 'shum'; // Reset to default
-                    selectedAdditionalServices = [];
-                    discount = 0;
-                    discountSection.style.display = 'none';
-                    submitBtn.textContent = 'Отправить заявку';
-                    updateSubmitButton();
-                }, 1000);
             }
         });
     }
