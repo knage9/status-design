@@ -52,13 +52,11 @@ function formatPortfolioDate(dateString) {
     if (!dateString) return 'Дата не указана';
 
     const date = new Date(dateString);
-
     if (isNaN(date.getTime())) return 'Дата не указана';
 
     const day = date.getDate();
     const year = date.getFullYear();
 
-    // Месяцы в родительном падеже для правильного формата дат
     const monthsGenitive = [
         'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
         'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
@@ -106,13 +104,14 @@ class PortfolioManager {
                 carModel: item.carModel,
                 mainImage: item.mainImage || null,
                 gallery: item.gallery || [],
-                services: item.services || [], // Assuming backend returns services array
-                date: new Date(item.date).toLocaleDateString('ru-RU'),
+                services: item.services || [],
+                date: item.date, // Store raw ISO string
                 description: item.description,
                 views: item.views || 0
             }));
 
             this.filteredPortfolio = [...this.portfolioData];
+            this.setupFilterOptions(); // Populate filters after data load
             this.renderPortfolio();
         } catch (error) {
             console.error('Error loading portfolio:', error);
@@ -120,10 +119,17 @@ class PortfolioManager {
     }
 
     setupFilterOptions() {
-        // Добавляем опции марок автомобилей
+        // Добавляем опции марок автомобилей динамически из данных
         const brandMenu = document.getElementById('brandMenu');
         if (brandMenu) {
-            const brands = getAllCarBrands();
+            // Сохраняем "Все марки"
+            const allOption = brandMenu.querySelector('[data-value="all"]');
+            brandMenu.innerHTML = '';
+            if (allOption) brandMenu.appendChild(allOption);
+
+            // Извлекаем уникальные марки из загруженных данных
+            const brands = [...new Set(this.portfolioData.map(item => item.carBrand))].sort();
+
             brands.forEach(brand => {
                 const option = document.createElement('div');
                 option.className = 'filter-dropdown__option';
@@ -136,16 +142,21 @@ class PortfolioManager {
         // Добавляем опции услуг
         const serviceMenu = document.getElementById('serviceMenu');
         if (serviceMenu) {
-            const services = getAllServices(); // ['carbon','antichrome',...]
-            services.forEach(serviceKey => {
+            const allOption = serviceMenu.querySelector('[data-value="all"]');
+            serviceMenu.innerHTML = '';
+            if (allOption) serviceMenu.appendChild(allOption);
+
+            // Извлекаем уникальные услуги
+            const serviceKeys = [...new Set(this.portfolioData.flatMap(item => item.services))].sort();
+
+            serviceKeys.forEach(serviceKey => {
                 const option = document.createElement('div');
                 option.className = 'filter-dropdown__option';
-                option.textContent = mapServiceToRussian(serviceKey); // "Карбон", "Антихром", ...
-                option.setAttribute('data-value', serviceKey);        // "carbon", "antichrome", ...
+                option.textContent = mapServiceToRussian(serviceKey);
+                option.setAttribute('data-value', serviceKey);
                 serviceMenu.appendChild(option);
             });
         }
-
     }
 
     setupEventListeners() {
@@ -403,8 +414,7 @@ class PortfolioManager {
             </div>
             <div class="portfolio-card__content">
                 <h3 class="portfolio-card__title">${portfolioItem.title}</h3>
-                <div class="portfolio-card__brand">${portfolioItem.carBrand}</div>
-                <div class="portfolio-card__model">${portfolioItem.carModel}</div>
+                <div class="portfolio-card__car">${portfolioItem.carBrand} ${portfolioItem.carModel}</div>
                 <div class="portfolio-card__services">
                     ${portfolioItem.services.map(service => `<span class="portfolio-card__service">${mapServiceToRussian(service)}</span>`).join('')}
                 </div>
@@ -470,10 +480,9 @@ class PortfolioManager {
         // Заполняем модальное окно данными
         document.getElementById('modalMainImage').src = portfolioItem.mainImage;
         document.getElementById('modalTitle').textContent = portfolioItem.title;
-        document.getElementById('modalBrand').textContent = portfolioItem.carBrand;
-        document.getElementById('modalModel').textContent = portfolioItem.carModel;
+        document.getElementById('modalBrand').textContent = `${portfolioItem.carBrand} ${portfolioItem.carModel}`;
         document.getElementById('modalDate').textContent = formatPortfolioDate(portfolioItem.date);
-        document.getElementById('modalDescription').textContent = portfolioItem.description;
+        document.getElementById('modalDescription').textContent = portfolioItem.description || '';
 
         // Добавляем услуги
         const servicesContainer = document.getElementById('modalServices');

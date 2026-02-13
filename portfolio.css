@@ -150,7 +150,8 @@
     margin: 0;
 }
 
-.portfolio-card__brand {
+.portfolio-card__brand,
+.portfolio-card__car {
     font-size: 16px;
     font-weight: 400;
     color: #1458E4;

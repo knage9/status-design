@@ -48,7 +48,7 @@ model PortfolioItem {
   services    String[]
   mainImage   String
   gallery     String[]
-  description String
+  description String?
   date        DateTime
   featured    Boolean         @default(false)
   views       Int             @default(0)

@@ -218,7 +218,7 @@ export default function PortfolioPage() {
                             {services.map(s => <Option key={s.key} value={s.key}>{s.label}</Option>)}
                         </Select>
                     </Form.Item>
-                    <Form.Item name="description" label="Описание" rules={[{ required: true }]}>
+                    <Form.Item name="description" label="Описание">
                         <TextArea rows={4} />
                     </Form.Item>
                     <Form.Item name="mainImage" label="Главное изображение">
