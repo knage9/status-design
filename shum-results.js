@@ -1,5 +1,5 @@
 // Shum Results Gallery Functionality - Улучшенная версия
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // DOM элементы
     const thumbnailsContainer = document.getElementById('shumThumbnails');
     const mainImage = document.getElementById('mainShumImage');
@@ -14,14 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 0,
             title: 'Mercedes GLC',
             images: [
-                'img/Gallery-1.png',
-                'img/Gallery-2.png',
-                'img/Gallery-3.png'
+                'img/Gallery-1.webp',
+                'img/Gallery-2.webp',
+                'img/Gallery-3.webp'
             ],
             thumbnails: [
-                'img/Gallery-1.png',
-                'img/Gallery-2.png',
-                'img/Gallery-3.png'
+                'img/Gallery-1.webp',
+                'img/Gallery-2.webp',
+                'img/Gallery-3.webp'
             ],
             alt: 'Mercedes GLC - Шумоизоляция с арками',
             services: [
@@ -34,14 +34,14 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 1,
             title: 'BMW X5',
             images: [
-                'img/Gallery-2.png',
-                'img/Gallery-3.png',
-                'img/Gallery-1.png'
+                'img/Gallery-2.webp',
+                'img/Gallery-3.webp',
+                'img/Gallery-1.webp'
             ],
             thumbnails: [
-                'img/Gallery-2.png',
-                'img/Gallery-3.png',
-                'img/Gallery-1.png'
+                'img/Gallery-2.webp',
+                'img/Gallery-3.webp',
+                'img/Gallery-1.webp'
             ],
             alt: 'BMW X5 - Полная шумоизоляция',
             services: [
@@ -54,14 +54,14 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 2,
             title: 'Audi A6',
             images: [
-                'img/Gallery-3.png',
-                'img/Gallery-1.png',
-                'img/Gallery-2.png'
+                'img/Gallery-3.webp',
+                'img/Gallery-1.webp',
+                'img/Gallery-2.webp'
             ],
             thumbnails: [
-                'img/Gallery-3.png',
-                'img/Gallery-1.png',
-                'img/Gallery-2.png'
+                'img/Gallery-3.webp',
+                'img/Gallery-1.webp',
+                'img/Gallery-2.webp'
             ],
             alt: 'Audi A6 - Премиум шумоизоляция',
             services: [
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Обработка ошибок загрузки изображений
     function handleImageError(img) {
-        img.src = 'img/placeholder.png'; // Замените на путь к изображению-заглушке
+        img.src = 'img/placeholder.webp'; // Замените на путь к изображению-заглушке
         img.alt = 'Изображение недоступно';
     }
 
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupImageErrorHandlers() {
         const images = document.querySelectorAll('#mainShumImage, .shum-results__thumbnail img');
         images.forEach(img => {
-            img.addEventListener('error', function() {
+            img.addEventListener('error', function () {
                 handleImageError(this);
             });
         });

@@ -258,7 +258,7 @@ class NewsDetailManager {
         // Open Graph image
         const ogImage = document.getElementById('news-og-image');
         if (ogImage) {
-            const imageUrl = newsData.image || 'img/news_img_1.png';
+            const imageUrl = newsData.image || 'img/news_img_1.webp';
             ogImage.setAttribute('content', `https://statusdesign.ru/${imageUrl}`);
         }
 
@@ -294,7 +294,7 @@ class NewsDetailManager {
         // Twitter image
         const twitterImage = document.getElementById('news-twitter-image');
         if (twitterImage) {
-            const imageUrl = newsData.image || 'img/news_img_1.png';
+            const imageUrl = newsData.image || 'img/news_img_1.webp';
             twitterImage.setAttribute('content', `https://statusdesign.ru/${imageUrl}`);
         }
     }
@@ -585,7 +585,7 @@ class NewsDetailManager {
             "@type": "NewsArticle",
             "headline": newsData.title,
             "description": newsData.content.substring(0, 200) + '...',
-            "image": newsData.image ? newsData.image : "https://statusdesign.ru/img/news_img_1.png",
+            "image": newsData.image ? newsData.image : "https://statusdesign.ru/img/news_img_1.webp",
             "datePublished": publishedISO,
             "dateModified": publishedISO,
             "author": {

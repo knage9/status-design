@@ -1,11 +1,11 @@
 // Interactive Soundproofing Zones functionality (for shum.html page)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if we're on the shum.html page
     if (document.querySelector('.soundproofing-zones')) {
         const zonesMainImage = document.getElementById('zonesMainImage');
         const zoneButtons = document.querySelectorAll('.zone-btn');
 
-        let currentImage = 'img/shum-preview.png';
+        let currentImage = 'img/shum-preview.webp';
 
         // Function to change main image
         function changeMainImage(newImage) {
@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Function to reset to default image
         function resetToDefaultImage() {
-            if (zonesMainImage && currentImage !== 'img/shum-preview.png') {
-                changeMainImage('img/shum-preview.png');
+            if (zonesMainImage && currentImage !== 'img/shum-preview.webp') {
+                changeMainImage('img/shum-preview.webp');
             }
         }
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (zoneImage) {
                 // Click event - change image and toggle active state
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const isActive = this.classList.contains('active');
 
                     // Remove active class from all buttons

@@ -16,7 +16,7 @@ if (-not (Test-Path $BackupDir)) {
 }
 
 # Get all image files
-$imageFiles = Get-ChildItem -Path $SourceDir -Recurse -Include *.jpg, *.jpeg, *.png, *.JPG, *.JPEG, *.PNG
+$imageFiles = Get-ChildItem -Path $SourceDir -Recurse -Include *.jpg, *.jpeg, *.webp, *.JPG, *.JPEG, *.webp
 
 Write-Host "Found $($imageFiles.Count) images to convert" -ForegroundColor Cyan
 

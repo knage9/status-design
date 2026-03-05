@@ -18,7 +18,7 @@ const htmlFiles = [
 
 // Hero section patterns - images that should NOT have lazy loading
 const heroPatterns = [
-    'Фон.png',
+    'Фон.webp',
     'Фон.webp',
     'hero',
     'background'
@@ -39,7 +39,7 @@ function updateHtmlFile(filePath) {
     let content = fs.readFileSync(filePath, 'utf8');
     let changes = 0;
 
-    // 1. Replace .jpg, .jpeg, .png with .webp in img tags
+    // 1. Replace .jpg, .jpeg, .webp with .webp in img tags
     content = content.replace(/(<img[^>]+src=["'])([^"']+\.(jpg|jpeg|png|JPG|JPEG|PNG))(["'][^>]*>)/gi, (match, prefix, imagePath, ext, suffix) => {
         const webpPath = imagePath.replace(/\.(jpg|jpeg|png|JPG|JPEG|PNG)$/i, '.webp');
         changes++;

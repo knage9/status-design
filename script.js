@@ -10,18 +10,18 @@ document.addEventListener('DOMContentLoaded', function () {
         {
             main: {
                 text: "Сначала сомневался, как будет смотреться матовый оттенок на моей машине, но ребята сделали просто идеально! Покраска ровная, оттенок глубокий, ощущение премиум-класса сразу заметно.",
-                image: "img/review-1.png",
+                image: "img/review-1.webp",
                 tags: ["GAC GS8", "Антихром", "Решётка радиатора"]
             },
             sides: [
                 {
                     text: "Заказывал детали в карбоне — получилось даже лучше, чем ожидал. Всё аккуратно...",
-                    image: "img/review-2.png",
+                    image: "img/review-2.webp",
                     tags: ["GLS Майбах", "Карбон"]
                 },
                 {
                     text: "Делал антихром — результат превзошёл ожидания. Машина заиграла по-новому...",
-                    image: "img/review-3.png",
+                    image: "img/review-3.webp",
                     tags: ["Li9", "Антихром"]
                 }
             ]
@@ -29,18 +29,18 @@ document.addEventListener('DOMContentLoaded', function () {
         {
             main: {
                 text: "Заказывал детали в карбоне — получилось даже лучше, чем ожидал. Всё аккуратно...",
-                image: "img/review-2.png",
+                image: "img/review-2.webp",
                 tags: ["GLS Майбах", "Карбон"]
             },
             sides: [
                 {
                     text: "Делал антихром — результат превзошёл ожидания. Машина заиграла по-новому...",
-                    image: "img/review-3.png",
+                    image: "img/review-3.webp",
                     tags: ["Li9", "Антихром"]
                 },
                 {
                     text: "Сначала сомневался, как будет смотреться матовый оттенок на моей машине, но ребята сделали просто идеально! Покраска ровная, оттенок глубокий, ощущение премиум-класса сразу заметно.",
-                    image: "img/review-1.png",
+                    image: "img/review-1.webp",
                     tags: ["GAC GS8", "Антихром", "Решётка радиатора"]
                 }
             ]
@@ -48,18 +48,18 @@ document.addEventListener('DOMContentLoaded', function () {
         {
             main: {
                 text: "Делал антихром — результат превзошёл ожидания. Машина заиграла по-новому...",
-                image: "img/review-3.png",
+                image: "img/review-3.webp",
                 tags: ["Li9", "Антихром"]
             },
             sides: [
                 {
                     text: "Сначала сомневался, как будет смотреться матовый оттенок на моей машине, но ребята сделали просто идеально! Покраска ровная, оттенок глубокий, ощущение премиум-класса сразу заметно.",
-                    image: "img/review-1.png",
+                    image: "img/review-1.webp",
                     tags: ["GAC GS8", "Антихром", "Решётка радиатора"]
                 },
                 {
                     text: "Заказывал детали в карбоне — получилось даже лучше, чем ожидал. Всё аккуратно...",
-                    image: "img/review-2.png",
+                    image: "img/review-2.webp",
                     tags: ["GLS Майбах", "Карбон"]
                 }
             ]
@@ -275,10 +275,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Change image based on selected service
                 if (servicesBgImage) {
                     if (service === 'carbon') {
-                        servicesBgImage.src = 'img/carbon.png';
+                        servicesBgImage.src = 'img/carbon.webp';
                         servicesBgImage.alt = 'Carbon service';
                     } else if (service === 'antichrome') {
-                        servicesBgImage.src = 'img/antichrome.png';
+                        servicesBgImage.src = 'img/antichrome.webp';
                         servicesBgImage.alt = 'Antichrome service';
                     }
                 }

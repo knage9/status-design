@@ -9,11 +9,11 @@ const PORTFOLIO_DATA = [
         carBrand: "Mercedes-Benz",
         carModel: "S-Class W223",
         services: ["Антихром", "Шумоизоляция"],
-        mainImage: "img/gallery-1.png",
+        mainImage: "img/gallery-1.webp",
         gallery: [
-            "img/gallery-1.png",
-            "img/gallery-2.png",
-            "img/gallery-3.png"
+            "img/gallery-1.webp",
+            "img/gallery-2.webp",
+            "img/gallery-3.webp"
         ],
         description: "Полная замена всех хромированных элементов на черные глянцевые + премиальная шумоизоляция салона. Результат - элегантный и современный вид автомобиля премиум-класса.",
         date: "2024-01-15",
