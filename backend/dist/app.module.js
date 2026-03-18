@@ -37,11 +37,11 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
             }),
             serve_static_1.ServeStaticModule.forRoot({
-                rootPath: (0, path_1.join)(process.cwd(), 'uploads'),
+                rootPath: (0, path_1.join)(__dirname, '..', 'uploads'),
                 serveRoot: '/uploads',
             }),
             serve_static_1.ServeStaticModule.forRoot({
-                rootPath: (0, path_1.join)(process.cwd(), 'admin-client/dist'),
+                rootPath: (0, path_1.join)(__dirname, '..', 'admin-client/dist'),
                 serveRoot: '/admin',
             }),
             prisma_module_1.PrismaModule, reviews_module_1.ReviewsModule, posts_module_1.PostsModule, portfolio_module_1.PortfolioModule, uploads_module_1.UploadsModule, dashboard_module_1.DashboardModule, requests_module_1.RequestsModule, auth_module_1.AuthModule, users_module_1.UsersModule, work_orders_module_1.WorkOrdersModule, executor_stats_module_1.ExecutorStatsModule, load_chart_module_1.LoadChartModule, telegram_module_1.TelegramModule, work_order_history_module_1.WorkOrderHistoryModule

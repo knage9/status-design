@@ -25,11 +25,11 @@ import { WorkOrderHistoryModule } from './work-order-history/work-order-history.
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads'),
+      rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'admin-client/dist'),
+      rootPath: join(__dirname, '..', 'admin-client/dist'),
       serveRoot: '/admin',
     }),
     PrismaModule, ReviewsModule, PostsModule, PortfolioModule, UploadsModule, DashboardModule, RequestsModule, AuthModule, UsersModule, WorkOrdersModule, ExecutorStatsModule, LoadChartModule, TelegramModule, WorkOrderHistoryModule],
