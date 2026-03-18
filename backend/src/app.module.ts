@@ -24,14 +24,16 @@ import { WorkOrderHistoryModule } from './work-order-history/work-order-history.
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'admin-client/dist'),
-      serveRoot: '/admin',
-    }),
+    ServeStaticModule.forRoot([
+      {
+        rootPath: join(__dirname, '..', 'uploads'),
+        serveRoot: '/uploads',
+      },
+      {
+        rootPath: join(__dirname, '..', 'admin-client/dist'),
+        serveRoot: '/admin',
+      },
+    ] as any),
     PrismaModule, ReviewsModule, PostsModule, PortfolioModule, UploadsModule, DashboardModule, RequestsModule, AuthModule, UsersModule, WorkOrdersModule, ExecutorStatsModule, LoadChartModule, TelegramModule, WorkOrderHistoryModule],
   controllers: [AppController],
   providers: [AppService],
