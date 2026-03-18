@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ExecutorStatsController } from './executor-stats.controller';
 import { ExecutorStatsService } from './executor-stats.service';
+import { ExecutorStatsController } from './executor-stats.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-    imports: [PrismaModule],
-    controllers: [ExecutorStatsController],
-    providers: [ExecutorStatsService],
-    exports: [ExecutorStatsService],
+  imports: [PrismaModule],
+  providers: [ExecutorStatsService],
+  controllers: [ExecutorStatsController]
 })
-export class ExecutorStatsModule { }
+export class ExecutorStatsModule {}

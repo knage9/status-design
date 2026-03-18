@@ -17,6 +17,7 @@ import { LoadChartModule } from './load-chart/load-chart.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { WorkOrderHistoryModule } from './work-order-history/work-order-history.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { join } from 'path';
       rootPath: join(process.cwd(), 'admin-client/dist'),
       serveRoot: '/admin',
     }),
-    PrismaModule, ReviewsModule, PostsModule, PortfolioModule, UploadsModule, DashboardModule, RequestsModule, AuthModule, UsersModule, WorkOrdersModule, ExecutorStatsModule, LoadChartModule, TelegramModule],
+    PrismaModule, ReviewsModule, PostsModule, PortfolioModule, UploadsModule, DashboardModule, RequestsModule, AuthModule, UsersModule, WorkOrdersModule, ExecutorStatsModule, LoadChartModule, TelegramModule, WorkOrderHistoryModule],
   controllers: [AppController],
   providers: [AppService],
 })

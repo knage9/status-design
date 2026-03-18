@@ -12,100 +12,60 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecutorStatsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const client_1 = require("@prisma/client");
 let ExecutorStatsService = class ExecutorStatsService {
     prisma;
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async getAllExecutorStats() {
-        const executors = await this.prisma.user.findMany({
+    async getEarnings(startDate, endDate, currentUser) {
+        if (!currentUser || !currentUser.id) {
+            throw new common_1.ForbiddenException('Пользователь не идентифицирован');
+        }
+        const assignments = await this.prisma.workOrderExecutor.findMany({
             where: {
-                role: { in: ['EXECUTOR', 'PAINTER'] },
-                isActive: true,
-            },
-        });
-        const stats = await Promise.all(executors.map(async (executor) => {
-            const works = await this.prisma.workOrderExecutor.findMany({
-                where: { executorId: executor.id },
-                include: {
-                    workOrder: {
-                        select: {
-                            id: true,
-                            orderNumber: true,
-                            status: true,
-                        },
-                    },
-                },
-            });
-            const totalEarned = works.reduce((sum, w) => sum + w.amount, 0);
-            const paidAmount = works.reduce((sum, w) => sum + w.paidAmount, 0);
-            const serviceBreakdown = {};
-            works.forEach((w) => {
-                const key = w.serviceType || w.workType;
-                if (!serviceBreakdown[key]) {
-                    serviceBreakdown[key] = { count: 0, amount: 0 };
+                executorId: currentUser.id,
+                workOrder: {
+                    status: client_1.WorkOrderStatus.DELIVERED,
+                    completedAt: {
+                        gte: startDate,
+                        lte: endDate,
+                    }
                 }
-                serviceBreakdown[key].count++;
-                serviceBreakdown[key].amount += w.amount;
-            });
-            return {
-                executor: {
-                    id: executor.id,
-                    name: executor.name,
-                    email: executor.email,
-                },
-                totalEarned,
-                paidAmount,
-                remaining: totalEarned - paidAmount,
-                serviceBreakdown,
-                workOrdersCount: works.length,
-            };
-        }));
-        return stats;
-    }
-    async getExecutorDetails(executorId) {
-        const works = await this.prisma.workOrderExecutor.findMany({
-            where: { executorId },
+            },
             include: {
                 workOrder: {
-                    include: {
-                        request: true,
-                        manager: { select: { name: true, email: true } },
-                    },
-                },
+                    select: {
+                        id: true,
+                        orderNumber: true,
+                        completedAt: true,
+                        carBrand: true,
+                        carModel: true,
+                    }
+                }
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: {
+                workOrder: {
+                    completedAt: 'desc'
+                }
+            }
         });
+        const totalEarned = assignments.reduce((sum, current) => sum + (current.amount || 0), 0);
         return {
-            works: works.map((w) => ({
-                id: w.id,
-                workOrderId: w.workOrderId,
-                workOrderNumber: w.workOrder.orderNumber,
-                workType: w.workType,
-                serviceType: w.serviceType,
-                description: w.description,
-                amount: w.amount,
-                isPaid: w.isPaid,
-                paidAmount: w.paidAmount,
-                createdAt: w.createdAt,
-                carModel: w.workOrder.carModel,
-                customerName: w.workOrder.customerName,
-                managerName: w.workOrder.manager?.name,
-            })),
+            totalEarned,
+            assignments: assignments.map(a => ({
+                id: a.id,
+                amount: a.amount,
+                description: a.description,
+                workType: a.workType,
+                workOrder: {
+                    id: a.workOrder.id,
+                    orderNumber: a.workOrder.orderNumber,
+                    carText: `${a.workOrder.carBrand} ${a.workOrder.carModel}`,
+                    completedAt: a.workOrder.completedAt
+                }
+            }))
         };
-    }
-    async updatePayment(workOrderId, executorId, paidAmount) {
-        await this.prisma.workOrderExecutor.updateMany({
-            where: {
-                workOrderId,
-                executorId,
-            },
-            data: {
-                paidAmount,
-                isPaid: true,
-            },
-        });
-        return { success: true, workOrderId, executorId, paidAmount };
     }
 };
 exports.ExecutorStatsService = ExecutorStatsService;

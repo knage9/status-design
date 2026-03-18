@@ -106,6 +106,7 @@ model User {
   WorkOrder_WorkOrder_painterIdToUser                   WorkOrder[]         @relation("WorkOrder_painterIdToUser")
   WorkOrder_WorkOrder_polishCeramicExecutorIdToUser     WorkOrder[]         @relation("WorkOrder_polishCeramicExecutorIdToUser")
   assignedWorks                                         WorkOrderExecutor[] @relation("AssignedExecutor") // NEW
+  actionHistories                                       WorkOrderHistory[]
 }
 
 model WorkOrder {
@@ -245,6 +246,30 @@ model WorkOrder {
   // Структура bodyPartsData: { radiatorGrille?: {quantity, actualQuantity, status, executorId}, fogLights?: {...}, ...}
   bodyPartsData       Json?               @default("{}")
   executorAssignments WorkOrderExecutor[] // NEW: связь с назначениями
+
+  // NEW FIELDS
+  ticketType          TicketType          @default(CAR)
+  deliveryDate        DateTime?
+  history             WorkOrderHistory[]
+}
+
+model WorkOrderHistory {
+  id          Int       @id @default(autoincrement())
+  workOrderId Int
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  action      String
+  details     Json
+  createdAt   DateTime  @default(now())
+
+  @@index([workOrderId])
+  @@index([userId])
+}
+
+enum TicketType {
+  CAR
+  DETAILS
 }
 
 enum ReviewStatus {
@@ -335,21 +360,14 @@ enum PaymentMethod {
 
 enum WorkOrderStatus {
   NEW
-  ASSIGNED_TO_MASTER
-  ASSIGNED_TO_EXECUTOR
+  IN_DEAL
   IN_PROGRESS
-  PAINTING // NEW: покраска
-  POLISHING // NEW: полировка
-  ASSEMBLY_STAGE // NEW: сборка
-  UNDER_REVIEW
-  APPROVED
-  RETURNED_FOR_REVISION
-  SENT // NEW: отправлен
-  SHIPPED // существующий
-  ASSEMBLED // существующий
-  ISSUED // существующий
-  READY // существующий
-  COMPLETED
+  IN_PAINTING
+  PAINTED
+  POLISHED
+  PACKAGING
+  READY
+  DELIVERED
 }
 
 enum UserRole {

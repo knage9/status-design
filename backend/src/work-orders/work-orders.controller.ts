@@ -148,6 +148,36 @@ export class WorkOrdersController {
         );
     }
 
+    @Patch(':id/tasks/:assignmentId')
+    @Roles('ADMIN', 'MANAGER')
+    updateTask(
+        @Param('id', ParseIntPipe) id: number,
+        @Param('assignmentId', ParseIntPipe) assignmentId: number,
+        @Body() body: { amount?: number },
+        @Request() req,
+    ) {
+        return this.workOrdersService.updateAssignment(
+            id,
+            assignmentId,
+            body,
+            buildCurrentUser(req.user),
+        );
+    }
+
+    @Patch(':id/executor-payouts')
+    @Roles('ADMIN', 'MANAGER')
+    updateExecutorPayouts(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: { payouts: Array<{ assignmentId: number; finalAmount: number }> },
+        @Request() req,
+    ) {
+        return this.workOrdersService.updateExecutorPayouts(
+            id,
+            body.payouts,
+            buildCurrentUser(req.user)
+        );
+    }
+
     // Photo endpoints
     @Post(':id/photos/before')
     addPhotoBefore(

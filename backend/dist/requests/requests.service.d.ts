@@ -215,6 +215,8 @@ export declare class RequestsService {
             isDiskPainting: boolean;
             servicesData: Prisma.JsonValue | null;
             bodyPartsData: Prisma.JsonValue | null;
+            ticketType: import(".prisma/client").$Enums.TicketType;
+            deliveryDate: Date | null;
         })[];
     } & {
         carModel: string;

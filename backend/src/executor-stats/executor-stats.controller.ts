@@ -1,37 +1,31 @@
-import { Controller, Get, Param, Patch, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Request, BadRequestException } from '@nestjs/common';
 import { ExecutorStatsService } from './executor-stats.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
+import { buildCurrentUser } from '../auth/permissions';
 
 @Controller('executor-stats')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ExecutorStatsController {
-    constructor(private readonly executorStatsService: ExecutorStatsService) { }
+    constructor(private readonly statsService: ExecutorStatsService) {}
 
-    @Get()
-    @Roles('ADMIN', 'MANAGER')
-    async getAllStats() {
-        return this.executorStatsService.getAllExecutorStats();
-    }
-
-    @Get(':executorId')
-    @Roles('ADMIN', 'MANAGER')
-    async getExecutorDetails(@Param('executorId') executorId: string) {
-        return this.executorStatsService.getExecutorDetails(+executorId);
-    }
-
-    @Patch(':executorId/work-order/:workOrderId/payment')
-    @Roles('ADMIN', 'MANAGER')
-    async updatePayment(
-        @Param('executorId') executorId: string,
-        @Param('workOrderId') workOrderId: string,
-        @Body() body: { paidAmount: number },
+    @Get('earnings')
+    async getEarnings(
+        @Request() req,
+        @Query('startDate') startDateString: string,
+        @Query('endDate') endDateString: string,
     ) {
-        return this.executorStatsService.updatePayment(
-            +workOrderId,
-            +executorId,
-            body.paidAmount,
-        );
+        if (!startDateString || !endDateString) {
+            throw new BadRequestException('Необходимо указать startDate и endDate');
+        }
+
+        const startDate = new Date(startDateString);
+        const endDate = new Date(endDateString);
+
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            throw new BadRequestException('Некорректный формат дат');
+        }
+
+        return this.statsService.getEarnings(startDate, endDate, buildCurrentUser(req.user));
     }
 }

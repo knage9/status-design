@@ -1,45 +1,20 @@
 import { ExecutorStatsService } from './executor-stats.service';
 export declare class ExecutorStatsController {
-    private readonly executorStatsService;
-    constructor(executorStatsService: ExecutorStatsService);
-    getAllStats(): Promise<{
-        executor: {
-            id: number;
-            name: string;
-            email: string;
-        };
+    private readonly statsService;
+    constructor(statsService: ExecutorStatsService);
+    getEarnings(req: any, startDateString: string, endDateString: string): Promise<{
         totalEarned: number;
-        paidAmount: number;
-        remaining: number;
-        serviceBreakdown: Record<string, {
-            count: number;
-            amount: number;
-        }>;
-        workOrdersCount: number;
-    }[]>;
-    getExecutorDetails(executorId: string): Promise<{
-        works: {
+        assignments: {
             id: number;
-            workOrderId: number;
-            workOrderNumber: string;
-            workType: import(".prisma/client").$Enums.WorkType;
-            serviceType: import(".prisma/client").$Enums.ServiceType | null;
-            description: string | null;
             amount: number;
-            isPaid: boolean;
-            paidAmount: number;
-            createdAt: Date;
-            carModel: string;
-            customerName: string;
-            managerName: string;
+            description: string | null;
+            workType: import(".prisma/client").$Enums.WorkType;
+            workOrder: {
+                id: number;
+                orderNumber: string;
+                carText: string;
+                completedAt: Date | null;
+            };
         }[];
-    }>;
-    updatePayment(executorId: string, workOrderId: string, body: {
-        paidAmount: number;
-    }): Promise<{
-        success: boolean;
-        workOrderId: number;
-        executorId: number;
-        paidAmount: number;
     }>;
 }

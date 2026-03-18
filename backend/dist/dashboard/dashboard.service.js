@@ -229,13 +229,13 @@ let DashboardService = class DashboardService {
         const activeWOCount = await this.prisma.workOrder.count({
             where: {
                 managerId: userId,
-                status: { notIn: [client_2.WorkOrderStatus.COMPLETED, client_2.WorkOrderStatus.ISSUED, client_2.WorkOrderStatus.SENT, client_2.WorkOrderStatus.ASSEMBLED] }
+                status: { notIn: [client_2.WorkOrderStatus.DELIVERED] }
             }
         });
         const completedWOWeek = await this.prisma.workOrder.count({
             where: {
                 managerId: userId,
-                status: { in: [client_2.WorkOrderStatus.COMPLETED, client_2.WorkOrderStatus.ISSUED, client_2.WorkOrderStatus.SENT, client_2.WorkOrderStatus.ASSEMBLED] },
+                status: { in: [client_2.WorkOrderStatus.DELIVERED] },
                 completedAt: { gte: sevenDaysAgo }
             }
         });
@@ -255,7 +255,7 @@ let DashboardService = class DashboardService {
         const activeWorkOrders = await this.prisma.workOrder.findMany({
             where: {
                 managerId: userId,
-                status: { notIn: [client_2.WorkOrderStatus.COMPLETED, client_2.WorkOrderStatus.ISSUED, client_2.WorkOrderStatus.SENT, client_2.WorkOrderStatus.ASSEMBLED] },
+                status: { notIn: [client_2.WorkOrderStatus.DELIVERED] },
             },
             orderBy: { createdAt: 'desc' },
             take: 30,
@@ -295,7 +295,7 @@ let DashboardService = class DashboardService {
         const executorStageRaw = await this.prisma.workOrder.findMany({
             where: {
                 masterId: userId,
-                status: { in: [client_2.WorkOrderStatus.ASSIGNED_TO_EXECUTOR, client_2.WorkOrderStatus.IN_PROGRESS] },
+                status: { in: [client_2.WorkOrderStatus.IN_PROGRESS] },
             },
             orderBy: { createdAt: 'desc' },
             select: {
@@ -321,7 +321,7 @@ let DashboardService = class DashboardService {
         const masterStageRaw = await this.prisma.workOrder.findMany({
             where: {
                 masterId: userId,
-                status: client_2.WorkOrderStatus.ASSIGNED_TO_MASTER,
+                status: { in: [client_2.WorkOrderStatus.IN_PROGRESS, client_2.WorkOrderStatus.READY] },
             },
             orderBy: { createdAt: 'desc' },
             select: {

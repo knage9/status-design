@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { WorkOrderNumberService } from './work-order-number.service';
 import { PaymentMethod, CarCondition } from '@prisma/client';
 import { CurrentUser } from '../auth/permissions';
+import { WorkOrderHistoryService } from '../work-order-history/work-order-history.service';
 type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'DONE';
 interface CreateWorkOrderDto {
     requestId?: number;
@@ -131,7 +132,8 @@ interface CreateWorkOrderDto {
 export declare class WorkOrdersService {
     private prisma;
     private numberService;
-    constructor(prisma: PrismaService, numberService: WorkOrderNumberService);
+    private historyService;
+    constructor(prisma: PrismaService, numberService: WorkOrderNumberService, historyService: WorkOrderHistoryService);
     private hasExecutorTaskInJson;
     private hasExecutorTasksInPayload;
     private stripFinanceIfNeeded;
@@ -288,9 +290,17 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     findAll(currentUser: CurrentUser, view?: string, search?: string): Promise<any[]>;
     findOne(id: number, currentUser: CurrentUser): Promise<any>;
+    updateExecutorPayouts(id: number, payouts: Array<{
+        assignmentId: number;
+        finalAmount: number;
+    }>, currentUser: CurrentUser): Promise<{
+        success: boolean;
+    }>;
     update(id: number, data: Partial<CreateWorkOrderDto>, currentUser: CurrentUser): Promise<{
         request: {
             carModel: string;
@@ -464,6 +474,8 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     private recalculateArmaturaPayments;
     delete(id: number): Promise<{
@@ -582,8 +594,26 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     updateAssignmentStatus(workOrderId: number, assignmentId: number, status: TaskStatus, currentUser: CurrentUser): Promise<{
+        id: number;
+        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        executorId: number;
+        workOrderId: number;
+        workType: import(".prisma/client").$Enums.WorkType;
+        serviceType: import(".prisma/client").$Enums.ServiceType | null;
+        amount: number;
+        isPaid: boolean;
+        paidAmount: number;
+        metadata: Prisma.JsonValue | null;
+    }>;
+    updateAssignment(workOrderId: number, assignmentId: number, data: {
+        amount?: number;
+    }, currentUser: CurrentUser): Promise<{
         id: number;
         description: string | null;
         createdAt: Date;
@@ -720,6 +750,8 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     assignExecutor(id: number, executorId: number): Promise<{
         executor: {
@@ -843,6 +875,8 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     startWork(id: number, currentUser: CurrentUser): Promise<{
         carBrand: string;
@@ -960,129 +994,15 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     submitForReview(id: number, currentUser: CurrentUser): Promise<{
         ok: boolean;
     }>;
     approve(id: number, currentUser: CurrentUser): Promise<void>;
     requestRevision(id: number, currentUser: CurrentUser): Promise<void>;
-    complete(id: number, currentUser: CurrentUser, finalStage: 'ASSEMBLED' | 'SENT' | 'ISSUED'): Promise<{
-        carBrand: string;
-        carModel: string;
-        status: import(".prisma/client").$Enums.WorkOrderStatus;
-        id: number;
-        createdAt: Date;
-        updatedAt: Date;
-        orderNumber: string;
-        requestId: number | null;
-        managerId: number;
-        masterId: number | null;
-        executorId: number | null;
-        assembly: boolean;
-        assemblyPrice: number;
-        badges: boolean;
-        blackCount: number;
-        carCondition: import(".prisma/client").$Enums.CarCondition;
-        carbonCount: number;
-        completedAt: Date | null;
-        customerName: string;
-        customerPhone: string;
-        diffuser: boolean;
-        disassembly: boolean;
-        disassemblyPrice: number;
-        dismantling: boolean;
-        dismantlingPrice: number;
-        doorHandles: boolean;
-        doorMoldings: boolean;
-        fakeExhausts: boolean;
-        fenders: boolean;
-        fogLights: boolean;
-        frontBumper: boolean;
-        hood: boolean;
-        hubCaps: boolean;
-        inscriptions: boolean;
-        lip: boolean;
-        mirrors: boolean;
-        mounting: boolean;
-        mountingPrice: number;
-        nozzles: boolean;
-        paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
-        photosAfterWork: string[];
-        photosBeforeWork: string[];
-        radiatorGrille: boolean;
-        railings: boolean;
-        rearBumper: boolean;
-        rearLights: boolean;
-        sills: boolean;
-        spoiler: boolean;
-        standardStructureCount: number;
-        startedAt: Date | null;
-        totalAmount: number;
-        trunkLid: boolean;
-        vents: boolean;
-        vin: string | null;
-        wheels: boolean;
-        windowMoldings: boolean;
-        antichromArmatureAmount: number;
-        assemblyExecutorId: number | null;
-        badgesActualQty: number;
-        badgesQty: number;
-        badgesStatus: string;
-        carbonAssemblyExecutorId: number | null;
-        carbonComment: string | null;
-        carbonDisassemblyExecutorId: number | null;
-        carbonDismantlingExecutorId: number | null;
-        carbonMountingExecutorId: number | null;
-        carbonPrice: number;
-        carbonQty: number;
-        carbonType: string | null;
-        cleaningExecutorAmount: number;
-        cleaningExecutorId: number | null;
-        cleaningPrice: number;
-        disassemblyExecutorId: number | null;
-        dismantlingExecutorId: number | null;
-        doorHandlesActualQty: number;
-        doorHandlesQty: number;
-        doorHandlesStatus: string;
-        extraPainterAmount: number;
-        fendersActualQty: number;
-        fendersQty: number;
-        fendersStatus: string;
-        filmExecutorAmount: number;
-        filmTeam: string | null;
-        fogLightsActualQty: number;
-        fogLightsQty: number;
-        fogLightsStatus: string;
-        hubCapsActualQty: number;
-        hubCapsQty: number;
-        hubCapsStatus: string;
-        inscriptionsActualQty: number;
-        inscriptionsLetterCount: number;
-        inscriptionsQty: number;
-        inscriptionsStatus: string;
-        isCarbon: boolean;
-        isCleaning: boolean;
-        isFilm: boolean;
-        isPolishCeramic: boolean;
-        mountingExecutorId: number | null;
-        painterId: number | null;
-        polishCeramicExecutorAmount: number;
-        polishCeramicExecutorId: number | null;
-        polishCeramicPrice: number;
-        radiatorGrilleActualQty: number;
-        radiatorGrilleQty: number;
-        radiatorGrilleStatus: string;
-        railingsActualQty: number;
-        railingsQty: number;
-        railingsStatus: string;
-        antichromMode: string;
-        diskPaintingExecutorAmount: number;
-        diskPaintingExecutorId: number | null;
-        diskPaintingPrice: number;
-        isDiskPainting: boolean;
-        servicesData: Prisma.JsonValue | null;
-        bodyPartsData: Prisma.JsonValue | null;
-    }>;
+    complete(id: number, currentUser: CurrentUser, finalStage: string): Promise<void>;
     addPhotoBefore(id: number, photoUrl: string): Promise<{
         carBrand: string;
         carModel: string;
@@ -1199,6 +1119,8 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     addPhotoAfter(id: number, photoUrl: string): Promise<{
         carBrand: string;
@@ -1316,6 +1238,8 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
     deletePhoto(id: number, photoUrl: string): Promise<{
         carBrand: string;
@@ -1433,6 +1357,8 @@ export declare class WorkOrdersService {
         isDiskPainting: boolean;
         servicesData: Prisma.JsonValue | null;
         bodyPartsData: Prisma.JsonValue | null;
+        ticketType: import(".prisma/client").$Enums.TicketType;
+        deliveryDate: Date | null;
     }>;
 }
 export {};

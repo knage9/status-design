@@ -255,13 +255,13 @@ export class DashboardService {
         const activeWOCount = await this.prisma.workOrder.count({
             where: {
                 managerId: userId,
-                status: { notIn: [WorkOrderStatus.COMPLETED, WorkOrderStatus.ISSUED, WorkOrderStatus.SENT, WorkOrderStatus.ASSEMBLED] as any }
+                status: { notIn: [WorkOrderStatus.DELIVERED] as any }
             }
         });
         const completedWOWeek = await this.prisma.workOrder.count({
             where: {
                 managerId: userId,
-                status: { in: [WorkOrderStatus.COMPLETED, WorkOrderStatus.ISSUED, WorkOrderStatus.SENT, WorkOrderStatus.ASSEMBLED] as any },
+                status: { in: [WorkOrderStatus.DELIVERED] as any },
                 completedAt: { gte: sevenDaysAgo }
             }
         });
@@ -287,7 +287,7 @@ export class DashboardService {
         const activeWorkOrders = await this.prisma.workOrder.findMany({
             where: {
                 managerId: userId,
-                status: { notIn: [WorkOrderStatus.COMPLETED, WorkOrderStatus.ISSUED, WorkOrderStatus.SENT, WorkOrderStatus.ASSEMBLED] as any },
+                status: { notIn: [WorkOrderStatus.DELIVERED] as any },
             },
             orderBy: { createdAt: 'desc' },
             take: 30,
@@ -332,7 +332,7 @@ export class DashboardService {
         const executorStageRaw = await this.prisma.workOrder.findMany({
             where: {
                 masterId: userId,
-                status: { in: [WorkOrderStatus.ASSIGNED_TO_EXECUTOR, WorkOrderStatus.IN_PROGRESS] as any },
+                status: { in: [WorkOrderStatus.IN_PROGRESS] as any },
             },
             orderBy: { createdAt: 'desc' },
             select: {
@@ -361,7 +361,7 @@ export class DashboardService {
         const masterStageRaw = await this.prisma.workOrder.findMany({
             where: {
                 masterId: userId,
-                status: WorkOrderStatus.ASSIGNED_TO_MASTER,
+                status: { in: [WorkOrderStatus.IN_PROGRESS, WorkOrderStatus.READY] as any },
             },
             orderBy: { createdAt: 'desc' },
             select: {

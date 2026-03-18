@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Card, Typography, Space, Spin, Empty, Button, Badge, Divider, App, Grid, Select, Input, Flex, Col, Tag, theme } from 'antd';
-import { UserOutlined, ClockCircleOutlined, CarOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { Card, Typography, Space, Spin, Empty, Button, Badge, Divider, App, Grid, Select, Input, Flex, Col, Tag, Switch, theme } from 'antd';
+import { UserOutlined, ClockCircleOutlined, CarOutlined, ReloadOutlined, SearchOutlined, WarningOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import { useAuth } from '../auth/AuthContext';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import FilterBar from '../components/FilterBar';
 
@@ -25,13 +26,16 @@ interface WorkOrderCard {
     startedAt?: string;
     completedAt?: string;
     status: string;
+    ticketType?: 'CAR' | 'DETAILS';
+    masterId?: number;
+    executorId?: number;
 }
 
 interface LoadChartData {
     stages: Record<string, WorkOrderCard[]>;
 }
 
-type StageKey = 'NEW' | 'DEAL' | 'IN_WORK' | 'DONE' | 'DELIVERED';
+type StageKey = 'NEW' | 'IN_DEAL' | 'IN_PROGRESS' | 'IN_PAINTING' | 'PAINTED' | 'POLISHED' | 'PACKAGING' | 'READY' | 'DELIVERED';
 
 const stageConfig: Array<{
     key: StageKey;
@@ -41,58 +45,27 @@ const stageConfig: Array<{
     color: string;
     isTerminal?: boolean;
 }> = [
-    {
-        key: 'NEW',
-        label: 'Новое',
-        statuses: ['NEW'],
-        updateStatus: 'NEW',
-        color: '#1677ff',
-    },
-    {
-        key: 'DEAL',
-        label: 'Сделка',
-        statuses: ['ASSIGNED_TO_MASTER'],
-        updateStatus: 'ASSIGNED_TO_MASTER',
-        color: '#13c2c2',
-    },
-    {
-        key: 'IN_WORK',
-        label: 'В работе',
-        statuses: ['ASSIGNED_TO_EXECUTOR', 'IN_PROGRESS', 'PAINTING', 'POLISHING'],
-        updateStatus: 'IN_PROGRESS',
-        color: '#fa8c16',
-    },
-    {
-        key: 'DONE',
-        label: 'Выполнено',
-        statuses: ['ASSEMBLY_STAGE', 'ASSEMBLED', 'READY'],
-        updateStatus: 'ASSEMBLY_STAGE',
-        color: '#52c41a',
-    },
-    {
-        key: 'DELIVERED',
-        label: 'Отправлен / Выдан',
-        statuses: ['SENT', 'SHIPPED', 'ISSUED', 'COMPLETED'],
-        updateStatus: 'ISSUED',
-        color: '#8c8c8c',
-        isTerminal: true,
-    },
+    { key: 'NEW', label: 'Новое', statuses: ['NEW'], updateStatus: 'NEW', color: '#1677ff' },
+    { key: 'IN_DEAL', label: 'В сделке', statuses: ['IN_DEAL'], updateStatus: 'IN_DEAL', color: '#13c2c2' },
+    { key: 'IN_PROGRESS', label: 'В работе', statuses: ['IN_PROGRESS'], updateStatus: 'IN_PROGRESS', color: '#fa8c16' },
+    { key: 'IN_PAINTING', label: 'В окраске', statuses: ['IN_PAINTING'], updateStatus: 'IN_PAINTING', color: '#722ed1' },
+    { key: 'PAINTED', label: 'Открашено', statuses: ['PAINTED'], updateStatus: 'PAINTED', color: '#eb2f96' },
+    { key: 'POLISHED', label: 'Отполировано', statuses: ['POLISHED'], updateStatus: 'POLISHED', color: '#2f54eb' },
+    { key: 'PACKAGING', label: 'На упаковке', statuses: ['PACKAGING'], updateStatus: 'PACKAGING', color: '#faad14' },
+    { key: 'READY', label: 'Готово', statuses: ['READY'], updateStatus: 'READY', color: '#52c41a' },
+    { key: 'DELIVERED', label: 'Выдан', statuses: ['DELIVERED'], updateStatus: 'DELIVERED', color: '#8c8c8c', isTerminal: true },
 ];
 
 const statusLabels: Record<string, { label: string; color: string }> = {
     NEW: { label: 'Новое', color: '#1677ff' },
-    ASSIGNED_TO_MASTER: { label: 'Сделка', color: '#13c2c2' },
-    ASSIGNED_TO_EXECUTOR: { label: 'В работе', color: '#fa8c16' },
+    IN_DEAL: { label: 'В сделке', color: '#13c2c2' },
     IN_PROGRESS: { label: 'В работе', color: '#fa8c16' },
-    PAINTING: { label: 'В работе', color: '#fa8c16' },
-    POLISHING: { label: 'В работе', color: '#fa8c16' },
-    ASSEMBLY_STAGE: { label: 'Выполнено', color: '#52c41a' },
-    ASSEMBLED: { label: 'Выполнено', color: '#52c41a' },
-    READY: { label: 'Выполнено', color: '#52c41a' },
-    SENT: { label: 'Отправлен / Выдан', color: '#8c8c8c' },
-    SHIPPED: { label: 'Отправлен / Выдан', color: '#8c8c8c' },
-    ISSUED: { label: 'Отправлен / Выдан', color: '#8c8c8c' },
-    COMPLETED: { label: 'Отправлен / Выдан', color: '#8c8c8c' },
+    IN_PAINTING: { label: 'В окраске', color: '#722ed1' },
+    PAINTED: { label: 'Открашено', color: '#eb2f96' },
+    POLISHED: { label: 'Отполировано', color: '#2f54eb' },
+    PACKAGING: { label: 'На упаковке', color: '#faad14' },
+    READY: { label: 'Готово', color: '#52c41a' },
+    DELIVERED: { label: 'Выдан', color: '#8c8c8c' },
 };
 
 type Filters = { search: string; statuses: StageKey[] };
@@ -137,6 +110,7 @@ const LoadChartPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { notification } = App.useApp();
+    const { user } = useAuth();
     const screens = useBreakpoint();
     const isMobile = !screens.md; // < 768px
     const { token } = useToken();
@@ -144,6 +118,8 @@ const LoadChartPage: React.FC = () => {
     const defaultFilters: Filters = { search: '', statuses: [] };
     const [filters, setFilters] = useState<Filters>(defaultFilters);
     const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
+    const isManager = user?.role === 'ADMIN' || user?.role === 'MANAGER';
+    const [onlyMyCars, setOnlyMyCars] = useState(!isManager);
 
     const fetchLoadChart = async () => {
         try {
@@ -229,8 +205,17 @@ const LoadChartPage: React.FC = () => {
 
     const normalizedStages = useMemo(() => {
         if (!data) return null;
-        return normalizeStages(data.stages, appliedFilters);
-    }, [data, appliedFilters]);
+        let stages = normalizeStages(data.stages, appliedFilters);
+        if (onlyMyCars && user?.id) {
+            const uid = user.id;
+            const filtered: Record<StageKey, WorkOrderCard[]> = {} as Record<StageKey, WorkOrderCard[]>;
+            (Object.keys(stages) as StageKey[]).forEach(k => {
+                filtered[k] = stages[k].filter(c => c.masterId === uid || c.executorId === uid);
+            });
+            return filtered;
+        }
+        return stages;
+    }, [data, appliedFilters, onlyMyCars, user?.id]);
 
     const handleApplyFilters = () => {
         setAppliedFilters(filters);
@@ -306,8 +291,12 @@ const LoadChartPage: React.FC = () => {
                                             styles={{ body: { padding: isMobile ? 8 : 12 } }}
                                             style={{
                                                 ...provided.draggableProps.style,
-                                                border: `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}`,
-                                                borderLeft: `4px solid ${stage.color}`,
+                                                border: (card.status === 'POLISHED' && card.ticketType === 'DETAILS')
+                                                    ? '2px solid #faad14'
+                                                    : `1px solid ${isDarkMode ? token.colorBorderSecondary : '#f0f0f0'}`,
+                                                borderLeft: (card.status === 'POLISHED' && card.ticketType === 'DETAILS')
+                                                    ? '4px solid #faad14'
+                                                    : `4px solid ${stage.color}`,
                                                 background: isDarkMode ? token.colorBgContainer : '#fff',
                                                 opacity: snapshot.isDragging ? 0.9 : 1,
                                                 boxShadow: snapshot.isDragging 
@@ -329,9 +318,14 @@ const LoadChartPage: React.FC = () => {
                                                     <>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, gap: 8, alignItems: 'center' }}>
                                                             <Text strong style={{ fontSize: isMobile ? 13 : 14 }}>#{card.orderNumber}</Text>
-                                                            <Tag color={statusMeta.color} style={{ margin: 0, fontSize: 11, lineHeight: '18px' }}>
-                                                                {statusMeta.label}
-                                                            </Tag>
+                                                            <Space size={4}>
+                                                                {card.status === 'POLISHED' && card.ticketType === 'DETAILS' && isManager && (
+                                                                    <Tag color="warning" icon={<WarningOutlined />} style={{ margin: 0, fontSize: 10 }}>Упаковка!</Tag>
+                                                                )}
+                                                                <Tag color={statusMeta.color} style={{ margin: 0, fontSize: 11, lineHeight: '18px' }}>
+                                                                    {statusMeta.label}
+                                                                </Tag>
+                                                            </Space>
                                                         </div>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
                                                             <Text style={{ fontSize: isMobile ? 10 : 11, color: dateColor }}>
@@ -473,6 +467,16 @@ const LoadChartPage: React.FC = () => {
                         onChange={(value) => setFilters(prev => ({ ...prev, statuses: value as StageKey[] }))}
                         options={stageConfig.map(stage => ({ label: stage.label, value: stage.key }))}
                     />
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                    <Space>
+                        <Switch
+                            checked={onlyMyCars}
+                            onChange={setOnlyMyCars}
+                            id="only-my-cars-switch"
+                        />
+                        <Text>Только мои машины</Text>
+                    </Space>
                 </Col>
             </FilterBar>
 

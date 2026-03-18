@@ -12,12 +12,13 @@ const work_orders_controller_1 = require("./work-orders.controller");
 const work_orders_service_1 = require("./work-orders.service");
 const work_order_number_service_1 = require("./work-order-number.service");
 const prisma_module_1 = require("../prisma/prisma.module");
+const work_order_history_module_1 = require("../work-order-history/work-order-history.module");
 let WorkOrdersModule = class WorkOrdersModule {
 };
 exports.WorkOrdersModule = WorkOrdersModule;
 exports.WorkOrdersModule = WorkOrdersModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, work_order_history_module_1.WorkOrderHistoryModule],
         controllers: [work_orders_controller_1.WorkOrdersController],
         providers: [work_orders_service_1.WorkOrdersService, work_order_number_service_1.WorkOrderNumberService],
         exports: [work_orders_service_1.WorkOrdersService],

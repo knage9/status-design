@@ -26,6 +26,7 @@ const load_chart_module_1 = require("./load-chart/load-chart.module");
 const telegram_module_1 = require("./telegram/telegram.module");
 const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
+const work_order_history_module_1 = require("./work-order-history/work-order-history.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,7 +44,7 @@ exports.AppModule = AppModule = __decorate([
                 rootPath: (0, path_1.join)(process.cwd(), 'admin-client/dist'),
                 serveRoot: '/admin',
             }),
-            prisma_module_1.PrismaModule, reviews_module_1.ReviewsModule, posts_module_1.PostsModule, portfolio_module_1.PortfolioModule, uploads_module_1.UploadsModule, dashboard_module_1.DashboardModule, requests_module_1.RequestsModule, auth_module_1.AuthModule, users_module_1.UsersModule, work_orders_module_1.WorkOrdersModule, executor_stats_module_1.ExecutorStatsModule, load_chart_module_1.LoadChartModule, telegram_module_1.TelegramModule
+            prisma_module_1.PrismaModule, reviews_module_1.ReviewsModule, posts_module_1.PostsModule, portfolio_module_1.PortfolioModule, uploads_module_1.UploadsModule, dashboard_module_1.DashboardModule, requests_module_1.RequestsModule, auth_module_1.AuthModule, users_module_1.UsersModule, work_orders_module_1.WorkOrdersModule, executor_stats_module_1.ExecutorStatsModule, load_chart_module_1.LoadChartModule, telegram_module_1.TelegramModule, work_order_history_module_1.WorkOrderHistoryModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

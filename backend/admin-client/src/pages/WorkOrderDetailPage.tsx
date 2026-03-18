@@ -17,12 +17,11 @@ import {
     Popover,
     Collapse,
     Grid,
+    Timeline,
     Upload,
     message,
     Image,
     Statistic,
-    Radio,
-    Checkbox,
     theme,
 } from 'antd';
 import {
@@ -30,7 +29,6 @@ import {
     ToolOutlined,
     UserOutlined,
     DollarOutlined,
-    CheckOutlined,
     CameraOutlined,
     ClockCircleOutlined,
     EditOutlined,
@@ -56,7 +54,6 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
     const { token } = useToken();
     const isDarkMode = token.colorBgBase === '#141414' || document.documentElement.getAttribute('data-theme') === 'dark';
     const [fileList, setFileList] = useState<UploadFile[]>([]);
-    const [loading, setLoading] = useState(false);
     const thumbnailWrapperStyle = {
         width: '100%',
         aspectRatio: '1 / 1',
@@ -84,7 +81,6 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
 
     const handleUpload = async (options: any) => {
         const { file, onSuccess, onError, onProgress } = options;
-        setLoading(true);
 
         const formData = new FormData();
         formData.append('file', file);
@@ -109,8 +105,6 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
                 title: 'Ошибка загрузки', 
                 description: error.response?.data?.message || 'Не удалось загрузить фото' 
             });
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -149,9 +143,7 @@ const PhotoReportSection: React.FC<{ workOrderId: number; photos: string[]; onUp
         return true;
     };
 
-    const imageUrls = fileList
-        .filter(file => file.status === 'done' && file.url)
-        .map(file => file.url as string);
+
 
     return (
         <div>
@@ -235,6 +227,7 @@ interface WorkOrderExecutor {
 interface WorkOrder {
     id: number;
     orderNumber: string;
+    ticketType: 'CAR' | 'DETAILS';
     status: string;
     totalAmount: number;
     paymentMethod: string;
@@ -294,6 +287,8 @@ interface WorkOrder {
     servicesData?: any;
     bodyPartsData?: any;
     executorAssignments?: WorkOrderExecutor[];
+    deliveryDate?: string;
+    assigneeDeadline?: string;
 }
 
 interface User {
@@ -321,7 +316,9 @@ const WorkOrderDetailPage: React.FC = () => {
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState<string>('');
     const [taskUpdateId, setTaskUpdateId] = useState<number | null>(null);
-    const [finalStage, setFinalStage] = useState<'SENT' | 'ISSUED' | null>(null);
+    const [historyLogs, setHistoryLogs] = useState<any[]>([]);
+    const [payoutModalVisible, setPayoutModalVisible] = useState(false);
+    const [payoutAmounts, setPayoutAmounts] = useState<Record<number, number>>({});
     const myAssignments = useMemo(
         () => (workOrder?.executorAssignments || []).filter(a => a.executor?.id === user?.id),
         [workOrder?.executorAssignments, user?.id]
@@ -335,8 +332,12 @@ const WorkOrderDetailPage: React.FC = () => {
     const fetchWorkOrder = async () => {
         try {
             setLoading(true);
-            const response = await api.get(`/work-orders/${id}`);
-            setWorkOrder(response.data);
+            const [orderRes, historyRes] = await Promise.all([
+                api.get(`/work-orders/${id}`),
+                api.get(`/work-orders/${id}/history`).catch(() => ({ data: [] }))
+            ]);
+            setWorkOrder(orderRes.data);
+            setHistoryLogs(historyRes.data || []);
         } catch (error) {
             notification.error({ title: 'Ошибка загрузки заказ-наряда' });
         } finally {
@@ -403,30 +404,42 @@ const WorkOrderDetailPage: React.FC = () => {
         }
     };
 
-    const handleWorkflowAction = async (action: string, onSuccess?: () => void) => {
+    const handleStatusChange = async (newStatus: string) => {
         try {
-            await api.post(`/work-orders/${id}/${action}`);
+            await api.patch(`/work-orders/${id}`, { status: newStatus });
             notification.success({ title: 'Статус обновлен' });
-            fetchWorkOrder();
-            onSuccess?.();
-        } catch (error) {
-            notification.error({ title: 'Ошибка обновления статуса' });
-        }
-    };
-
-    const handleCompleteWithStage = async () => {
-        if (!finalStage) {
-            notification.warning({ title: 'Выберите финальный этап' });
-            return;
-        }
-        try {
-            await api.post(`/work-orders/${id}/complete`, { finalStage });
-            notification.success({ title: 'Заказ-наряд завершён' });
             fetchWorkOrder();
         } catch (error: any) {
             notification.error({
-                title: 'Ошибка завершения',
-                description: error.response?.data?.message || 'Не удалось завершить заказ-наряд',
+                title: 'Ошибка обновления статуса',
+                description: error.response?.data?.message || 'Не удалось обновить статус'
+            });
+        }
+    };
+
+    const handleOpenDeliveryModal = () => {
+        const assignments = workOrder?.executorAssignments || [];
+        const initial: Record<number, number> = {};
+        assignments.forEach(a => { initial[a.id] = a.amount || 0; });
+        setPayoutAmounts(initial);
+        setPayoutModalVisible(true);
+    };
+
+    const handleConfirmDelivery = async () => {
+        try {
+            const payouts = Object.entries(payoutAmounts).map(([assignmentId, finalAmount]) => ({
+                assignmentId: Number(assignmentId),
+                finalAmount: Number(finalAmount)
+            }));
+            await api.patch(`/work-orders/${id}/executor-payouts`, { payouts });
+            await api.patch(`/work-orders/${id}`, { status: 'DELIVERED' });
+            notification.success({ title: 'Заказ-наряд выдан клиенту' });
+            setPayoutModalVisible(false);
+            fetchWorkOrder();
+        } catch (error: any) {
+            notification.error({
+                title: 'Ошибка',
+                description: error.response?.data?.message || 'Не удалось завершить'
             });
         }
     };
@@ -494,10 +507,14 @@ const WorkOrderDetailPage: React.FC = () => {
     const getStatusColor = (status: string) => {
         const colors: Record<string, string> = {
             NEW: 'blue',
-            ASSIGNED_TO_MASTER: 'cyan',
-            ASSIGNED_TO_EXECUTOR: 'purple',
+            IN_DEAL: 'cyan',
             IN_PROGRESS: 'orange',
-            COMPLETED: 'default',
+            IN_PAINTING: 'magenta',
+            PAINTED: 'purple',
+            POLISHED: 'geekblue',
+            PACKAGING: 'volcano',
+            READY: 'green',
+            DELIVERED: 'default',
         };
         return colors[status] || 'default';
     };
@@ -505,16 +522,14 @@ const WorkOrderDetailPage: React.FC = () => {
     const getStatusText = (status: string) => {
         const texts: Record<string, string> = {
             NEW: 'Новый',
-            ASSIGNED_TO_MASTER: 'У мастера',
-            ASSIGNED_TO_EXECUTOR: 'У исполнителей',
+            IN_DEAL: 'В сделке',
             IN_PROGRESS: 'В работе',
-            UNDER_REVIEW: 'На проверке',
-            APPROVED: 'Одобрен',
-            RETURNED_FOR_REVISION: 'Возврат на доработку',
-            ASSEMBLED: 'Собран',
-            SENT: 'Отправлен',
-            ISSUED: 'Выдан',
-            COMPLETED: 'Завершён',
+            IN_PAINTING: 'В окраске',
+            PAINTED: 'Открашено',
+            POLISHED: 'Отполировано',
+            PACKAGING: 'На упаковке',
+            READY: 'Готово к выдаче',
+            DELIVERED: 'Выдан',
         };
         return texts[status] || status;
     };
@@ -787,26 +802,53 @@ const WorkOrderDetailPage: React.FC = () => {
                                 {elapsedTime}
                             </Tag>
                         )}
-                        <Space>
-                            {/* NEW: Edit Button - Manager or Master */}
+                            {/* Edit Button */}
                             {(isManager || canMasterEdit) && (
-                                <Button
-                                    icon={<EditOutlined />}
-                                    onClick={() => navigate(`/work-orders/${id}/edit`)}
-                                >
+                                <Button icon={<EditOutlined />} onClick={() => navigate(`/work-orders/${id}/edit`)}>
                                     Редактировать
                                 </Button>
                             )}
 
-                            {/* Manager Actions */}
+                            {/* Role-based Status Transitions */}
                             {isManager && workOrder.status === 'NEW' && (
-                                <Button type="primary" onClick={() => openAssignModal('MASTER')}>Назначить мастера</Button>
+                                <Space>
+                                    <Button type="primary" onClick={() => openAssignModal('MASTER')}>Назначить мастера</Button>
+                                    <Button onClick={() => handleStatusChange('IN_DEAL')}>В сделку</Button>
+                                </Space>
                             )}
-                            {/* Executor Actions */}
-                            {(isExecutor || isAdmin) && (workOrder.status === 'ASSIGNED_TO_EXECUTOR' || workOrder.status === 'RETURNED_FOR_REVISION') && (
-                                <Button type="primary" onClick={() => handleWorkflowAction('start', () => setTimeout(fetchWorkOrder, 200))}>Начать работу</Button>
+                            {isManager && workOrder.status === 'IN_DEAL' && (
+                                <Button type="primary" onClick={() => handleStatusChange('IN_PROGRESS')}>В работу</Button>
                             )}
-                        </Space>
+
+                            {/* CAR Pipeline */}
+                            {workOrder.ticketType === 'CAR' && workOrder.status === 'IN_PROGRESS' && (isManager || canMasterEdit) && (
+                                <Button type="primary" onClick={() => handleStatusChange('READY')}>Готово к выдаче</Button>
+                            )}
+
+                            {/* DETAILS Pipeline */}
+                            {workOrder.ticketType === 'DETAILS' && (
+                                <>
+                                    {workOrder.status === 'IN_PROGRESS' && (isManager || canMasterEdit) && (
+                                        <Button type="primary" onClick={() => handleStatusChange('IN_PAINTING')}>Передать в окраску</Button>
+                                    )}
+                                    {workOrder.status === 'IN_PAINTING' && (isExecutor || isManager || canMasterEdit) && (
+                                        <Button type="primary" onClick={() => handleStatusChange('PAINTED')}>Открашено</Button>
+                                    )}
+                                    {workOrder.status === 'PAINTED' && (isExecutor || isManager || canMasterEdit) && (
+                                        <Button type="primary" onClick={() => handleStatusChange('POLISHED')}>Отполировано</Button>
+                                    )}
+                                    {workOrder.status === 'POLISHED' && (isManager || canMasterEdit) && (
+                                        <Button type="primary" onClick={() => handleStatusChange('PACKAGING')}>На упаковку</Button>
+                                    )}
+                                    {workOrder.status === 'PACKAGING' && (isManager || canMasterEdit) && (
+                                        <Button type="primary" onClick={() => handleStatusChange('READY')}>Готово к выдаче</Button>
+                                    )}
+                                </>
+                            )}
+                            
+                            {workOrder.status === 'READY' && (isManager || canMasterEdit) && (
+                                <Button type="primary" style={{ backgroundColor: '#52c41a' }} onClick={handleOpenDeliveryModal}>Выдать клиенту</Button>
+                            )}
                     </Space>
                 </div>
 
@@ -815,6 +857,18 @@ const WorkOrderDetailPage: React.FC = () => {
                 <Descriptions column={{ xs: 1, sm: 2, md: 3 }} size="small">
                     <Descriptions.Item label="Менеджер">{workOrder.manager?.name || '—'}</Descriptions.Item>
                     <Descriptions.Item label="Мастер">{workOrder.master?.name || '—'}</Descriptions.Item>
+                    {workOrder.deliveryDate && (
+                        <Descriptions.Item label="Дата выдачи">
+                            <Tag color="purple">{dayjs(workOrder.deliveryDate).format('DD.MM.YYYY')}</Tag>
+                        </Descriptions.Item>
+                    )}
+                    {workOrder.assigneeDeadline && (
+                        <Descriptions.Item label="Дедлайн исполнителя">
+                            <Tag color={dayjs(workOrder.assigneeDeadline).isBefore(dayjs()) ? 'red' : 'orange'} icon={<ClockCircleOutlined />}>
+                                {dayjs(workOrder.assigneeDeadline).format('DD.MM.YYYY')}
+                            </Tag>
+                        </Descriptions.Item>
+                    )}
                 </Descriptions>
             </Card>
 
@@ -863,31 +917,7 @@ const WorkOrderDetailPage: React.FC = () => {
                 </Card>
             )}
 
-            {(workOrder.status === 'ASSIGNED_TO_MASTER') && (isMaster || isManager || isAdmin) && (
-                <Card
-                    title="Завершение заказ-наряда"
-                    style={{ marginBottom: 24, border: '1px solid #e6f7ff' }}
-                    styles={{ header: { background: '#e6f7ff' } }}
-                >
-                    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                        <div>
-                            <Text strong>Выберите финальный этап:</Text>
-                            <br />
-                            <Radio.Group
-                                value={finalStage}
-                                onChange={(e) => setFinalStage(e.target.value)}
-                                style={{ marginTop: 8 }}
-                            >
-                                <Radio.Button value="SENT">Отправлен</Radio.Button>
-                                <Radio.Button value="ISSUED">Выдан</Radio.Button>
-                            </Radio.Group>
-                        </div>
-                        <Button type="primary" onClick={handleCompleteWithStage} disabled={!finalStage}>
-                            Завершить заказ-наряд
-                        </Button>
-                    </Space>
-                </Card>
-            )}
+
 
             <Row gutter={[24, 24]}>
                 {/* Left Column */}
@@ -1072,7 +1102,7 @@ const WorkOrderDetailPage: React.FC = () => {
                             {(() => {
                                 const groups: Record<number, any[]> = {};
                                 (workOrder?.executorAssignments || []).forEach(a => {
-                                    const key = a.executorId || -1;
+                                    const key = a.executor?.id || -1;
                                     if (!groups[key]) groups[key] = [];
                                     groups[key].push(a);
                                 });
@@ -1404,11 +1434,118 @@ const WorkOrderDetailPage: React.FC = () => {
                 {/* Right Column */}
                 <Col xs={24} lg={8}>
                     {/* Photos Section */}
-                    <Card title={<Space><CameraOutlined /> Фотоотчет</Space>}>
+                    <Card title={<Space><CameraOutlined /> Фотоотчет</Space>} style={{ marginBottom: 24 }}>
                         <PhotoReportSection workOrderId={workOrder.id} photos={workOrder.photosAfterWork || []} onUpdate={fetchWorkOrder} />
                     </Card>
+
+                    {/* Timeline History Section */}
+                    {isManager && (
+                        <Card title={<Space><ClockCircleOutlined /> История изменений</Space>} style={{ marginBottom: 24 }}>
+                            {historyLogs.length > 0 ? (
+                                <Timeline
+                                    mode="left"
+                                    items={historyLogs.map(log => {
+                                        let detailsContent = null;
+                                        if (log.details && (log.action === 'UPDATE' || log.action === 'STATUS_CHANGE')) {
+                                            if (log.details.oldStatus && log.details.newStatus) {
+                                                detailsContent = (
+                                                    <div style={{ marginTop: 4, fontSize: 12 }}>
+                                                        <Tag>{getStatusText(log.details.oldStatus)}</Tag>
+                                                        <span>→</span>
+                                                        <Tag color={getStatusColor(log.details.newStatus)} style={{ marginLeft: 8 }}>
+                                                            {getStatusText(log.details.newStatus)}
+                                                        </Tag>
+                                                    </div>
+                                                );
+                                            } else {
+                                                const keys = Object.keys(log.details || {}).filter(k => k !== 'oldStatus' && k !== 'newStatus');
+                                                if (keys.length > 0) {
+                                                    detailsContent = (
+                                                        <div style={{ marginTop: 4, fontSize: 12 }}>
+                                                            <Text type="secondary">Изменено полей: {keys.length}</Text>
+                                                        </div>
+                                                    );
+                                                }
+                                            }
+                                        }
+
+                                        let actionText = log.action;
+                                        switch (log.action) {
+                                            case 'CREATE': actionText = 'Создан заказ-наряд'; break;
+                                            case 'UPDATE': actionText = 'Обновлен заказ-наряд'; break;
+                                            case 'STATUS_CHANGE': actionText = 'Изменен статус'; break;
+                                            case 'ASSIGN': actionText = 'Назначение исполнителя'; break;
+                                            case 'COMMENT': actionText = 'Добавлен комментарий'; break;
+                                        }
+
+                                        return {
+                                            color: log.action === 'CREATE' ? 'green' : log.action === 'STATUS_CHANGE' ? 'blue' : 'gray',
+                                            children: (
+                                                <div>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                                        <Text strong style={{ fontSize: 13 }}>{actionText}</Text>
+                                                        <Text type="secondary" style={{ fontSize: 12 }}>{dayjs(log.createdAt).format('DD.MM.YY HH:mm')}</Text>
+                                                    </div>
+                                                    <div style={{ fontSize: 12, marginBottom: 4 }}>
+                                                        <UserOutlined style={{ marginRight: 4 }} />
+                                                        <Text>{log.user?.name || 'Система'}</Text>
+                                                    </div>
+                                                    {detailsContent}
+                                                </div>
+                                            )
+                                        };
+                                    })}
+                                />
+                            ) : (
+                                <Text type="secondary">История пуста</Text>
+                            )}
+                        </Card>
+                    )}
                 </Col>
             </Row>
+
+            {/* Payout Confirmation Modal */}
+            <Modal
+                title="Выплаты исполнителям перед выдачей"
+                open={payoutModalVisible}
+                onOk={handleConfirmDelivery}
+                onCancel={() => setPayoutModalVisible(false)}
+                okText="Выдать клиенту"
+                cancelText="Отмена"
+                okButtonProps={{ style: { backgroundColor: '#52c41a' } }}
+                width={560}
+            >
+                <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+                    Проверьте и при необходимости скорректируйте суммы выплат перед закрытием заказ-наряда.
+                </Text>
+                {(workOrder?.executorAssignments || []).length === 0 ? (
+                    <Text type="secondary">Назначений не найдено.</Text>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {(workOrder?.executorAssignments || []).map(a => (
+                            <div key={a.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                                <div>
+                                    <Text strong>{a.executor?.name || '—'}</Text>
+                                    <br />
+                                    <Text type="secondary" style={{ fontSize: 12 }}>{a.description || a.workType}</Text>
+                                </div>
+                                {isManager && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <input
+                                            type="number"
+                                            min={0}
+                                            value={payoutAmounts[a.id] ?? a.amount ?? 0}
+                                            onChange={e => setPayoutAmounts(prev => ({ ...prev, [a.id]: Number(e.target.value) }))}
+                                            style={{ width: 120, padding: '4px 8px', border: '1px solid #d9d9d9', borderRadius: 6, fontSize: 14, textAlign: 'right' }}
+                                        />
+                                        <Text>₽</Text>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </Modal>
 
             {/* Assign Modal */}
             <Modal

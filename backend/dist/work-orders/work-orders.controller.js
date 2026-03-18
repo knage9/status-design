@@ -81,6 +81,12 @@ let WorkOrdersController = class WorkOrdersController {
     updateTaskStatus(id, assignmentId, body, req) {
         return this.workOrdersService.updateAssignmentStatus(id, assignmentId, body.status, (0, permissions_1.buildCurrentUser)(req.user));
     }
+    updateTask(id, assignmentId, body, req) {
+        return this.workOrdersService.updateAssignment(id, assignmentId, body, (0, permissions_1.buildCurrentUser)(req.user));
+    }
+    updateExecutorPayouts(id, body, req) {
+        return this.workOrdersService.updateExecutorPayouts(id, body.payouts, (0, permissions_1.buildCurrentUser)(req.user));
+    }
     addPhotoBefore(id, photoUrl) {
         return this.workOrdersService.addPhotoBefore(id, photoUrl);
     }
@@ -218,6 +224,27 @@ __decorate([
     __metadata("design:paramtypes", [Number, Number, Object, Object]),
     __metadata("design:returntype", void 0)
 ], WorkOrdersController.prototype, "updateTaskStatus", null);
+__decorate([
+    (0, common_1.Patch)(':id/tasks/:assignmentId'),
+    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('assignmentId', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object, Object]),
+    __metadata("design:returntype", void 0)
+], WorkOrdersController.prototype, "updateTask", null);
+__decorate([
+    (0, common_1.Patch)(':id/executor-payouts'),
+    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:returntype", void 0)
+], WorkOrdersController.prototype, "updateExecutorPayouts", null);
 __decorate([
     (0, common_1.Post)(':id/photos/before'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

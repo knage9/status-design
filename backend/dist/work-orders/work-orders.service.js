@@ -16,12 +16,27 @@ const prisma_service_1 = require("../prisma/prisma.service");
 const work_order_number_service_1 = require("./work-order-number.service");
 const client_2 = require("@prisma/client");
 const permissions_1 = require("../auth/permissions");
+const work_order_history_service_1 = require("../work-order-history/work-order-history.service");
+const statusLabels = {
+    NEW: 'Новый',
+    IN_DEAL: 'В сделке',
+    IN_PROGRESS: 'В работе',
+    IN_PAINTING: 'В окраске',
+    PAINTED: 'Открашено',
+    POLISHED: 'Отполировано',
+    PACKAGING: 'На упаковке',
+    READY: 'Готово к выдаче',
+    DELIVERED: 'Выдан'
+};
+const getStatusText = (status) => statusLabels[status] || status;
 let WorkOrdersService = class WorkOrdersService {
     prisma;
     numberService;
-    constructor(prisma, numberService) {
+    historyService;
+    constructor(prisma, numberService, historyService) {
         this.prisma = prisma;
         this.numberService = numberService;
+        this.historyService = historyService;
     }
     hasExecutorTaskInJson(order, executorId) {
         const services = order.servicesData || {};
@@ -80,10 +95,18 @@ let WorkOrdersService = class WorkOrdersService {
         return false;
     }
     stripFinanceIfNeeded(orders, currentUser) {
+        const withDeadline = orders.map(order => {
+            let assigneeDeadline = null;
+            if (order.deliveryDate) {
+                assigneeDeadline = new Date(order.deliveryDate);
+                assigneeDeadline.setDate(assigneeDeadline.getDate() - 1);
+            }
+            return { ...order, assigneeDeadline };
+        });
         if ((0, permissions_1.hasPermission)(currentUser, 'WORK_ORDERS_VIEW_FINANCE')) {
-            return orders;
+            return withDeadline;
         }
-        return orders.map(order => {
+        return withDeadline.map(order => {
             const clone = { ...order };
             delete clone.totalAmount;
             delete clone.paymentMethod;
@@ -122,8 +145,8 @@ let WorkOrdersService = class WorkOrdersService {
             const finalMasterId = masterId || data.masterId;
             const hasExecutorTasks = this.hasExecutorTasksInPayload(data);
             const initialStatus = hasExecutorTasks
-                ? client_2.WorkOrderStatus.ASSIGNED_TO_EXECUTOR
-                : (finalMasterId ? client_2.WorkOrderStatus.ASSIGNED_TO_MASTER : client_2.WorkOrderStatus.NEW);
+                ? client_2.WorkOrderStatus.IN_PROGRESS
+                : (finalMasterId ? client_2.WorkOrderStatus.IN_PROGRESS : client_2.WorkOrderStatus.NEW);
             const result = await this.prisma.workOrder.create({
                 data: {
                     ...workOrderData,
@@ -347,6 +370,10 @@ let WorkOrdersService = class WorkOrdersService {
                 });
                 console.log(`Created ${assignments.length} executor assignments`);
             }
+            await this.historyService.logAction(result.id, currentUser?.id || finalManagerId, 'CREATED', {
+                message: 'Создан заказ-наряд',
+                status: initialStatus,
+            });
             console.log('Work order created successfully:', result.id);
             return result;
         }
@@ -565,8 +592,14 @@ let WorkOrdersService = class WorkOrdersService {
                 return a;
             });
         }
+        let assigneeDeadline = null;
+        if (order.deliveryDate) {
+            assigneeDeadline = new Date(order.deliveryDate);
+            assigneeDeadline.setDate(assigneeDeadline.getDate() - 1);
+        }
         const result = {
             ...order,
+            assigneeDeadline,
             armaturaExecutors: Object.keys(armaturaExecutors).length > 0 ? armaturaExecutors : undefined,
             fixedServices: Object.keys(fixedServices).length > 0 ? fixedServices : undefined,
             additionalServices: additionalServices.length > 0 ? additionalServices : undefined,
@@ -610,6 +643,33 @@ let WorkOrdersService = class WorkOrdersService {
         }
         return result;
     }
+    async updateExecutorPayouts(id, payouts, currentUser) {
+        if (currentUser.role !== 'ADMIN' && currentUser.role !== 'MANAGER') {
+            throw new common_1.ForbiddenException('Недостаточно прав для редактирования выплат исполнителям');
+        }
+        const order = await this.prisma.workOrder.findUnique({
+            where: { id },
+            include: { executorAssignments: true }
+        });
+        if (!order) {
+            throw new common_1.NotFoundException('Заказ-наряд не найден');
+        }
+        await this.prisma.$transaction(payouts.map(p => {
+            const assignment = order.executorAssignments.find(a => a.id === p.assignmentId);
+            if (!assignment) {
+                throw new common_1.NotFoundException(`Назначение с ID ${p.assignmentId} не найдено в этом заказ-наряде`);
+            }
+            return this.prisma.workOrderExecutor.update({
+                where: { id: p.assignmentId },
+                data: { amount: p.finalAmount }
+            });
+        }));
+        await this.historyService.logAction(id, currentUser.id, 'UPDATE_PAYOUTS', {
+            message: 'Обновлены суммы выплат исполнителям',
+            payoutsCount: payouts.length
+        });
+        return { success: true };
+    }
     async update(id, data, currentUser) {
         const canEditAll = (0, permissions_1.hasPermission)(currentUser, 'WORK_ORDERS_EDIT_ALL');
         const canEditAssigned = (0, permissions_1.hasPermission)(currentUser, 'WORK_ORDERS_EDIT_ASSIGNED');
@@ -642,6 +702,39 @@ let WorkOrdersService = class WorkOrdersService {
         if (data.totalAmount) {
             await this.recalculateArmaturaPayments(id, data.totalAmount);
         }
+        const oldOrder = await this.prisma.workOrder.findUnique({ where: { id } });
+        if (!oldOrder)
+            throw new common_1.NotFoundException('Work order not found');
+        const newPainterId = data.painterId;
+        if (oldOrder.ticketType === 'DETAILS' && oldOrder.status === 'IN_PROGRESS' && newPainterId && newPainterId !== oldOrder.painterId) {
+            data.status = 'IN_PAINTING';
+        }
+        const pipeline = [
+            'NEW', 'IN_DEAL', 'IN_PROGRESS', 'IN_PAINTING',
+            'PAINTED', 'POLISHED', 'PACKAGING', 'READY', 'DELIVERED'
+        ];
+        const newStatus = data.status;
+        if (newStatus && newStatus !== oldOrder.status) {
+            const oldIdx = pipeline.indexOf(oldOrder.status);
+            const newIdx = pipeline.indexOf(newStatus);
+            if (oldIdx !== -1 && newIdx !== -1 && newIdx <= oldIdx) {
+                if (currentUser.role !== 'ADMIN' && currentUser.role !== 'MANAGER') {
+                    throw new common_1.BadRequestException(`Нельзя вернуть статус назад с ${getStatusText(oldOrder.status)} на ${getStatusText(newStatus)}`);
+                }
+            }
+            if (oldOrder.ticketType === 'CAR') {
+                const skipped = ['IN_PAINTING', 'PAINTED', 'POLISHED', 'PACKAGING'];
+                if (skipped.includes(newStatus)) {
+                    throw new common_1.BadRequestException(`Статус ${getStatusText(newStatus)} недоступен для автомобилей`);
+                }
+            }
+            if (newStatus === 'IN_PROGRESS' && !oldOrder.startedAt) {
+                data.startedAt = new Date();
+            }
+            if (newStatus === 'DELIVERED' && !oldOrder.completedAt) {
+                data.completedAt = new Date();
+            }
+        }
         const { armaturaExecutors, fixedServices, additionalServices, ...workOrderData } = data;
         if (data.servicesData || data.bodyPartsData || armaturaExecutors || fixedServices || additionalServices) {
             const result = await this.prisma.workOrder.findUnique({ where: { id } });
@@ -673,9 +766,18 @@ let WorkOrdersService = class WorkOrdersService {
                 }
                 if (data.bodyPartsData) {
                     typesToClean.push(client_2.WorkType.BODY_PART);
+                    const defaultExecutorId = data.painterId || armaturaExecutors?.disassembly || data.disassemblyExecutorId;
                     for (const [partType, partData] of Object.entries(data.bodyPartsData)) {
-                        if (partData.executorId && partData.quantity > 0) {
-                            assignments.push({ workOrderId: id, executorId: partData.executorId, workType: client_2.WorkType.BODY_PART, amount: partData.quantity * 400, description: partType, metadata: partData });
+                        const finalExecutorId = partData.executorId || defaultExecutorId;
+                        if (finalExecutorId && partData.quantity > 0) {
+                            assignments.push({
+                                workOrderId: id,
+                                executorId: finalExecutorId,
+                                workType: client_2.WorkType.BODY_PART,
+                                amount: partData.quantity * 400,
+                                description: partType,
+                                metadata: partData
+                            });
                         }
                     }
                 }
@@ -724,7 +826,7 @@ let WorkOrdersService = class WorkOrdersService {
                 }
             }
         }
-        return this.prisma.workOrder.update({
+        const updatedOrder = await this.prisma.workOrder.update({
             where: { id },
             data: workOrderData,
             include: {
@@ -739,6 +841,19 @@ let WorkOrdersService = class WorkOrdersService {
                 }
             },
         });
+        if (newStatus && newStatus !== oldOrder.status) {
+            await this.historyService.logAction(id, currentUser.id, 'STATUS_CHANGED', {
+                oldStatus: oldOrder.status,
+                newStatus: updatedOrder.status,
+                message: `Статус изменен на ${getStatusText(updatedOrder.status)}`
+            });
+        }
+        if (updatedOrder.deliveryDate) {
+            const deadline = new Date(updatedOrder.deliveryDate);
+            deadline.setDate(deadline.getDate() - 1);
+            updatedOrder.assigneeDeadline = deadline;
+        }
+        return updatedOrder;
     }
     async recalculateArmaturaPayments(workOrderId, newTotalAmount) {
         const armaturaWorks = await this.prisma.workOrderExecutor.findMany({
@@ -802,12 +917,23 @@ let WorkOrdersService = class WorkOrdersService {
         });
         const allDone = allAssignments.length > 0 && allAssignments.every(a => a.metadata?.status === 'DONE');
         if (allDone) {
-            await this.prisma.workOrder.update({
-                where: { id: workOrderId },
-                data: { status: client_2.WorkOrderStatus.ASSIGNED_TO_MASTER },
-            });
         }
         return updated;
+    }
+    async updateAssignment(workOrderId, assignmentId, data, currentUser) {
+        if (currentUser.role !== 'ADMIN' && currentUser.role !== 'MANAGER') {
+            throw new common_1.ForbiddenException('Только менеджер может изменять выплаты по задачам');
+        }
+        const assignment = await this.prisma.workOrderExecutor.findUnique({
+            where: { id: assignmentId },
+        });
+        if (!assignment || assignment.workOrderId !== workOrderId) {
+            throw new common_1.NotFoundException('Задача не найдена');
+        }
+        return this.prisma.workOrderExecutor.update({
+            where: { id: assignmentId },
+            data: { amount: data.amount },
+        });
     }
     async checkMasterAccess(workOrderId, masterId) {
         const workOrder = await this.prisma.workOrder.findUnique({
@@ -820,8 +946,7 @@ let WorkOrdersService = class WorkOrdersService {
         return this.prisma.workOrder.update({
             where: { id },
             data: {
-                masterId,
-                status: client_2.WorkOrderStatus.ASSIGNED_TO_MASTER,
+                masterId
             },
             include: {
                 master: { select: { id: true, name: true, email: true } },
@@ -832,8 +957,7 @@ let WorkOrdersService = class WorkOrdersService {
         return this.prisma.workOrder.update({
             where: { id },
             data: {
-                executorId,
-                status: client_2.WorkOrderStatus.ASSIGNED_TO_EXECUTOR,
+                executorId
             },
             include: {
                 executor: { select: { id: true, name: true, email: true } },
@@ -902,43 +1026,7 @@ let WorkOrdersService = class WorkOrdersService {
         throw new common_1.ForbiddenException('Этап проверки отключен');
     }
     async complete(id, currentUser, finalStage) {
-        if (!(0, permissions_1.hasPermission)(currentUser, 'WORK_ORDERS_CHANGE_STATUS')) {
-            throw new common_1.ForbiddenException('Недостаточно прав для изменения статуса');
-        }
-        if (!finalStage) {
-            throw new common_1.BadRequestException('Не указан финальный этап');
-        }
-        const isSupervisor = currentUser.role === 'ADMIN' || currentUser.role === 'MANAGER';
-        const isMaster = currentUser.role === 'MASTER';
-        if (!isSupervisor && !isMaster) {
-            throw new common_1.ForbiddenException('Недостаточно прав для завершения заказ-наряда');
-        }
-        if (isMaster) {
-            const hasAccess = await this.checkMasterAccess(id, currentUser.id);
-            if (!hasAccess) {
-                throw new common_1.ForbiddenException('Можно завершать только назначенные вам заказ-наряды');
-            }
-            const current = await this.prisma.workOrder.findUnique({
-                where: { id },
-                select: { status: true },
-            });
-            if (current?.status !== client_2.WorkOrderStatus.ASSIGNED_TO_MASTER) {
-                throw new common_1.ForbiddenException('ЗН должен быть на этапе мастера для завершения');
-            }
-        }
-        const stageToStatus = {
-            ASSEMBLED: client_2.WorkOrderStatus.ASSEMBLED,
-            SENT: client_2.WorkOrderStatus.SENT,
-            ISSUED: client_2.WorkOrderStatus.ISSUED,
-        };
-        const nextStatus = stageToStatus[finalStage];
-        return this.prisma.workOrder.update({
-            where: { id },
-            data: {
-                status: nextStatus,
-                completedAt: new Date(),
-            },
-        });
+        throw new common_1.ForbiddenException('Используйте централизованное изменение статуса (update)');
     }
     async addPhotoBefore(id, photoUrl) {
         const order = await this.prisma.workOrder.findUnique({ where: { id } });
@@ -994,6 +1082,7 @@ exports.WorkOrdersService = WorkOrdersService;
 exports.WorkOrdersService = WorkOrdersService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        work_order_number_service_1.WorkOrderNumberService])
+        work_order_number_service_1.WorkOrderNumberService,
+        work_order_history_service_1.WorkOrderHistoryService])
 ], WorkOrdersService);
 //# sourceMappingURL=work-orders.service.js.map

@@ -14,7 +14,10 @@ import {
     Spin,
     Typography,
     theme,
+    DatePicker,
+    Radio,
 } from 'antd';
+import dayjs from 'dayjs';
 import {
     ArrowLeftOutlined,
     SaveOutlined,
@@ -54,11 +57,11 @@ const WorkOrderEditPage: React.FC = () => {
     const [executors, setExecutors] = useState<any[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
 
-
-
-
-
     const isExecutor = user?.role === 'EXECUTOR' || user?.role === 'PAINTER';
+    const isManager = user?.role === 'MANAGER' || user?.role === 'ADMIN';
+
+    // Watch deliveryDate for deadline display
+    const deliveryDate = Form.useWatch('deliveryDate', form);
 
     useEffect(() => {
         if (isExecutor) {
@@ -251,6 +254,8 @@ const WorkOrderEditPage: React.FC = () => {
 
             const initialValues: any = {
                 // Main Fields
+                ticketType: wo.ticketType,
+                deliveryDate: wo.deliveryDate ? dayjs(wo.deliveryDate) : undefined,
                 totalAmount: wo.totalAmount,
                 paymentMethod: wo.paymentMethod,
                 customerName: wo.customerName,
@@ -514,6 +519,8 @@ const WorkOrderEditPage: React.FC = () => {
             }
 
             const data = {
+                ticketType: values.ticketType,
+                deliveryDate: values.deliveryDate ? values.deliveryDate.toISOString() : undefined,
                 totalAmount,
                 paymentMethod: values.paymentMethod,
                 customerName: values.customerName,
@@ -577,29 +584,68 @@ const WorkOrderEditPage: React.FC = () => {
                     onValuesChange={handleFormChange}
                     scrollToFirstError
                 >
+                    {/* Basic Settings */}
+                    <Card
+                        type="inner"
+                        title={
+                            <Space>
+                                <FileTextOutlined style={{ color: token.colorPrimary }} />
+                                <Text strong>Основные настройки</Text>
+                            </Space>
+                        }
+                        style={{ marginBottom: 24, background: isDarkMode ? 'rgba(24, 144, 255, 0.15)' : 'rgba(24, 144, 255, 0.05)' }}
+                    >
+                        <Row gutter={[24, 0]}>
+                            <Col xs={24} sm={12}>
+                                <Form.Item
+                                    label={<Text strong>Тип заказ-наряда</Text>}
+                                    name="ticketType"
+                                    rules={[{ required: true, message: 'Выберите тип' }]}
+                                >
+                                    <Radio.Group buttonStyle="solid" size="large">
+                                        <Radio.Button value="CAR">Автомобиль</Radio.Button>
+                                        <Radio.Button value="DETAILS">Детали</Radio.Button>
+                                    </Radio.Group>
+                                </Form.Item>
+                            </Col>
+                            <Col xs={24} sm={12}>
+                                <Form.Item label={<Text strong>Дата выдачи клиенту</Text>} name="deliveryDate" tooltip="Используется для расчёта дедлайна исполнителей">
+                                    <DatePicker size="large" style={{ width: '100%' }} format="DD.MM.YYYY" />
+                                </Form.Item>
+                                {deliveryDate && (
+                                    <Text type="secondary" style={{ fontSize: 13, display: 'block', marginTop: -15, marginBottom: 15 }}>
+                                        Дедлайн исполнителей: <Text strong>{dayjs(deliveryDate).subtract(1, 'day').format('DD.MM.YYYY')}</Text>
+                                    </Text>
+                                )}
+                            </Col>
+                        </Row>
+                    </Card>
+
                     {/* Financial Block */}
                     <Card type="inner" title={<Space><DollarOutlined style={{ color: isDarkMode ? '#73d13d' : '#52c41a' }} /><Text strong>Финансовая информация</Text></Space>} style={{ marginBottom: 24, background: isDarkMode ? 'rgba(82, 196, 26, 0.15)' : 'rgba(82, 196, 26, 0.05)' }}>
                         <Row gutter={[24, 0]}>
-                            <Col xs={24} sm={12} lg={8}>
-                                <Form.Item 
-                                    label={<Text strong>Общая сумма З/Н</Text>} 
-                                    name="totalAmount" 
-                                    rules={[{ required: true }]}
-                                    extra={<Text type="secondary" style={{ fontSize: 12 }}>Сумма = Услуги + Детали - Скидка</Text>}
-                                >
-                                    <Space.Compact style={{ width: '100%' }}>
-                                        <InputNumber 
-                                            style={{ width: '100%' }} 
-                                            size="large" 
-                                            min={0}
-                                            placeholder="Введите сумму"
-                                            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-                                            parser={value => (value ? parseFloat(value.replace(/\s|₽/g, '')) : 0) as any}
-                                        />
-                                        <Button size="large" disabled>₽</Button>
-                                    </Space.Compact>
-                                </Form.Item>
-                            </Col>
+                            {isManager && (
+                                <Col xs={24} sm={12} lg={8}>
+                                    <Form.Item 
+                                        label={<Text strong>Общая сумма З/Н</Text>} 
+                                        name="totalAmount" 
+                                        rules={[{ required: true }]}
+                                        extra={<Text type="secondary" style={{ fontSize: 12 }}>Сумма = Услуги + Детали - Скидка</Text>}
+                                    >
+                                        <Space.Compact style={{ width: '100%' }}>
+                                            <InputNumber 
+                                                style={{ width: '100%' }} 
+                                                size="large" 
+                                                min={0}
+                                                placeholder="Введите сумму"
+                                                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                                                parser={value => (value ? parseFloat(value.replace(/\s|₽/g, '')) : 0) as any}
+                                            />
+                                            <Button size="large" disabled>₽</Button>
+                                        </Space.Compact>
+                                    </Form.Item>
+                                </Col>
+                            )}
                             <Col xs={24} sm={12} lg={8}>
                                 <Form.Item label={<Text strong>Форма оплаты</Text>} name="paymentMethod" rules={[{ required: true }]}>
                                     <Select size="large">

@@ -14,6 +14,7 @@ import WorkOrderCreatePage from './pages/WorkOrderCreatePage';
 import WorkOrderEditPage from './pages/WorkOrderEditPage';
 import UsersPage from './pages/UsersPage';
 import ExecutorStatsPage from './pages/ExecutorStatsPage';
+import ExecutorEarningsPage from './pages/ExecutorEarningsPage';
 import LoadChartPage from './pages/LoadChartPage';
 import LoginPage from './auth/LoginPage';
 import { AuthProvider, useAuth } from './auth/AuthContext';
@@ -147,6 +148,11 @@ function AppContent() {
           key: 'load-chart',
           icon: <DashboardOutlined />,
           label: <Link to="/load-chart">График загрузки</Link>,
+        },
+        {
+          key: 'executor-stats',
+          icon: <DollarOutlined />,
+          label: <Link to="/executor-stats">Статистика выплат</Link>,
         }
       );
     }
@@ -167,16 +173,28 @@ function AppContent() {
           key: 'load-chart',
           icon: <DashboardOutlined />,
           label: <Link to="/load-chart">График загрузки</Link>,
+        },
+        {
+          key: 'executor-earnings',
+          icon: <DollarOutlined />,
+          label: <Link to="/executor-earnings">Мои заработки</Link>,
         }
       );
     }
-    // EXECUTOR - только Дашборд и Заказ-наряды
+    // EXECUTOR — Заказ-наряды и Мои заработки
     else if (role === 'EXECUTOR') {
-      items.push({
-        key: 'work-orders',
-        icon: <FileTextOutlined />,
-        label: <Link to="/work-orders">Заказ-наряды</Link>,
-      });
+      items.push(
+        {
+          key: 'work-orders',
+          icon: <FileTextOutlined />,
+          label: <Link to="/work-orders">Заказ-наряды</Link>,
+        },
+        {
+          key: 'executor-earnings',
+          icon: <DollarOutlined />,
+          label: <Link to="/executor-earnings">Мои заработки</Link>,
+        }
+      );
     }
 
     return items;
@@ -606,6 +624,7 @@ function AppContent() {
                 <Route path="/work-orders/:id" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER', 'EXECUTOR']}><WorkOrderDetailPage /></ProtectedRoute>} />
                 <Route path="/work-orders/:id/edit" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><WorkOrderEditPage /></ProtectedRoute>} />
                 <Route path="/executor-stats" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER']}><ExecutorStatsPage /></ProtectedRoute>} />
+                <Route path="/executor-earnings" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER', 'EXECUTOR']}><ExecutorEarningsPage /></ProtectedRoute>} />
                 <Route path="/load-chart" element={<ProtectedRoute allowedRoles={['ADMIN', 'MANAGER', 'MASTER']}><LoadChartPage /></ProtectedRoute>} />
                 <Route path="/users" element={<ProtectedRoute allowedRoles={['ADMIN']}><UsersPage /></ProtectedRoute>} />
               </Routes>
